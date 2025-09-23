@@ -7,7 +7,7 @@
     
     <main>
       <section class="status">
-        <h2>Server Status</h2>
+        <h2>Server Status LOX</h2>
         <button @click="checkStatus" :disabled="loading">
           {{ loading ? 'Checking...' : 'Check API Status' }}
         </button>
