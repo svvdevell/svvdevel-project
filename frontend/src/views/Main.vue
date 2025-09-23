@@ -13,7 +13,6 @@
 
 <script setup>
 import MainBanner from '../components/MainBanner.vue'
-
 </script>
 
 <style scoped lang="scss">
@@ -21,19 +20,18 @@ import MainBanner from '../components/MainBanner.vue'
     width: 100%;
 }
 
-.global-wrapper {}
-
 .top-section {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .main-banner {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     z-index: 2;
 
     & * {
@@ -42,12 +40,17 @@ import MainBanner from '../components/MainBanner.vue'
 }
 
 .video-container {
-    width: 100vw;
-    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 
     & video {
-        z-index: -1;
-        width: 100vw;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
     }
 }
 </style>

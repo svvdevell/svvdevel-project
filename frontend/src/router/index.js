@@ -19,7 +19,6 @@ const routes = [
     {
         path: '/contact',
         name: 'Contact',
-        // Lazy loading компонента
         component: () => import('@/views/Contact.vue')
     },
     {
@@ -40,9 +39,8 @@ const routes = [
 ]
 
 const router = createRouter({
-    history: createWebHistory(process.env.BASE_URL),
+    history: createWebHistory(import.meta.env.BASE_URL || '/'), // Используйте import.meta.env для Vite
     routes,
-    // Настройка скролла при переходах между страницами
     scrollBehavior(to, from, savedPosition) {
         if (savedPosition) {
             return savedPosition
@@ -52,9 +50,7 @@ const router = createRouter({
     }
 })
 
-// Navigation guards (опционально)
 router.beforeEach((to, from, next) => {
-    // Логика перед переходом на новый маршрут
     console.log(`Переход с ${from.path} на ${to.path}`)
     next()
 })

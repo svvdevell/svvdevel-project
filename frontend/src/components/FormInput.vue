@@ -42,7 +42,7 @@
                 </div>
 
                 <!-- Поле загрузки фото (необязательное) -->
-                <div class="input-group" :class="{ 'has-error': errors.photos, 'has-success': form.photos.length > 0 }">
+                <div class="input-group file-container" :class="{ 'has-error': errors.photos, 'has-success': form.photos.length > 0 }">
                     <div class="file-upload-wrapper">
                         <input ref="fileInput" type="file" accept="image/*" @change="handleFileUpload"
                             class="file-input" id="photo-upload" multiple>
@@ -375,7 +375,7 @@ const resetForm = () => {
     border: 1px solid rgba(255, 255, 255, 0.18);
     padding: 2.5rem;
     width: 100%;
-    max-width: 700px;
+    max-width: 600px;
     // box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     position: relative;
     z-index: 2;
@@ -388,6 +388,10 @@ const resetForm = () => {
     font-size: 1.8rem;
     font-weight: 600;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.file-container {
+    flex-direction: column;
 }
 
 .input-group {
@@ -491,6 +495,7 @@ const resetForm = () => {
 // Стили для загрузки файлов
 .file-upload-wrapper {
     position: relative;
+    display: contents;
 }
 
 .file-input {
