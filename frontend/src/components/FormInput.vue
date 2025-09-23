@@ -393,6 +393,7 @@ const resetForm = () => {
 .input-group {
     position: relative;
     margin-bottom: 1.5rem;
+    display: flex;
 
     & .glass-input {
         max-width: 525px;

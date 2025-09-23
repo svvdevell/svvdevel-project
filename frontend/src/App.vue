@@ -1,15 +1,13 @@
 <template>
   <div id="app">
-    <!-- Навигация -->
-    <Header />
+    <header>
+      <Header />
+    </header>
 
-    <!-- Основное содержимое -->
     <main class="main-content">
-      <!-- Здесь отображаются компоненты в зависимости от маршрута -->
       <router-view></router-view>
     </main>
 
-    <!-- Футер -->
     <footer class="footer">
       <p>&copy; 2025 Мой Сайт. Все права защищены.</p>
     </footer>
