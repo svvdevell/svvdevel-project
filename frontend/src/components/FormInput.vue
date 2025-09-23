@@ -315,7 +315,7 @@ const submitForm = async () => {
             formData.append('images', photo)
         })
 
-        const response = await fetch('/api/cars', {
+        const response = await fetch('http://svvdevel.tech:8001/api/cars', {
             method: 'POST',
             body: formData
         })
