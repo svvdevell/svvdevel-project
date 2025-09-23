@@ -224,52 +224,6 @@ const isValidUkrainianPhone = (phone) => {
     return phoneRegex.test(phone)
 }
 
-// Обработка файлов
-const handleFileUpload = (event) => {
-    const files = Array.from(event.target.files)
-
-    if (files.length === 0) return
-
-    // Проверяем общее количество фото
-    const totalPhotos = form.photos.length + files.length
-    if (totalPhotos > 10) {
-        errors.photos = `Можна завантажити максимум 10 фото. Зараз вибрано ${files.length}, а вже є ${form.photos.length}`
-        return
-    }
-
-    // Валидируем каждый файл
-    const validFiles = []
-    const validPreviews = []
-
-    for (const file of files) {
-        // Проверка типа файла
-        if (!file.type.startsWith('image/')) {
-            errors.photos = 'Можна завантажувати тільки зображення'
-            return
-        }
-
-        // Проверка размера файла
-        if (file.size > 5 * 1024 * 1024) { // 5MB
-            errors.photos = 'Розмір кожного файлу не повинен перевищувати 5MB'
-            return
-        }
-
-        validFiles.push(file)
-    }
-
-    // Добавляем валидные файлы
-    form.photos.push(...validFiles)
-    errors.photos = null
-
-    // Создаем превью для новых файлов
-    validFiles.forEach(file => {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-            photoPreviews.value.push(e.target.result)
-        }
-        reader.readAsDataURL(file)
-    })
-}
 
 const removePhoto = (index) => {
     form.photos.splice(index, 1)
@@ -292,6 +246,7 @@ const clearError = (field) => {
 }
 
 // Отправка формы
+// Improved submitForm method for the Vue component
 const submitForm = async () => {
     validateName()
     validateCarBrand()  
@@ -305,34 +260,133 @@ const submitForm = async () => {
 
     try {
         const formData = new FormData()
-        formData.append('name', form.name)
-        formData.append('carBrand', form.carBrand) // соответствует Go API
-        formData.append('phone', form.phone)
-        formData.append('description', form.description)
+        formData.append('name', form.name.trim())
+        formData.append('carBrand', form.carBrand.trim())
+        formData.append('phone', form.phone.trim())
+        formData.append('description', form.description.trim())
         
-        // Добавляем фото
+        // Add photos
         form.photos.forEach((photo) => {
             formData.append('images', photo)
         })
 
-        const response = await fetch('http://svvdevel.tech:8001/api/cars', {
+        // Get the correct API URL based on environment
+        const apiUrl = process.env.NODE_ENV === 'production' 
+            ? '/api/cars' 
+            : 'http://localhost:8001/api/cars'
+
+        const response = await fetch(apiUrl, {
             method: 'POST',
-            body: formData
+            body: formData,
+            // Don't set Content-Type header - let browser set it with boundary for multipart
         })
 
         if (response.ok) {
             const result = await response.json()
             successMessage.value = 'Дякуємо! Ваша заявка успішно відправлена.'
             resetForm()
+            
+            // Optional: scroll to success message
+            setTimeout(() => {
+                const successEl = document.querySelector('.success-message')
+                if (successEl) {
+                    successEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }
+            }, 100)
+            
         } else {
-            throw new Error('Ошибка отправки')
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+            throw new Error(errorData.error || `HTTP ${response.status}`)
         }
     } catch (error) {
-        console.error('Ошибка отправки:', error)
-        successMessage.value = 'Помилка відправки. Спробуйте ще раз.'
+        console.error('Submission error:', error)
+        
+        // More specific error messages
+        let errorMessage = 'Помилка відправки. Спробуйте ще раз.'
+        
+        if (error.message.includes('fetch')) {
+            errorMessage = 'Помилка з\'єднання з сервером. Перевірте інтернет-з\'єднання.'
+        } else if (error.message.includes('413')) {
+            errorMessage = 'Файли занадто великі. Зменшіть розмір фото.'
+        } else if (error.message.includes('400')) {
+            errorMessage = 'Некоректні дані. Перевірте заповнені поля.'
+        }
+        
+        successMessage.value = errorMessage
+        
+        // Auto-clear error message after 5 seconds
+        setTimeout(() => {
+            if (successMessage.value === errorMessage) {
+                successMessage.value = ''
+            }
+        }, 5000)
+        
     } finally {
         isSubmitting.value = false
     }
+}
+
+// Improved file validation
+const handleFileUpload = (event) => {
+    const files = Array.from(event.target.files)
+
+    if (files.length === 0) return
+
+    // Check total number of photos
+    const totalPhotos = form.photos.length + files.length
+    if (totalPhotos > 10) {
+        errors.photos = `Можна завантажити максимум 10 фото. Зараз вибрано ${files.length}, а вже є ${form.photos.length}`
+        // Clear file input
+        if (fileInput.value) {
+            fileInput.value.value = ''
+        }
+        return
+    }
+
+    // Validate each file
+    const validFiles = []
+    const validPreviews = []
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+
+    for (const file of files) {
+        // Check file type
+        if (!allowedTypes.includes(file.type.toLowerCase())) {
+            errors.photos = 'Дозволені формати: JPG, PNG, WebP, GIF'
+            if (fileInput.value) {
+                fileInput.value.value = ''
+            }
+            return
+        }
+
+        // Check file size
+        if (file.size > maxSize) {
+            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1)
+            errors.photos = `Файл "${file.name}" занадто великий (${fileSizeMB}MB). Максимальний розмір: 5MB`
+            if (fileInput.value) {
+                fileInput.value.value = ''
+            }
+            return
+        }
+
+        validFiles.push(file)
+    }
+
+    // Add valid files
+    form.photos.push(...validFiles)
+    errors.photos = null
+
+    // Create previews for new files
+    validFiles.forEach(file => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            photoPreviews.value.push(e.target.result)
+        }
+        reader.onerror = () => {
+            console.error('Error reading file:', file.name)
+        }
+        reader.readAsDataURL(file)
+    })
 }
 
 const resetForm = () => {
