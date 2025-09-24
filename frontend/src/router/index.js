@@ -22,6 +22,11 @@ const routes = [
         component: () => import('@/views/Contact.vue')
     },
     {
+        path: '/admin',
+        name: 'Admin',
+        component: () => import('@/views/Admin.vue')
+    },
+    {
         path: '/form',
         name: 'Form',
         component: () => import('@/views/Form.vue')
