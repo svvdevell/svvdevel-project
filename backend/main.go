@@ -12,10 +12,26 @@ import (
     "strconv"
     "strings"
     "time"
+    "bytes"
+    "net/url"
+    "mime/multipart"
 
     _ "github.com/mattn/go-sqlite3"
     "github.com/gorilla/mux"
 )
+
+// Структуры для Telegram API
+type TelegramMessage struct {
+    ChatID    string `json:"chat_id"`
+    Text      string `json:"text"`
+    ParseMode string `json:"parse_mode"`
+}
+
+type TelegramPhoto struct {
+    ChatID  string `json:"chat_id"`
+    Caption string `json:"caption"`
+    ParseMode string `json:"parse_mode"`
+}
 
 type Response struct {
     Message string `json:"message"`
@@ -112,6 +128,127 @@ func main() {
     
     log.Println("🚀 Go API server starting on :8080")
     log.Fatal(http.ListenAndServe(":8080", r))
+}
+
+var (
+    telegramBotToken = os.Getenv("TELEGRAM_BOT_TOKEN")
+    telegramChatID   = os.Getenv("TELEGRAM_CHAT_ID")
+)
+
+// Функция отправки текстового сообщения в Telegram
+func sendTelegramMessage(message string) error {
+    if telegramBotToken == "" || telegramChatID == "" {
+        log.Println("Telegram not configured - skipping notification")
+        return nil
+    }
+
+    telegramURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", telegramBotToken)
+    
+    payload := TelegramMessage{
+        ChatID:    telegramChatID,
+        Text:      message,
+        ParseMode: "HTML",
+    }
+    
+    jsonData, err := json.Marshal(payload)
+    if err != nil {
+        return fmt.Errorf("error marshaling telegram message: %v", err)
+    }
+    
+    resp, err := http.Post(telegramURL, "application/json", bytes.NewBuffer(jsonData))
+    if err != nil {
+        return fmt.Errorf("error sending telegram message: %v", err)
+    }
+    defer resp.Body.Close()
+    
+    if resp.StatusCode != 200 {
+        body, _ := io.ReadAll(resp.Body)
+        return fmt.Errorf("telegram API error: %s", string(body))
+    }
+    
+    log.Println("Telegram notification sent successfully")
+    return nil
+}
+
+// Функция отправки фотографии в Telegram
+func sendTelegramPhoto(photoPath, caption string) error {
+    if telegramBotToken == "" || telegramChatID == "" {
+        return nil
+    }
+
+    telegramURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendPhoto", telegramBotToken)
+    
+    file, err := os.Open(photoPath)
+    if err != nil {
+        return fmt.Errorf("error opening photo: %v", err)
+    }
+    defer file.Close()
+    
+    var requestBody bytes.Buffer
+    writer := multipart.NewWriter(&requestBody)
+    
+    // Добавляем chat_id
+    writer.WriteField("chat_id", telegramChatID)
+    writer.WriteField("caption", caption)
+    writer.WriteField("parse_mode", "HTML")
+    
+    // Добавляем файл
+    part, err := writer.CreateFormFile("photo", filepath.Base(photoPath))
+    if err != nil {
+        return err
+    }
+    
+    _, err = io.Copy(part, file)
+    if err != nil {
+        return err
+    }
+    
+    writer.Close()
+    
+    req, err := http.NewRequest("POST", telegramURL, &requestBody)
+    if err != nil {
+        return err
+    }
+    req.Header.Set("Content-Type", writer.FormDataContentType())
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending photo to telegram: %v", err)
+    }
+    defer resp.Body.Close()
+    
+    if resp.StatusCode != 200 {
+        body, _ := io.ReadAll(resp.Body)
+        return fmt.Errorf("telegram photo API error: %s", string(body))
+    }
+    
+    return nil
+}
+
+// Функция формирования красивого сообщения о новой заявке
+func formatCarRequestMessage(name, carBrand, phone, description string, imageCount int) string {
+    message := fmt.Sprintf(`🚗 <b>Новая заявка на автомобиль</b>
+
+👤 <b>Имя:</b> %s
+🚙 <b>Марка авто:</b> %s  
+📞 <b>Телефон:</b> %s`, name, carBrand, phone)
+
+    if description != "" {
+        message += fmt.Sprintf(`
+📝 <b>Описание:</b> %s`, description)
+    }
+
+    if imageCount > 0 {
+        message += fmt.Sprintf(`
+📷 <b>Количество фото:</b> %d`, imageCount)
+    }
+
+    message += fmt.Sprintf(`
+
+⏰ <b>Время:</b> %s`, time.Now().Format("02.01.2006 15:04:05"))
+
+    return message
 }
 
 // CORS middleware
@@ -228,6 +365,8 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
 
     // Обработка загруженных изображений
     uploadedFiles := []string{}
+    uploadedPaths := []string{}
+    
     if files := r.MultipartForm.File["images"]; len(files) > 0 {
         for i, fileHeader := range files {
             if i >= 10 { // Ограничиваем максимум 10 файлов
@@ -278,8 +417,26 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
             }
 
             uploadedFiles = append(uploadedFiles, fileName)
+            uploadedPaths = append(uploadedPaths, filePath)
         }
     }
+
+    // Отправляем уведомление в Telegram
+    go func() {
+        // Формируем и отправляем текстовое сообщение
+        message := formatCarRequestMessage(name, carBrand, phone, description, len(uploadedFiles))
+        if err := sendTelegramMessage(message); err != nil {
+            log.Printf("Error sending telegram message: %v", err)
+        }
+
+        // Отправляем первое фото если есть
+        if len(uploadedPaths) > 0 {
+            caption := fmt.Sprintf("Фото от %s (%s)", name, carBrand)
+            if err := sendTelegramPhoto(uploadedPaths[0], caption); err != nil {
+                log.Printf("Error sending telegram photo: %v", err)
+            }
+        }
+    }()
 
     // Возвращаем успешный ответ
     response := map[string]interface{}{
