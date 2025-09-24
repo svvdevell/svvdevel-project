@@ -32,6 +32,36 @@ type CarRequest struct {
     CreatedAt   time.Time `json:"createdAt"`
 }
 
+// Структуры для API ответов
+type AdminRequestResponse struct {
+    ID          int       `json:"id"`
+    Name        string    `json:"name"`
+    CarBrand    string    `json:"carBrand"`
+    Phone       string    `json:"phone"`
+    Description string    `json:"description"`
+    CreatedAt   time.Time `json:"createdAt"`
+    ImageCount  int       `json:"imageCount"`
+}
+
+type CarImageResponse struct {
+    ID           int       `json:"id"`
+    CarRequestID int       `json:"carRequestId"`
+    FileName     string    `json:"fileName"`
+    FileURL      string    `json:"fileUrl"`
+    FileSize     int       `json:"fileSize"`
+    CreatedAt    time.Time `json:"createdAt"`
+}
+
+type RequestDetailResponse struct {
+    ID          int                `json:"id"`
+    Name        string             `json:"name"`
+    CarBrand    string             `json:"carBrand"`
+    Phone       string             `json:"phone"`
+    Description string             `json:"description"`
+    CreatedAt   time.Time          `json:"createdAt"`
+    Images      []CarImageResponse `json:"images"`
+}
+
 var db *sql.DB
 
 func main() {
@@ -66,10 +96,16 @@ func main() {
     // Добавляем CORS middleware
     r.Use(corsMiddleware)
     
+    // Основные роуты
     r.HandleFunc("/health", healthHandler).Methods("GET")
     r.HandleFunc("/api/status", statusHandler).Methods("GET")
     r.HandleFunc("/api/cars", createCarRequestHandler).Methods("POST")
     r.HandleFunc("/api/cars", getCarRequestsHandler).Methods("GET")
+    
+    // Админ API роуты
+    r.HandleFunc("/api/admin/requests", getAdminRequestsHandler).Methods("GET")
+    r.HandleFunc("/api/admin/requests/{id}", getAdminRequestDetailHandler).Methods("GET")
+    r.HandleFunc("/api/admin/requests/{id}/images", getRequestImagesHandler).Methods("GET")
     
     // Статические файлы для изображений
     r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads/"))))
@@ -331,5 +367,188 @@ func getCarRequestsHandler(w http.ResponseWriter, r *http.Request) {
         },
     }
 
+    json.NewEncoder(w).Encode(response)
+}
+
+// Получение списка всех заявок для админки
+func getAdminRequestsHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    
+    // Параметры пагинации
+    page := 1
+    limit := 50
+    
+    if p := r.URL.Query().Get("page"); p != "" {
+        if parsed, err := strconv.Atoi(p); err == nil && parsed > 0 {
+            page = parsed
+        }
+    }
+    
+    if l := r.URL.Query().Get("limit"); l != "" {
+        if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 && parsed <= 100 {
+            limit = parsed
+        }
+    }
+    
+    offset := (page - 1) * limit
+    
+    // Запрос заявок с количеством изображений
+    query := `
+        SELECT cr.id, cr.name, cr.car_brand, cr.phone, cr.description, cr.created_at,
+               COUNT(ci.id) as image_count
+        FROM car_requests cr
+        LEFT JOIN car_images ci ON cr.id = ci.car_request_id
+        GROUP BY cr.id, cr.name, cr.car_brand, cr.phone, cr.description, cr.created_at
+        ORDER BY cr.created_at DESC
+        LIMIT ? OFFSET ?
+    `
+    
+    rows, err := db.Query(query, limit, offset)
+    if err != nil {
+        log.Printf("Error querying admin requests: %v", err)
+        http.Error(w, `{"error": "Ошибка получения данных"}`, http.StatusInternalServerError)
+        return
+    }
+    defer rows.Close()
+    
+    var requests []AdminRequestResponse
+    for rows.Next() {
+        var req AdminRequestResponse
+        err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.Phone, 
+                        &req.Description, &req.CreatedAt, &req.ImageCount)
+        if err != nil {
+            log.Printf("Error scanning admin request row: %v", err)
+            continue
+        }
+        requests = append(requests, req)
+    }
+    
+    // Подсчет общего количества записей
+    var total int
+    err = db.QueryRow("SELECT COUNT(*) FROM car_requests").Scan(&total)
+    if err != nil {
+        log.Printf("Error counting admin requests: %v", err)
+        total = 0
+    }
+    
+    response := map[string]interface{}{
+        "status": "success",
+        "data": requests,
+        "pagination": map[string]interface{}{
+            "page":  page,
+            "limit": limit,
+            "total": total,
+            "pages": (total + limit - 1) / limit,
+        },
+    }
+    
+    json.NewEncoder(w).Encode(response)
+}
+
+// Получение детальной информации о заявке с изображениями
+func getAdminRequestDetailHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    
+    vars := mux.Vars(r)
+    requestID := vars["id"]
+    
+    // Получаем основную информацию о заявке
+    var req RequestDetailResponse
+    query := "SELECT id, name, car_brand, phone, description, created_at FROM car_requests WHERE id = ?"
+    err := db.QueryRow(query, requestID).Scan(&req.ID, &req.Name, &req.CarBrand, 
+                                             &req.Phone, &req.Description, &req.CreatedAt)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            http.Error(w, `{"error": "Заявка не найдена"}`, http.StatusNotFound)
+        } else {
+            log.Printf("Error getting request detail: %v", err)
+            http.Error(w, `{"error": "Ошибка получения данных"}`, http.StatusInternalServerError)
+        }
+        return
+    }
+    
+    // Получаем изображения
+    imageQuery := "SELECT id, car_request_id, file_name, file_path, file_size, created_at FROM car_images WHERE car_request_id = ?"
+    imageRows, err := db.Query(imageQuery, requestID)
+    if err != nil {
+        log.Printf("Error getting request images: %v", err)
+    } else {
+        defer imageRows.Close()
+        
+        for imageRows.Next() {
+            var img CarImageResponse
+            var filePath string
+            err := imageRows.Scan(&img.ID, &img.CarRequestID, &img.FileName, 
+                                 &filePath, &img.FileSize, &img.CreatedAt)
+            if err != nil {
+                log.Printf("Error scanning image row: %v", err)
+                continue
+            }
+            
+            // Создаем URL для изображения
+            fileName := filepath.Base(filePath)
+            img.FileURL = "/uploads/" + fileName
+            
+            req.Images = append(req.Images, img)
+        }
+    }
+    
+    response := map[string]interface{}{
+        "status": "success",
+        "data":   req,
+    }
+    
+    json.NewEncoder(w).Encode(response)
+}
+
+// Получение только изображений для конкретной заявки
+func getRequestImagesHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    
+    vars := mux.Vars(r)
+    requestID := vars["id"]
+    
+    // Проверяем что заявка существует
+    var exists int
+    err := db.QueryRow("SELECT COUNT(*) FROM car_requests WHERE id = ?", requestID).Scan(&exists)
+    if err != nil || exists == 0 {
+        http.Error(w, `{"error": "Заявка не найдена"}`, http.StatusNotFound)
+        return
+    }
+    
+    // Получаем изображения
+    query := "SELECT id, car_request_id, file_name, file_path, file_size, created_at FROM car_images WHERE car_request_id = ? ORDER BY created_at ASC"
+    rows, err := db.Query(query, requestID)
+    if err != nil {
+        log.Printf("Error getting images: %v", err)
+        http.Error(w, `{"error": "Ошибка получения изображений"}`, http.StatusInternalServerError)
+        return
+    }
+    defer rows.Close()
+    
+    var images []CarImageResponse
+    for rows.Next() {
+        var img CarImageResponse
+        var filePath string
+        err := rows.Scan(&img.ID, &img.CarRequestID, &img.FileName, 
+                        &filePath, &img.FileSize, &img.CreatedAt)
+        if err != nil {
+            log.Printf("Error scanning image row: %v", err)
+            continue
+        }
+        
+        // Создаем URL для изображения
+        fileName := filepath.Base(filePath)
+        img.FileURL = "/uploads/" + fileName
+        
+        images = append(images, img)
+    }
+    
+    response := map[string]interface{}{
+        "status": "success",
+        "data":   images,
+        "count":  len(images),
+    }
+    
     json.NewEncoder(w).Encode(response)
 }
