@@ -35,34 +35,23 @@ type CarRequest struct {
 var db *sql.DB
 
 func main() {
-    // Подключение к БД
-    dbHost := os.Getenv("DB_HOST")
-    if dbHost == "" {
-        dbHost = "localhost"
+    // Подключение к SQLite БД
+    dbPath := os.Getenv("DB_PATH")
+    if dbPath == "" {
+        dbPath = "./data/database.db"
     }
     
-    dbUser := os.Getenv("DB_USER")
-    if dbUser == "" {
-        dbUser = "developer"
-    }
-    
-    dbPassword := os.Getenv("DB_PASSWORD")
-    if dbPassword == "" {
-        dbPassword = "your_strong_password"
-    }
-    
-    dbName := os.Getenv("DB_NAME")
-    if dbName == "" {
-        dbName = "site1_db"
+    // Создаем папку для БД если её нет
+    if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
+        log.Printf("Error creating database directory: %v", err)
     }
 
-    connStr := "host=" + dbHost + " user=" + dbUser + " password=" + dbPassword + " dbname=" + dbName + " sslmode=disable"
     var err error
-    db, err = sql.Open("postgres", connStr)
+    db, err = sql.Open("sqlite3", dbPath)
     if err != nil {
         log.Printf("Database connection error: %v", err)
     } else {
-        log.Println("Database connected successfully")
+        log.Printf("SQLite database connected successfully: %s", dbPath)
         // Создаем таблицы при подключении
         createTables()
     }
@@ -105,24 +94,24 @@ func corsMiddleware(next http.Handler) http.Handler {
     })
 }
 
-// Создание таблиц
+// Создание таблиц для SQLite
 func createTables() {
     queries := []string{
         `CREATE TABLE IF NOT EXISTS car_requests (
-            id SERIAL PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name VARCHAR(255) NOT NULL,
             car_brand VARCHAR(255) NOT NULL,
             phone VARCHAR(20) NOT NULL,
             description TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`,
         `CREATE TABLE IF NOT EXISTS car_images (
-            id SERIAL PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             car_request_id INTEGER REFERENCES car_requests(id) ON DELETE CASCADE,
             file_name VARCHAR(255) NOT NULL,
             file_path VARCHAR(500) NOT NULL,
             file_size INTEGER,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`,
     }
 
@@ -131,7 +120,7 @@ func createTables() {
             log.Printf("Error creating table: %v", err)
         }
     }
-    log.Println("Database tables initialized")
+    log.Println("SQLite database tables initialized")
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
@@ -158,6 +147,7 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
         "api": "running",
         "database": dbStatus,
         "version": "1.0.0",
+        "db_type": "SQLite",
     }
     json.NewEncoder(w).Encode(response)
 }
@@ -181,15 +171,22 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Вставляем заявку в базу данных
-    var carRequestID int
+    // Вставляем заявку в базу данных SQLite
     query := `INSERT INTO car_requests (name, car_brand, phone, description) 
-              VALUES ($1, $2, $3, $4) RETURNING id`
+              VALUES (?, ?, ?, ?)`
     
-    err := db.QueryRow(query, name, carBrand, phone, description).Scan(&carRequestID)
+    result, err := db.Exec(query, name, carBrand, phone, description)
     if err != nil {
         log.Printf("Error inserting car request: %v", err)
         http.Error(w, `{"error": "Ошибка сохранения данных"}`, http.StatusInternalServerError)
+        return
+    }
+
+    // Получаем ID вставленной записи
+    carRequestID, err := result.LastInsertId()
+    if err != nil {
+        log.Printf("Error getting last insert ID: %v", err)
+        http.Error(w, `{"error": "Ошибка получения ID записи"}`, http.StatusInternalServerError)
         return
     }
 
@@ -236,7 +233,7 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
 
             // Сохраняем информацию о файле в базе данных
             imageQuery := `INSERT INTO car_images (car_request_id, file_name, file_path, file_size) 
-                          VALUES ($1, $2, $3, $4)`
+                          VALUES (?, ?, ?, ?)`
             _, err = db.Exec(imageQuery, carRequestID, fileHeader.Filename, filePath, fileHeader.Size)
             if err != nil {
                 log.Printf("Error saving image info to database: %v", err)
@@ -290,11 +287,11 @@ func getCarRequestsHandler(w http.ResponseWriter, r *http.Request) {
 
     offset := (page - 1) * limit
 
-    // Запрос заявок с пагинацией
+    // Запрос заявок с пагинацией для SQLite
     query := `SELECT id, name, car_brand, phone, description, created_at 
               FROM car_requests 
               ORDER BY created_at DESC 
-              LIMIT $1 OFFSET $2`
+              LIMIT ? OFFSET ?`
 
     rows, err := db.Query(query, limit, offset)
     if err != nil {
