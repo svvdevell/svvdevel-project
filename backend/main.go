@@ -250,6 +250,90 @@ func formatCarRequestMessage(name, carBrand, phone, description string, imageCou
     return message
 }
 
+func sendTelegramMediaGroup(photoPaths []string, caption string) error {
+    if telegramBotToken == "" || telegramChatID == "" || len(photoPaths) == 0 {
+        return nil
+    }
+
+    telegramURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMediaGroup", telegramBotToken)
+    
+    // Telegram поддерживает максимум 10 фото в группе
+    maxPhotos := len(photoPaths)
+    if maxPhotos > 10 {
+        maxPhotos = 10
+    }
+    
+    // Создаем массив медиа
+    var media []map[string]interface{}
+    
+    for i := 0; i < maxPhotos; i++ {
+        mediaItem := map[string]interface{}{
+            "type":  "photo",
+            "media": fmt.Sprintf("attach://photo%d", i),
+        }
+        
+        // Добавляем подпись только к первому фото
+        if i == 0 {
+            mediaItem["caption"] = caption
+            mediaItem["parse_mode"] = "HTML"
+        }
+        
+        media = append(media, mediaItem)
+    }
+    
+    mediaJSON, err := json.Marshal(media)
+    if err != nil {
+        return fmt.Errorf("error marshaling media group: %v", err)
+    }
+    
+    var requestBody bytes.Buffer
+    writer := multipart.NewWriter(&requestBody)
+    
+    // Добавляем параметры
+    writer.WriteField("chat_id", telegramChatID)
+    writer.WriteField("media", string(mediaJSON))
+    
+    // Добавляем файлы
+    for i := 0; i < maxPhotos; i++ {
+        file, err := os.Open(photoPaths[i])
+        if err != nil {
+            log.Printf("Error opening photo %d: %v", i, err)
+            continue
+        }
+        defer file.Close()
+        
+        part, err := writer.CreateFormFile(fmt.Sprintf("photo%d", i), filepath.Base(photoPaths[i]))
+        if err != nil {
+            log.Printf("Error creating form file %d: %v", i, err)
+            continue
+        }
+        
+        io.Copy(part, file)
+    }
+    
+    writer.Close()
+    
+    req, err := http.NewRequest("POST", telegramURL, &requestBody)
+    if err != nil {
+        return err
+    }
+    req.Header.Set("Content-Type", writer.FormDataContentType())
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending media group to telegram: %v", err)
+    }
+    defer resp.Body.Close()
+    
+    if resp.StatusCode != 200 {
+        body, _ := io.ReadAll(resp.Body)
+        return fmt.Errorf("telegram media group API error: %s", string(body))
+    }
+    
+    return nil
+}
+
 // CORS middleware
 func corsMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -428,8 +512,21 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
             log.Printf("Error sending telegram message: %v", err)
         }
 
-        // Отправляем первое фото если есть
-        if len(uploadedPaths) > 0 {
+        // Отправляем фотографии как альбом если их больше 1
+        if len(uploadedPaths) > 1 {
+            caption := fmt.Sprintf("Фотографии от %s (%s) - %d шт.", name, carBrand, len(uploadedPaths))
+            if err := sendTelegramMediaGroup(uploadedPaths, caption); err != nil {
+                log.Printf("Error sending telegram media group: %v", err)
+                // Если не получилось отправить группой, отправляем по одному
+                for i, path := range uploadedPaths {
+                    if i >= 5 { break } // Ограничиваем 5 фото
+                    singleCaption := fmt.Sprintf("Фото %d/%d от %s", i+1, len(uploadedPaths), name)
+                    sendTelegramPhoto(path, singleCaption)
+                    time.Sleep(500 * time.Millisecond)
+                }
+            }
+        } else if len(uploadedPaths) == 1 {
+            // Одно фото отправляем обычным способом
             caption := fmt.Sprintf("Фото от %s (%s)", name, carBrand)
             if err := sendTelegramPhoto(uploadedPaths[0], caption); err != nil {
                 log.Printf("Error sending telegram photo: %v", err)
