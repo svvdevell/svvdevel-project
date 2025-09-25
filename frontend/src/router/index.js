@@ -4,12 +4,25 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Main from '@/views/Main.vue'
 import Brands from '@/views/Brands.vue'
 import NotFound from '@/views/NotFound.vue'
+import AddCar from '@/views/AddCar.vue'
+import CarsCatalog from '@/views/CarsCatalog.vue'
+
 
 const routes = [
     {
         path: '/',
         name: 'Main',
         component: Main
+    },
+    {
+        path: '/cars',
+        name: 'CarsCatalog',
+        component: CarsCatalog
+    },
+    {
+        path: '/add',
+        name: 'AddCar',
+        component: AddCar
     },
     {
         path: '/brands',
