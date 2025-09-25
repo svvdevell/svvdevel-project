@@ -99,6 +99,7 @@ func main() {
         log.Printf("SQLite database connected successfully: %s", dbPath)
         // Создаем таблицы при подключении
         createTables()
+        createCarTables()
     }
 
     // Создаем папку для загрузок если её нет
@@ -121,7 +122,7 @@ func main() {
     r.HandleFunc("/api/admin/requests", getAdminRequestsHandler).Methods("GET")
     r.HandleFunc("/api/admin/requests/{id}", getAdminRequestDetailHandler).Methods("GET")
     r.HandleFunc("/api/admin/requests/{id}/images", getRequestImagesHandler).Methods("GET")
-    
+    registerCarRoutes(r)
     // Статические файлы для изображений
     r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads/"))))
     
