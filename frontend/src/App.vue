@@ -1,24 +1,22 @@
 <template>
   <div id="app">
-    <header>
-      <Header />
-    </header>
+    <Header />
 
     <main class="main-content">
       <router-view></router-view>
     </main>
 
-    <footer class="footer">
-      <p>&copy; 2025 Мой Сайт. Все права защищены.</p>
-    </footer>
+    <Footer />
   </div>
 </template>
 
 <script setup>
-import Header from './components/Header.vue'
+import Header from './components/global/Header.vue'
+import Footer from './components/global/Footer.vue'
+
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 * {
   margin: 0;
   padding: 0;
@@ -26,7 +24,10 @@ import Header from './components/Header.vue'
 }
 
 #app {
-  font-family: "Montserrat", sans-serif;
-}
+  background-color: #FFF;
 
+  & * {
+    font-family: "Work Sans", sans-serif;
+  }
+}
 </style>

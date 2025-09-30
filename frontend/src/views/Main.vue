@@ -2,7 +2,6 @@
     <div class="main-page">
         <section class="top-section">
             <div class="video-container">
-                <video src="../media/video/aston.mp4" autoplay muted loop></video>
             </div>
             <div class="main-banner">
                 <MainBanner />
@@ -12,7 +11,7 @@
 </template>
 
 <script setup>
-import MainBanner from '../components/MainBanner.vue'
+import MainBanner from '@/components/banners/MainBanner.vue'
 </script>
 
 <style scoped lang="scss">
@@ -33,6 +32,7 @@ import MainBanner from '../components/MainBanner.vue'
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
+    width: 100%;
 
     & * {
         font-family: "Zalando Sans SemiExpanded", sans-serif;

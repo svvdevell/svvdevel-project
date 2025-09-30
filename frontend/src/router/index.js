@@ -2,9 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // Импортируйте ваши компоненты
 import Main from '@/views/Main.vue'
-import Brands from '@/views/Brands.vue'
 import NotFound from '@/views/NotFound.vue'
-import AddCar from '@/views/AddCar.vue'
+import AddCar from '@/views/admin/AddCar.vue'
 import CarsCatalog from '@/views/CarsCatalog.vue'
 
 
@@ -15,19 +14,19 @@ const routes = [
         component: Main
     },
     {
-        path: '/cars',
+        path: '/test',
+        name: 'Test',
+        component: () => import('@/views/Test.vue')
+    },
+    {
+        path: '/catalog',
         name: 'CarsCatalog',
         component: CarsCatalog
     },
     {
-        path: '/add',
+        path: '/admin/add',
         name: 'AddCar',
         component: AddCar
-    },
-    {
-        path: '/brands',
-        name: 'Brands',
-        component: Brands
     },
     {
         path: '/contact',
@@ -37,17 +36,12 @@ const routes = [
     {
         path: '/admin',
         name: 'Admin',
-        component: () => import('@/views/Admin.vue')
+        component: () => import('@/views/admin/Admin.vue')
     },
     {
         path: '/form',
         name: 'Form',
         component: () => import('@/views/Form.vue')
-    },
-    {
-        path: '/reviews',
-        name: 'Reviews',
-        component: () => import('@/views/Reviews.vue')
     },
     {
         path: '/:pathMatch(.*)*',
