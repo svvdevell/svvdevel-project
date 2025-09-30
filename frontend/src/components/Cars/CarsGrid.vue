@@ -1,12 +1,12 @@
 <template>
     <section class="cars-grid">
-        <CarCard :car="car" v-for="car in cars" />
+        <!-- <CarCard :car="car" v-for="car in cars" /> -->
     </section>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import CarCard from './CarCard.vue';
+// import CarCard from '@/CarCard.vue';
 
 const cars = ref([
     {
