@@ -8,7 +8,6 @@
                 :class="{ 'has-error': errors.name, 'has-success': !errors.name && form.name.length > 0 }">
                 <input v-model="form.name" type="text" placeholder="Ваше Ім'я" required class="glass-input"
                     @blur="validateName" @input="clearError('name')">
-                <span class="input-icon">👤</span>
                 <div v-if="errors.name" class="error-message">{{ errors.name }}</div>
             </div>
 
@@ -17,16 +16,14 @@
                 :class="{ 'has-error': errors.carBrand, 'has-success': !errors.carBrand && form.carBrand.length > 0 }">
                 <input v-model="form.carBrand" type="text" placeholder="Марка авто" required class="glass-input"
                     @blur="validateCarBrand" @input="clearError('carBrand')">
-                <span class="input-icon">🚗</span>
                 <div v-if="errors.carBrand" class="error-message">{{ errors.carBrand }}</div>
             </div>
 
             <!-- Поле телефона -->
             <div class="input-group"
                 :class="{ 'has-error': errors.phone, 'has-success': !errors.phone && form.phone.length > 0 }">
-                <input v-model="form.phone" type="tel" placeholder="+380 (XX) XXX-XX-XX" required
-                    class="glass-input" @input="formatPhone" @blur="validatePhone" maxlength="19">
-                <span class="input-icon">📞</span>
+                <input v-model="form.phone" type="tel" placeholder="+380 (XX) XXX-XX-XX" required class="glass-input"
+                    @input="formatPhone" @blur="validatePhone" maxlength="19">
                 <div v-if="errors.phone" class="error-message">{{ errors.phone }}</div>
             </div>
 
@@ -36,17 +33,16 @@
                 <textarea v-model="form.description" placeholder="Розкажіть трошки про Ваше авто (необов'язково)"
                     class="glass-textarea" rows="4" @blur="validateDescription"
                     @input="clearError('description')"></textarea>
-                <span class="textarea-icon">📝</span>
                 <div v-if="errors.description" class="error-message">{{ errors.description }}</div>
             </div>
 
             <!-- Поле загрузки фото (необязательное) -->
-            <div class="input-group file-container" :class="{ 'has-error': errors.photos, 'has-success': form.photos.length > 0 }">
+            <div class="input-group file-container"
+                :class="{ 'has-error': errors.photos, 'has-success': form.photos.length > 0 }">
                 <div class="file-upload-wrapper">
-                    <input ref="fileInput" type="file" accept="image/*" @change="handleFileUpload"
-                        class="file-input" id="photo-upload" multiple>
+                    <input ref="fileInput" type="file" accept="image/*" @change="handleFileUpload" class="file-input"
+                        id="photo-upload" multiple>
                     <label for="photo-upload" class="file-label">
-                        <span class="file-icon">📷</span>
                         <span class="file-text">
                             Можете надати фото (необов'язково, максимум 10)
                         </span>
@@ -194,7 +190,7 @@ const validatePhone = () => {
     if (!form.phone.trim()) {
         errors.phone = 'Поле "Телефон" є обов\'язковим'
     } else if (!isValidUkrainianPhone(form.phone)) {
-        errors.phone = 'Введіть коректний український номер телефону'
+        errors.phone = 'Введіть коректний номер телефону'
     } else {
         errors.phone = null
     }
@@ -240,7 +236,7 @@ const clearError = (field) => {
 // Improved submitForm method for the Vue component
 const submitForm = async () => {
     validateName()
-    validateCarBrand()  
+    validateCarBrand()
     validatePhone()
     validateDescription()
 
@@ -255,15 +251,15 @@ const submitForm = async () => {
         formData.append('carBrand', form.carBrand.trim())
         formData.append('phone', form.phone.trim())
         formData.append('description', form.description.trim())
-        
+
         // Add photos
         form.photos.forEach((photo) => {
             formData.append('images', photo)
         })
 
         // Get the correct API URL based on environment
-        const apiUrl = process.env.NODE_ENV === 'production' 
-            ? '/api/cars' 
+        const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/api/cars'
             : 'http://localhost:8001/api/cars'
 
         const response = await fetch(apiUrl, {
@@ -276,7 +272,7 @@ const submitForm = async () => {
             const result = await response.json()
             successMessage.value = 'Дякуємо! Ваша заявка успішно відправлена.'
             resetForm()
-            
+
             // Optional: scroll to success message
             setTimeout(() => {
                 const successEl = document.querySelector('.success-message')
@@ -284,17 +280,17 @@ const submitForm = async () => {
                     successEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
                 }
             }, 100)
-            
+
         } else {
             const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
             throw new Error(errorData.error || `HTTP ${response.status}`)
         }
     } catch (error) {
         console.error('Submission error:', error)
-        
+
         // More specific error messages
         let errorMessage = 'Помилка відправки. Спробуйте ще раз.'
-        
+
         if (error.message.includes('fetch')) {
             errorMessage = 'Помилка з\'єднання з сервером. Перевірте інтернет-з\'єднання.'
         } else if (error.message.includes('413')) {
@@ -302,16 +298,16 @@ const submitForm = async () => {
         } else if (error.message.includes('400')) {
             errorMessage = 'Некоректні дані. Перевірте заповнені поля.'
         }
-        
+
         successMessage.value = errorMessage
-        
+
         // Auto-clear error message after 5 seconds
         setTimeout(() => {
             if (successMessage.value === errorMessage) {
                 successMessage.value = ''
             }
         }, 5000)
-        
+
     } finally {
         isSubmitting.value = false
     }
@@ -404,25 +400,26 @@ const resetForm = () => {
 
 <style lang="scss" scoped>
 .form-container {
-    padding: 2rem;
     width: 100%;
+    max-width: 520px;
+    background: #FFFFFF;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
     flex-direction: column;
+    gap: 20px;
+    padding: 40px;
+    border-radius: 20px;
 }
 
 
 .form-title {
-    color: rgba(255, 255, 255, 0.9);
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 1.8rem;
+    font-family: Work Sans;
     font-weight: 600;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    text-transform: uppercase;
+    font-style: SemiBold;
+    font-size: 28px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    color: #000;
 }
 
 .file-container {
@@ -430,27 +427,42 @@ const resetForm = () => {
 }
 
 .form-banner {
-    background-color: #FFF;
-    padding: 20px;
-    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     width: 100%;
-    max-width: 612px;
 }
 
 .input-group {
     position: relative;
-    margin-bottom: 1.5rem;
     display: flex;
+    flex-direction: column;
+    background: #FAFAFA;
+    border-radius: 12px;
+    padding: 16px;
+
+    & input,
+    textarea {
+        font-family: Work Sans;
+        font-weight: 400;
+        font-style: Regular;
+        font-size: 16px;
+        line-height: 20px;
+        letter-spacing: 0%;
+        color: #000;
+        background: #FAFAFA;
+        border: none;
+        max-height: 150px;
+    }
 
     &.has-error {
 
         .glass-input,
         .glass-textarea {
+            border-bottom: 1px solid;
             border-color: rgba(231, 76, 60, 0.6);
-            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
         }
 
-        .input-icon,
         .textarea-icon {
             color: #e74c3c;
         }
@@ -460,11 +472,10 @@ const resetForm = () => {
 
         .glass-input,
         .glass-textarea {
+            border-bottom: 1px solid;
             border-color: rgba(39, 174, 96, 0.6);
-            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.2);
         }
 
-        .input-icon,
         .textarea-icon {
             color: #27ae60;
         }
@@ -474,9 +485,6 @@ const resetForm = () => {
 .glass-input,
 .glass-textarea {
     width: 100%;
-    padding: 1rem 1rem 1rem 3rem;
-    // border: none;
-    border: 1px solid #000;
     color: #000;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -499,30 +507,13 @@ const resetForm = () => {
     font-family: inherit;
 }
 
-.input-icon,
-.textarea-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.8);
-    transition: color 0.3s ease;
-}
-
-.textarea-icon {
-    top: 1.5rem;
-}
 
 .error-message {
     color: #ff6b6b;
     font-size: 0.85rem;
     margin-top: 0.5rem;
-    background: rgba(255, 107, 107, 0.1);
-    padding: 0.5rem;
-    border-radius: 8px;
-    backdrop-filter: blur(5px);
-}
+    padding: 10px;
+}   
 
 // Стили для загрузки файлов
 .file-upload-wrapper {
@@ -540,11 +531,6 @@ const resetForm = () => {
 .file-label {
     display: flex;
     align-items: center;
-    padding: 1rem;
-    background: rgb(0 0 0 / 35%);
-    backdrop-filter: blur(5px);
-    border: 2px dashed rgba(255, 255, 255, 0.4);
-    border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
 
@@ -560,8 +546,13 @@ const resetForm = () => {
 }
 
 .file-text {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
+    font-family: Work Sans;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 0%;
+    color: #000;
 }
 
 .photos-preview {

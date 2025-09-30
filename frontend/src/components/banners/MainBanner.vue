@@ -14,10 +14,15 @@ import TextBanner from '@/components/banners/TextBanner.vue';
 <style lang="scss" scoped>
 .banner {
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 40px;
     width: 100%;
-    padding: 30px;
+    background: #5937E0;
+    border-radius: 40px;
+    margin: 50px 0;
+    padding: 78px 72px;
+
 }
 </style>

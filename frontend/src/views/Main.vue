@@ -1,12 +1,6 @@
 <template>
     <div class="main-page">
-        <section class="top-section">
-            <div class="video-container">
-            </div>
-            <div class="main-banner">
-                <MainBanner />
-            </div>
-        </section>
+        <MainBanner />
     </div>
 </template>
 
