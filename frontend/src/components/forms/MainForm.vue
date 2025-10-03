@@ -19,11 +19,37 @@
                 <div v-if="errors.carBrand" class="error-message">{{ errors.carBrand }}</div>
             </div>
 
+            <!-- Поле модели авто -->
             <div class="input-group"
                 :class="{ 'has-error': errors.carModel, 'has-success': !errors.carModel && form.carModel.length > 0 }">
-                <input v-model="form.carModel" type="text" placeholder="Марка авто" required class="glass-input"
+                <input v-model="form.carModel" type="text" placeholder="Модель авто" required class="glass-input"
                     @blur="validateCarModel" @input="clearError('carModel')">
-                <div v-if="errors.carModel" class="error-message">{{ errors.carModeld }}</div>
+                <div v-if="errors.carModel" class="error-message">{{ errors.carModel }}</div>
+            </div>
+
+            <!-- Селект года выпуска -->
+            <div class="input-group"
+                :class="{ 'has-error': errors.carYear, 'has-success': !errors.carYear && form.carYear }">
+                <select v-model="form.carYear" required class="glass-select" @blur="validateCarYear"
+                    @change="clearError('carYear')">
+                    <option value="" disabled selected>Рік випуску</option>
+                    <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
+                </select>
+                <div v-if="errors.carYear" class="error-message">{{ errors.carYear }}</div>
+            </div>
+
+            <!-- Селект трансмиссии -->
+            <div class="input-group"
+                :class="{ 'has-error': errors.carTrans, 'has-success': !errors.carTrans && form.carTrans }">
+                <select v-model="form.carTrans" required class="glass-select" @blur="validateCarTrans"
+                    @change="clearError('carTrans')">
+                    <option value="" disabled selected>Трансмісія</option>
+                    <option value="Механічна">Механічна</option>
+                    <option value="Автоматична">Автоматична</option>
+                    <option value="Робот">Робот</option>
+                    <option value="Варіатор">Варіатор</option>
+                </select>
+                <div v-if="errors.carTrans" class="error-message">{{ errors.carTrans }}</div>
             </div>
 
             <!-- Поле телефона -->
@@ -41,29 +67,6 @@
                     class="glass-textarea" rows="4" @blur="validateDescription"
                     @input="clearError('description')"></textarea>
                 <div v-if="errors.description" class="error-message">{{ errors.description }}</div>
-            </div>
-
-            <!-- Поле загрузки фото (необязательное) -->
-            <div class="input-group file-container"
-                :class="{ 'has-error': errors.photos, 'has-success': form.photos.length > 0 }">
-                <div class="file-upload-wrapper">
-                    <input ref="fileInput" type="file" accept="image/*" @change="handleFileUpload" class="file-input"
-                        id="photo-upload" multiple>
-                    <label for="photo-upload" class="file-label">
-                        <span class="file-text">
-                            Можете надати фото (необов'язково, максимум 10)
-                        </span>
-                    </label>
-                </div>
-                <div v-if="errors.photos" class="error-message">{{ errors.photos }}</div>
-
-                <!-- Превью фото -->
-                <div v-if="photoPreviews.length > 0" class="photos-preview">
-                    <div v-for="(preview, index) in photoPreviews" :key="index" class="photo-preview-item">
-                        <img :src="preview" :alt="`Фото ${index + 1}`">
-                        <button type="button" @click="removePhoto(index)" class="remove-photo">✕</button>
-                    </div>
-                </div>
             </div>
 
             <!-- Кнопка отправки -->
@@ -84,29 +87,36 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 
+// Генерация годов от 1980 до текущего года
+const currentYear = new Date().getFullYear()
+const years = ref([])
+for (let year = currentYear; year >= 1980; year--) {
+    years.value.push(year)
+}
+
 // Реактивные данные
 const form = reactive({
     name: '',
     carBrand: '',
-    phone: '',
-    description: '',
     carModel: '',
-    photos: []
+    carYear: '',
+    carTrans: '',
+    phone: '',
+    description: ''
 })
 
 const errors = reactive({
     name: null,
     carBrand: null,
     carModel: null,
+    carYear: null,
+    carTrans: null,
     phone: null,
-    description: null,
-    photos: null
+    description: null
 })
 
 const isSubmitting = ref(false)
 const successMessage = ref('')
-const photoPreviews = ref([])
-const fileInput = ref(null)
 
 // Computed свойства
 const isFormValid = computed(() => {
@@ -114,6 +124,8 @@ const isFormValid = computed(() => {
         form.name.length >= 2 &&
         form.carBrand.length >= 2 &&
         form.carModel.length >= 2 &&
+        form.carYear !== '' &&
+        form.carTrans !== '' &&
         isValidUkrainianPhone(form.phone) &&
         !Object.values(errors).some(error => error !== null)
     )
@@ -152,39 +164,49 @@ const validateCarModel = () => {
     }
 }
 
+const validateCarYear = () => {
+    if (!form.carYear) {
+        errors.carYear = 'Оберіть рік випуску авто'
+    } else {
+        errors.carYear = null
+    }
+}
+
+const validateCarTrans = () => {
+    if (!form.carTrans) {
+        errors.carTrans = 'Оберіть тип трансмісії'
+    } else {
+        errors.carTrans = null
+    }
+}
+
 const formatPhone = () => {
     let value = form.phone.replace(/\D/g, '')
 
-    // Если поле пустое, оставляем пустым
     if (!value) {
         form.phone = ''
         clearError('phone')
         return
     }
 
-    // Если начинается с 0, заменяем на 380
     if (value.startsWith('0')) {
         value = '380' + value.slice(1)
     }
 
-    // Если не начинается с 380, добавляем 380
     if (!value.startsWith('380')) {
         value = '380' + value
     }
 
-    // Ограничиваем до 12 цифр (380 + 9 цифр)
     value = value.slice(0, 12)
 
-    // Если осталось меньше 4 цифр (380 + минимум 1), показываем только то что есть
     if (value.length <= 3) {
         form.phone = '+' + value
         clearError('phone')
         return
     }
 
-    // Форматируем номер поэтапно
     let formatted = '+380'
-    const phoneDigits = value.slice(3) // Цифры после 380
+    const phoneDigits = value.slice(3)
 
     if (phoneDigits.length >= 1) {
         formatted += ' (' + phoneDigits.slice(0, 2)
@@ -217,7 +239,6 @@ const validatePhone = () => {
 }
 
 const validateDescription = () => {
-    // Описание теперь необязательное
     if (form.description.trim() && form.description.trim().length > 500) {
         errors.description = 'Опис не може містити більше 500 символів'
     } else {
@@ -225,39 +246,21 @@ const validateDescription = () => {
     }
 }
 
-// Проверка украинского номера
 const isValidUkrainianPhone = (phone) => {
     const phoneRegex = /^\+380 \(\d{2}\) \d{3}-\d{2}-\d{2}$/
     return phoneRegex.test(phone)
 }
 
-
-const removePhoto = (index) => {
-    form.photos.splice(index, 1)
-    photoPreviews.value.splice(index, 1)
-
-    // Очищаем input, чтобы можно было загрузить те же файлы снова
-    if (fileInput.value) {
-        fileInput.value.value = ''
-    }
-
-    // Убираем ошибку если фото удалены
-    if (form.photos.length === 0) {
-        errors.photos = null
-    }
-}
-
-// Очистка ошибки
 const clearError = (field) => {
     errors[field] = null
 }
 
-// Отправка формы
-// Improved submitForm method for the Vue component
 const submitForm = async () => {
     validateName()
     validateCarBrand()
     validateCarModel()
+    validateCarYear()
+    validateCarTrans()
     validatePhone()
     validateDescription()
 
@@ -271,15 +274,11 @@ const submitForm = async () => {
         formData.append('name', form.name.trim())
         formData.append('carBrand', form.carBrand.trim())
         formData.append('carModel', form.carModel.trim())
+        formData.append('carYear', form.carYear)
+        formData.append('carTrans', form.carTrans)
         formData.append('phone', form.phone.trim())
         formData.append('description', form.description.trim())
 
-        // Add photos
-        form.photos.forEach((photo) => {
-            formData.append('images', photo)
-        })
-
-        // Get the correct API URL based on environment
         const apiUrl = process.env.NODE_ENV === 'production'
             ? '/api/cars'
             : 'http://localhost:8001/api/cars'
@@ -287,7 +286,6 @@ const submitForm = async () => {
         const response = await fetch(apiUrl, {
             method: 'POST',
             body: formData,
-            // Don't set Content-Type header - let browser set it with boundary for multipart
         })
 
         if (response.ok) {
@@ -295,7 +293,6 @@ const submitForm = async () => {
             successMessage.value = 'Дякуємо! Ваша заявка успішно відправлена.'
             resetForm()
 
-            // Optional: scroll to success message
             setTimeout(() => {
                 const successEl = document.querySelector('.success-message')
                 if (successEl) {
@@ -310,20 +307,16 @@ const submitForm = async () => {
     } catch (error) {
         console.error('Submission error:', error)
 
-        // More specific error messages
         let errorMessage = 'Помилка відправки. Спробуйте ще раз.'
 
         if (error.message.includes('fetch')) {
             errorMessage = 'Помилка з\'єднання з сервером. Перевірте інтернет-з\'єднання.'
-        } else if (error.message.includes('413')) {
-            errorMessage = 'Файли занадто великі. Зменшіть розмір фото.'
         } else if (error.message.includes('400')) {
             errorMessage = 'Некоректні дані. Перевірте заповнені поля.'
         }
 
         successMessage.value = errorMessage
 
-        // Auto-clear error message after 5 seconds
         setTimeout(() => {
             if (successMessage.value === errorMessage) {
                 successMessage.value = ''
@@ -335,90 +328,25 @@ const submitForm = async () => {
     }
 }
 
-// Improved file validation
-const handleFileUpload = (event) => {
-    const files = Array.from(event.target.files)
-
-    if (files.length === 0) return
-
-    // Check total number of photos
-    const totalPhotos = form.photos.length + files.length
-    if (totalPhotos > 10) {
-        errors.photos = `Можна завантажити максимум 10 фото. Зараз вибрано ${files.length}, а вже є ${form.photos.length}`
-        // Clear file input
-        if (fileInput.value) {
-            fileInput.value.value = ''
-        }
-        return
-    }
-
-    // Validate each file
-    const validFiles = []
-    const validPreviews = []
-    const maxSize = 5 * 1024 * 1024 // 5MB
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
-
-    for (const file of files) {
-        // Check file type
-        if (!allowedTypes.includes(file.type.toLowerCase())) {
-            errors.photos = 'Дозволені формати: JPG, PNG, WebP, GIF'
-            if (fileInput.value) {
-                fileInput.value.value = ''
-            }
-            return
-        }
-
-        // Check file size
-        if (file.size > maxSize) {
-            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1)
-            errors.photos = `Файл "${file.name}" занадто великий (${fileSizeMB}MB). Максимальний розмір: 5MB`
-            if (fileInput.value) {
-                fileInput.value.value = ''
-            }
-            return
-        }
-
-        validFiles.push(file)
-    }
-
-    // Add valid files
-    form.photos.push(...validFiles)
-    errors.photos = null
-
-    // Create previews for new files
-    validFiles.forEach(file => {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-            photoPreviews.value.push(e.target.result)
-        }
-        reader.onerror = () => {
-            console.error('Error reading file:', file.name)
-        }
-        reader.readAsDataURL(file)
-    })
-}
-
 const resetForm = () => {
     Object.assign(form, {
         name: '',
         carBrand: '',
         carModel: '',
+        carYear: '',
+        carTrans: '',
         phone: '',
-        description: '',
-        photos: []
+        description: ''
     })
     Object.assign(errors, {
         name: null,
         carBrand: null,
-        carModel: '',
+        carModel: null,
+        carYear: null,
+        carTrans: null,
         phone: null,
-        description: null,
-        photos: null
+        description: null
     })
-    photoPreviews.value = []
-    if (fileInput.value) {
-        fileInput.value.value = ''
-    }
 }
 </script>
 
@@ -434,7 +362,6 @@ const resetForm = () => {
     border-radius: 20px;
 }
 
-
 .form-title {
     font-family: Work Sans;
     font-weight: 600;
@@ -444,10 +371,6 @@ const resetForm = () => {
     letter-spacing: 0%;
     text-align: center;
     color: #000;
-}
-
-.file-container {
-    flex-direction: column;
 }
 
 .form-banner {
@@ -466,7 +389,8 @@ const resetForm = () => {
     padding: 16px;
 
     & input,
-    textarea {
+    textarea,
+    select {
         font-family: Work Sans;
         font-weight: 400;
         font-style: Regular;
@@ -482,32 +406,27 @@ const resetForm = () => {
     &.has-error {
 
         .glass-input,
-        .glass-textarea {
+        .glass-textarea,
+        .glass-select {
             border-bottom: 1px solid;
             border-color: rgba(231, 76, 60, 0.6);
-        }
-
-        .textarea-icon {
-            color: #e74c3c;
         }
     }
 
     &.has-success {
 
         .glass-input,
-        .glass-textarea {
+        .glass-textarea,
+        .glass-select {
             border-bottom: 1px solid;
             border-color: rgba(39, 174, 96, 0.6);
-        }
-
-        .textarea-icon {
-            color: #27ae60;
         }
     }
 }
 
 .glass-input,
-.glass-textarea {
+.glass-textarea,
+.glass-select {
     width: 100%;
     color: #000;
     font-size: 1rem;
@@ -525,12 +444,29 @@ const resetForm = () => {
     }
 }
 
+.glass-select {
+    cursor: pointer;
+    padding-right: 30px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+
+    option {
+        background: #FAFAFA;
+        color: #000;
+    }
+
+    &:disabled {
+        color: #999;
+    }
+}
+
 .glass-textarea {
     resize: vertical;
     min-height: 100px;
     font-family: inherit;
 }
-
 
 .error-message {
     color: #ff6b6b;
@@ -539,7 +475,6 @@ const resetForm = () => {
     padding: 10px;
 }
 
-// Стили для загрузки файлов
 .file-upload-wrapper {
     position: relative;
     display: contents;
@@ -561,12 +496,6 @@ const resetForm = () => {
     &:hover {
         opacity: 0.6;
     }
-}
-
-.file-icon {
-    font-size: 1.5rem;
-    margin-right: 0.8rem;
-    color: rgba(255, 255, 255, 0.8);
 }
 
 .file-text {
@@ -685,71 +614,9 @@ const resetForm = () => {
     backdrop-filter: blur(5px);
 }
 
-// Декоративные элементы
-.decoration-circles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.circle {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0.1;
-    animation: float 6s ease-in-out infinite;
-
-    &.circle-1 {
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.3);
-        top: 10%;
-        left: -5%;
-        animation-delay: 0s;
-    }
-
-    &.circle-2 {
-        width: 150px;
-        height: 150px;
-        background: rgba(255, 255, 255, 0.2);
-        top: 60%;
-        right: -10%;
-        animation-delay: 2s;
-    }
-
-    &.circle-3 {
-        width: 100px;
-        height: 100px;
-        background: rgba(255, 255, 255, 0.25);
-        bottom: 20%;
-        left: 20%;
-        animation-delay: 4s;
-    }
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-20px);
-    }
-}
-
-// Адаптивность
 @media (max-width: 768px) {
     .form-container {
         padding: 1rem;
-    }
-
-    .glass-form {
-        padding: 1.5rem;
     }
 
     .form-title {
