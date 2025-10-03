@@ -42,6 +42,7 @@ type CarRequest struct {
     ID          int       `json:"id"`
     Name        string    `json:"name"`
     CarBrand    string    `json:"carBrand"`
+    CarModel    string    `json:"carModel"`
     Phone       string    `json:"phone"`
     Description string    `json:"description"`
     CreatedAt   time.Time `json:"createdAt"`
@@ -52,6 +53,7 @@ type AdminRequestResponse struct {
     ID          int       `json:"id"`
     Name        string    `json:"name"`
     CarBrand    string    `json:"carBrand"`
+    CarModel    string    `json:"carModel"`
     Phone       string    `json:"phone"`
     Description string    `json:"description"`
     CreatedAt   time.Time `json:"createdAt"`
@@ -71,6 +73,7 @@ type RequestDetailResponse struct {
     ID          int                `json:"id"`
     Name        string             `json:"name"`
     CarBrand    string             `json:"carBrand"`
+    CarModel    string             `json:"carModel"`
     Phone       string             `json:"phone"`
     Description string             `json:"description"`
     CreatedAt   time.Time          `json:"createdAt"`
@@ -227,12 +230,13 @@ func sendTelegramPhoto(photoPath, caption string) error {
 }
 
 // Функция формирования красивого сообщения о новой заявке
-func formatCarRequestMessage(name, carBrand, phone, description string, imageCount int) string {
+func formatCarRequestMessage(name, carBrand, carModel, phone, description string, imageCount int) string {
     message := fmt.Sprintf(`🚗 <b>Новая заявка на автомобиль</b>
 
 👤 <b>Имя:</b> %s
 🚙 <b>Марка авто:</b> %s  
-📞 <b>Телефон:</b> %s`, name, carBrand, phone)
+🚙 <b>Модель авто:</b> %s 
+📞 <b>Телефон:</b> %s`, name, carBrand, carModel, phone)
 
     if description != "" {
         message += fmt.Sprintf(`
@@ -358,6 +362,7 @@ func createTables() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name VARCHAR(255) NOT NULL,
             car_brand VARCHAR(255) NOT NULL,
+            car_model VARCHAR(255) NOT NULL,
             phone VARCHAR(20) NOT NULL,
             description TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -419,20 +424,21 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
     // Получаем данные из формы
     name := strings.TrimSpace(r.FormValue("name"))
     carBrand := strings.TrimSpace(r.FormValue("carBrand"))
+    carModel := strings.TrimSpace(r.FormValue("carModel"))
     phone := strings.TrimSpace(r.FormValue("phone"))
     description := strings.TrimSpace(r.FormValue("description"))
 
     // Валидация обязательных полей
-    if name == "" || carBrand == "" || phone == "" {
-        http.Error(w, `{"error": "Обязательные поля: name, carBrand, phone"}`, http.StatusBadRequest)
+    if name == "" || carBrand == "" || phone == "" || carModel == "" {
+        http.Error(w, `{"error": "Обязательные поля: name, carBrand, carModel, phone"}`, http.StatusBadRequest)
         return
     }
 
     // Вставляем заявку в базу данных SQLite
-    query := `INSERT INTO car_requests (name, car_brand, phone, description) 
+    query := `INSERT INTO car_requests (name, car_brand, car_model,  phone, description) 
               VALUES (?, ?, ?, ?)`
     
-    result, err := db.Exec(query, name, carBrand, phone, description)
+    result, err := db.Exec(query, name, carBrand, carModel , phone, description)
     if err != nil {
         log.Printf("Error inserting car request: %v", err)
         http.Error(w, `{"error": "Ошибка сохранения данных"}`, http.StatusInternalServerError)
@@ -508,14 +514,14 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
     // Отправляем уведомление в Telegram
     go func() {
         // Формируем и отправляем текстовое сообщение
-        message := formatCarRequestMessage(name, carBrand, phone, description, len(uploadedFiles))
+        message := formatCarRequestMessage(name, carBrand, carModel, phone, description, len(uploadedFiles))
         if err := sendTelegramMessage(message); err != nil {
             log.Printf("Error sending telegram message: %v", err)
         }
 
         // Отправляем фотографии как альбом если их больше 1
         if len(uploadedPaths) > 1 {
-            caption := fmt.Sprintf("Фотографии от %s (%s) - %d шт.", name, carBrand, len(uploadedPaths))
+            caption := fmt.Sprintf("Фотографии от %s (%s) - %d шт.", name, carBrand, carModel, len(uploadedPaths))
             if err := sendTelegramMediaGroup(uploadedPaths, caption); err != nil {
                 log.Printf("Error sending telegram media group: %v", err)
                 // Если не получилось отправить группой, отправляем по одному
@@ -528,7 +534,7 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
             }
         } else if len(uploadedPaths) == 1 {
             // Одно фото отправляем обычным способом
-            caption := fmt.Sprintf("Фото от %s (%s)", name, carBrand)
+            caption := fmt.Sprintf("Фото от %s (%s)", name, carBrand , carModel )
             if err := sendTelegramPhoto(uploadedPaths[0], caption); err != nil {
                 log.Printf("Error sending telegram photo: %v", err)
             }
@@ -543,14 +549,15 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
             "id": carRequestID,
             "name": name,
             "carBrand": carBrand,
+            "carModel": carModel,
             "phone": phone,
             "description": description,
             "uploadedImages": len(uploadedFiles),
         },
     }
 
-    log.Printf("New car request created: ID=%d, Name=%s, Brand=%s, Images=%d", 
-               carRequestID, name, carBrand, len(uploadedFiles))
+    log.Printf("New car request created: ID=%d, Name=%s, Brand=%s, Model=%s, Images=%d", 
+               carRequestID, name, carBrand, carModel, len(uploadedFiles))
 
     json.NewEncoder(w).Encode(response)
 }
@@ -578,7 +585,7 @@ func getCarRequestsHandler(w http.ResponseWriter, r *http.Request) {
     offset := (page - 1) * limit
 
     // Запрос заявок с пагинацией для SQLite
-    query := `SELECT id, name, car_brand, phone, description, created_at 
+    query := `SELECT id, name, car_brand, car_model, phone, description, created_at 
               FROM car_requests 
               ORDER BY created_at DESC 
               LIMIT ? OFFSET ?`
@@ -594,7 +601,7 @@ func getCarRequestsHandler(w http.ResponseWriter, r *http.Request) {
     var requests []CarRequest
     for rows.Next() {
         var req CarRequest
-        err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.Phone, &req.Description, &req.CreatedAt)
+        err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.CarModel, &req.Phone, &req.Description, &req.CreatedAt)
         if err != nil {
             log.Printf("Error scanning row: %v", err)
             continue
@@ -648,11 +655,11 @@ func getAdminRequestsHandler(w http.ResponseWriter, r *http.Request) {
     
     // Запрос заявок с количеством изображений
     query := `
-        SELECT cr.id, cr.name, cr.car_brand, cr.phone, cr.description, cr.created_at,
+        SELECT cr.id, cr.name, cr.car_brand, cr.car_model, cr.phone, cr.description, cr.created_at,
                COUNT(ci.id) as image_count
         FROM car_requests cr
         LEFT JOIN car_images ci ON cr.id = ci.car_request_id
-        GROUP BY cr.id, cr.name, cr.car_brand, cr.phone, cr.description, cr.created_at
+        GROUP BY cr.id, cr.name, cr.car_brand, cr.car_model, cr.phone, cr.description, cr.created_at
         ORDER BY cr.created_at DESC
         LIMIT ? OFFSET ?
     `
@@ -668,7 +675,7 @@ func getAdminRequestsHandler(w http.ResponseWriter, r *http.Request) {
     var requests []AdminRequestResponse
     for rows.Next() {
         var req AdminRequestResponse
-        err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.Phone, 
+        err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.CarModel, &req.Phone, 
                         &req.Description, &req.CreatedAt, &req.ImageCount)
         if err != nil {
             log.Printf("Error scanning admin request row: %v", err)
@@ -708,8 +715,8 @@ func getAdminRequestDetailHandler(w http.ResponseWriter, r *http.Request) {
     
     // Получаем основную информацию о заявке
     var req RequestDetailResponse
-    query := "SELECT id, name, car_brand, phone, description, created_at FROM car_requests WHERE id = ?"
-    err := db.QueryRow(query, requestID).Scan(&req.ID, &req.Name, &req.CarBrand, 
+    query := "SELECT id, name, car_brand, car_model, phone, description, created_at FROM car_requests WHERE id = ?"
+    err := db.QueryRow(query, requestID).Scan(&req.ID, &req.Name, &req.CarBrand, &req.CarModel
                                              &req.Phone, &req.Description, &req.CreatedAt)
     if err != nil {
         if err == sql.ErrNoRows {

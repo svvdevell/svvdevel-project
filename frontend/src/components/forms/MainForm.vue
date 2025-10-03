@@ -19,6 +19,13 @@
                 <div v-if="errors.carBrand" class="error-message">{{ errors.carBrand }}</div>
             </div>
 
+            <div class="input-group"
+                :class="{ 'has-error': errors.carModel, 'has-success': !errors.carModel && form.carModel.length > 0 }">
+                <input v-model="form.carModel" type="text" placeholder="Марка авто" required class="glass-input"
+                    @blur="validateCarModel" @input="clearError('carModel')">
+                <div v-if="errors.carModel" class="error-message">{{ errors.carModeld }}</div>
+            </div>
+
             <!-- Поле телефона -->
             <div class="input-group"
                 :class="{ 'has-error': errors.phone, 'has-success': !errors.phone && form.phone.length > 0 }">
@@ -83,12 +90,14 @@ const form = reactive({
     carBrand: '',
     phone: '',
     description: '',
+    carModel: '',
     photos: []
 })
 
 const errors = reactive({
     name: null,
     carBrand: null,
+    carModel: null,
     phone: null,
     description: null,
     photos: null
@@ -104,6 +113,7 @@ const isFormValid = computed(() => {
     return (
         form.name.length >= 2 &&
         form.carBrand.length >= 2 &&
+        form.carModel.length >= 2 &&
         isValidUkrainianPhone(form.phone) &&
         !Object.values(errors).some(error => error !== null)
     )
@@ -129,6 +139,16 @@ const validateCarBrand = () => {
         errors.carBrand = 'Марка авто повинна містити мінімум 2 символи'
     } else {
         errors.carBrand = null
+    }
+}
+
+const validateCarModel = () => {
+    if (!form.carModel.trim()) {
+        errors.carModel = 'Поле "Модель авто" є обов\'язковим'
+    } else if (form.carModel.trim().length < 2) {
+        errors.carModel = 'Модель авто повинна містити мінімум 2 символи'
+    } else {
+        errors.carModel = null
     }
 }
 
@@ -237,6 +257,7 @@ const clearError = (field) => {
 const submitForm = async () => {
     validateName()
     validateCarBrand()
+    validateCarModel()
     validatePhone()
     validateDescription()
 
@@ -249,6 +270,7 @@ const submitForm = async () => {
         const formData = new FormData()
         formData.append('name', form.name.trim())
         formData.append('carBrand', form.carBrand.trim())
+        formData.append('carModel', form.carModel.trim())
         formData.append('phone', form.phone.trim())
         formData.append('description', form.description.trim())
 
@@ -380,6 +402,7 @@ const resetForm = () => {
     Object.assign(form, {
         name: '',
         carBrand: '',
+        carModel: '',
         phone: '',
         description: '',
         photos: []
@@ -387,6 +410,7 @@ const resetForm = () => {
     Object.assign(errors, {
         name: null,
         carBrand: null,
+        carModel: '',
         phone: null,
         description: null,
         photos: null
@@ -513,7 +537,7 @@ const resetForm = () => {
     font-size: 0.85rem;
     margin-top: 0.5rem;
     padding: 10px;
-}   
+}
 
 // Стили для загрузки файлов
 .file-upload-wrapper {

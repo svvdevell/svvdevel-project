@@ -19,7 +19,7 @@ import TextBanner from '@/components/banners/TextBanner.vue';
     justify-content: space-between;
     gap: 40px;
     width: 100%;
-    background: #5937E0;
+    background: #aa3535;
     border-radius: 40px;
     margin: 50px 0;
     padding: 78px 72px;
