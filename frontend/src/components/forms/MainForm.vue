@@ -11,11 +11,20 @@
                 <div v-if="errors.name" class="error-message">{{ errors.name }}</div>
             </div>
 
-            <!-- Поле марки авто -->
-            <div class="input-group"
+            <!-- Поле марки авто с автокомплитом -->
+            <div class="input-group autocomplete-group"
                 :class="{ 'has-error': errors.carBrand, 'has-success': !errors.carBrand && form.carBrand.length > 0 }">
                 <input v-model="form.carBrand" type="text" placeholder="Марка авто" required class="glass-input"
-                    @blur="validateCarBrand" @input="clearError('carBrand')">
+                    @input="onBrandInput" @focus="onBrandFocus" @blur="onBrandBlur" autocomplete="off">
+
+                <!-- Выпадающий список марок -->
+                <div v-if="showBrandDropdown && filteredBrands.length > 0" class="autocomplete-dropdown">
+                    <div v-for="brand in filteredBrands" :key="brand" class="autocomplete-item"
+                        @mousedown="selectBrand(brand)">
+                        {{ brand }}
+                    </div>
+                </div>
+
                 <div v-if="errors.carBrand" class="error-message">{{ errors.carBrand }}</div>
             </div>
 
@@ -27,28 +36,37 @@
                 <div v-if="errors.carModel" class="error-message">{{ errors.carModel }}</div>
             </div>
 
-            <!-- Селект года выпуска -->
-            <div class="input-group"
+            <!-- Селект года выпуска с автокомплитом -->
+            <div class="input-group autocomplete-group"
                 :class="{ 'has-error': errors.carYear, 'has-success': !errors.carYear && form.carYear }">
-                <select v-model="form.carYear" required class="glass-select" @blur="validateCarYear"
-                    @change="clearError('carYear')">
-                    <option value="" disabled selected>Рік випуску</option>
-                    <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
-                </select>
+                <input v-model="form.carYear" type="text" placeholder="Рік випуску" required class="glass-input"
+                    @input="onYearInput" @focus="onYearFocus" @blur="onYearBlur" autocomplete="off" maxlength="4">
+
+                <!-- Выпадающий список годов -->
+                <div v-if="showYearDropdown && filteredYears.length > 0" class="autocomplete-dropdown">
+                    <div v-for="year in filteredYears.slice(0, 10)" :key="year" class="autocomplete-item"
+                        @mousedown="selectYear(year)">
+                        {{ year }}
+                    </div>
+                </div>
+
                 <div v-if="errors.carYear" class="error-message">{{ errors.carYear }}</div>
             </div>
 
-            <!-- Селект трансмиссии -->
-            <div class="input-group"
+            <!-- Селект трансмиссии с автокомплитом -->
+            <div class="input-group autocomplete-group"
                 :class="{ 'has-error': errors.carTrans, 'has-success': !errors.carTrans && form.carTrans }">
-                <select v-model="form.carTrans" required class="glass-select" @blur="validateCarTrans"
-                    @change="clearError('carTrans')">
-                    <option value="" disabled selected>Трансмісія</option>
-                    <option value="Механічна">Механічна</option>
-                    <option value="Автоматична">Автоматична</option>
-                    <option value="Робот">Робот</option>
-                    <option value="Варіатор">Варіатор</option>
-                </select>
+                <input v-model="form.carTrans" type="text" placeholder="Трансмісія" required class="glass-input"
+                    @input="onTransInput" @focus="onTransFocus" @blur="onTransBlur" autocomplete="off">
+
+                <!-- Выпадающий список трансмиссий -->
+                <div v-if="showTransDropdown && filteredTransmissions.length > 0" class="autocomplete-dropdown">
+                    <div v-for="trans in filteredTransmissions" :key="trans" class="autocomplete-item"
+                        @mousedown="selectTrans(trans)">
+                        {{ trans }}
+                    </div>
+                </div>
+
                 <div v-if="errors.carTrans" class="error-message">{{ errors.carTrans }}</div>
             </div>
 
@@ -87,12 +105,38 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 
+// Популярные марки автомобилей (расширенный список на основе украинского рынка)
+const carBrands = [
+    'Acura', 'Alfa Romeo', 'Aston Martin', 'Audi', 'Bentley', 'BMW', 'Brilliance',
+    'Buick', 'BYD', 'Cadillac', 'Changan', 'Chery', 'Chevrolet', 'Chrysler',
+    'Citroen', 'Cupra', 'Dacia', 'Daewoo', 'Daihatsu', 'Denza', 'Dodge', 'Dongfeng',
+    'DS', 'FAW', 'Ferrari', 'Fiat', 'Ford', 'Foton', 'Gac', 'Geely', 'Genesis',
+    'GMC', 'Great Wall', 'Haval', 'Honda', 'Hongqi', 'Hummer', 'Hyundai', 'Infiniti',
+    'Isuzu', 'Iveco', 'JAC', 'Jaguar', 'Jeep', 'Jetour', 'Kia', 'Lamborghini',
+    'Lancia', 'Land Rover', 'Lexus', 'Lifan', 'Lincoln', 'Lotus', 'Mahindra',
+    'Maserati', 'Maxus', 'Maybach', 'Mazda', 'McLaren', 'Mercedes-Benz', 'Mercury',
+    'MG', 'MINI', 'Mitsubishi', 'Nissan', 'Opel', 'Peugeot', 'Polestar', 'Pontiac',
+    'Porsche', 'Proton', 'Ram', 'Ravon', 'Renault', 'Rolls-Royce', 'Rover', 'Saab',
+    'Samsung', 'SEAT', 'Skoda', 'Smart', 'SsangYong', 'Subaru', 'Suzuki', 'TATA',
+    'Tesla', 'Toyota', 'Volkswagen', 'Volvo', 'Xpeng', 'Zeekr', 'Zotye',
+    'Богдан', 'ВАЗ', 'ГАЗ', 'ЗАЗ', 'ЗИЛ', 'ІЖ', 'ЛуАЗ', 'Москвич', 'УАЗ'
+].sort()
+
 // Генерация годов от 1980 до текущего года
 const currentYear = new Date().getFullYear()
 const years = ref([])
 for (let year = currentYear; year >= 1980; year--) {
     years.value.push(year)
 }
+
+// Типы трансмиссий
+const transmissions = [
+    'Механічна',
+    'Автоматична',
+    'Робот',
+    'Варіатор',
+    'Tiptronic'
+]
 
 // Реактивные данные
 const form = reactive({
@@ -117,6 +161,129 @@ const errors = reactive({
 
 const isSubmitting = ref(false)
 const successMessage = ref('')
+
+// Для автокомплита марки
+const showBrandDropdown = ref(false)
+const brandSearchQuery = ref('')
+
+// Для автокомплита года
+const showYearDropdown = ref(false)
+const yearSearchQuery = ref('')
+
+// Для автокомплита трансмиссии
+const showTransDropdown = ref(false)
+const transSearchQuery = ref('')
+
+// Фильтрованный список марок
+const filteredBrands = computed(() => {
+    if (!brandSearchQuery.value) return carBrands
+
+    const query = brandSearchQuery.value.toLowerCase()
+    return carBrands.filter(brand =>
+        brand.toLowerCase().includes(query)
+    )
+})
+
+// Фильтрованный список годов
+const filteredYears = computed(() => {
+    if (!yearSearchQuery.value) return years.value
+
+    const query = yearSearchQuery.value
+    return years.value.filter(year =>
+        year.toString().includes(query)
+    )
+})
+
+// Фильтрованный список трансмиссий
+const filteredTransmissions = computed(() => {
+    if (!transSearchQuery.value) return transmissions
+
+    const query = transSearchQuery.value.toLowerCase()
+    return transmissions.filter(trans =>
+        trans.toLowerCase().includes(query)
+    )
+})
+
+// Обработчики для автокомплита марки
+const onBrandInput = (event) => {
+    form.carBrand = event.target.value
+    brandSearchQuery.value = event.target.value
+    showBrandDropdown.value = true
+    clearError('carBrand')
+}
+
+const selectBrand = (brand) => {
+    form.carBrand = brand
+    brandSearchQuery.value = brand
+    showBrandDropdown.value = false
+    clearError('carBrand')
+}
+
+const onBrandFocus = () => {
+    brandSearchQuery.value = form.carBrand
+    showBrandDropdown.value = true
+}
+
+const onBrandBlur = () => {
+    setTimeout(() => {
+        showBrandDropdown.value = false
+        validateCarBrand()
+    }, 200)
+}
+
+// Обработчики для автокомплита года
+const onYearInput = (event) => {
+    form.carYear = event.target.value
+    yearSearchQuery.value = event.target.value
+    showYearDropdown.value = true
+    clearError('carYear')
+}
+
+const selectYear = (year) => {
+    form.carYear = year.toString()
+    yearSearchQuery.value = year.toString()
+    showYearDropdown.value = false
+    clearError('carYear')
+}
+
+const onYearFocus = () => {
+    yearSearchQuery.value = form.carYear
+    showYearDropdown.value = true
+}
+
+const onYearBlur = () => {
+    setTimeout(() => {
+        showYearDropdown.value = false
+        validateCarYear()
+    }, 200)
+}
+
+// Обработчики для автокомплита трансмиссии
+const onTransInput = (event) => {
+    form.carTrans = event.target.value
+    transSearchQuery.value = event.target.value
+    showTransDropdown.value = true
+    clearError('carTrans')
+}
+
+const selectTrans = (trans) => {
+    form.carTrans = trans
+    transSearchQuery.value = trans
+    showTransDropdown.value = false
+    clearError('carTrans')
+}
+
+const onTransFocus = () => {
+    transSearchQuery.value = form.carTrans
+    showTransDropdown.value = true
+}
+
+const onTransBlur = () => {
+    setTimeout(() => {
+        showTransDropdown.value = false
+        validateCarTrans()
+    }, 200)
+}
 
 // Computed свойства
 const isFormValid = computed(() => {
@@ -376,7 +543,7 @@ const resetForm = () => {
 .form-banner {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
     width: 100%;
 }
 
@@ -386,7 +553,7 @@ const resetForm = () => {
     flex-direction: column;
     background: #FAFAFA;
     border-radius: 12px;
-    padding: 16px;
+    padding: 10px;
 
     & input,
     textarea,
@@ -421,6 +588,66 @@ const resetForm = () => {
             border-bottom: 1px solid;
             border-color: rgba(39, 174, 96, 0.6);
         }
+    }
+}
+
+// Стили для автокомплита
+.autocomplete-group {
+    position: relative;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    /* Кастомный скроллбар */
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #F5F5F5;
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #CCCCCC;
+        border-radius: 10px;
+
+        &:hover {
+            background: #999999;
+        }
+    }
+}
+
+.autocomplete-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-family: Work Sans;
+    font-size: 16px;
+    color: #000;
+
+    &:hover {
+        background-color: #F5F5F5;
+    }
+
+    &:first-child {
+        border-radius: 12px 12px 0 0;
+    }
+
+    &:last-child {
+        border-radius: 0 0 12px 12px;
     }
 }
 
@@ -472,7 +699,6 @@ const resetForm = () => {
     color: #ff6b6b;
     font-size: 0.85rem;
     margin-top: 0.5rem;
-    padding: 10px;
 }
 
 .file-upload-wrapper {
