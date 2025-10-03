@@ -36,6 +36,8 @@ type CarRequest struct {
     Name        string    `json:"name"`
     CarBrand    string    `json:"carBrand"`
     CarModel    string    `json:"carModel"`
+    CarYear     string    `json:"carYear"`
+    CarTrans    string    `json:"carTrans"`
     Phone       string    `json:"phone"`
     Description string    `json:"description"`
     CreatedAt   time.Time `json:"createdAt"`
@@ -47,6 +49,8 @@ type AdminRequestResponse struct {
     Name        string    `json:"name"`
     CarBrand    string    `json:"carBrand"`
     CarModel    string    `json:"carModel"`
+    CarYear     string    `json:"carYear"`
+    CarTrans    string    `json:"carTrans"`
     Phone       string    `json:"phone"`
     Description string    `json:"description"`
     CreatedAt   time.Time `json:"createdAt"`
@@ -57,6 +61,8 @@ type RequestDetailResponse struct {
     Name        string             `json:"name"`
     CarBrand    string             `json:"carBrand"`
     CarModel    string             `json:"carModel"`
+    CarYear     string             `json:"carYear"`
+    CarTrans    string             `json:"carTrans"`
     Phone       string             `json:"phone"`
     Description string             `json:"description"`
     CreatedAt   time.Time          `json:"createdAt"`
@@ -154,7 +160,7 @@ func sendTelegramMessage(message string) error {
 }
 
 // Функция формирования красивого сообщения о новой заявке
-func formatCarRequestMessage(name, carBrand, carModel, phone, description string) string {
+func formatCarRequestMessage(name, carBrand, carModel, carYear, carTrans, phone, description string) string {
     cleanPhone := strings.ReplaceAll(phone, " ", "")
     cleanPhone = strings.ReplaceAll(cleanPhone, "(", "")
     cleanPhone = strings.ReplaceAll(cleanPhone, ")", "")
@@ -165,7 +171,9 @@ func formatCarRequestMessage(name, carBrand, carModel, phone, description string
 👤 <b>Имя:</b> %s
 🚙 <b>Марка:</b> %s  
 🚗 <b>Модель:</b> %s 
-📞 <b>Телефон:</b> <a href="tel:%s">%s</a>`, name, carBrand, carModel, cleanPhone, phone)
+🚗 <b>Год:</b> %s 
+🚗 <b>Трансмиссия:</b> %s 
+📞 <b>Телефон:</b> <a href="tel:%s">%s</a>`, name, carBrand, carModel, carYear, carTrans, cleanPhone, phone)
 
     if description != "" {
         message += fmt.Sprintf(`
@@ -203,6 +211,8 @@ func createTables() {
             name VARCHAR(255) NOT NULL,
             car_brand VARCHAR(255) NOT NULL,
             car_model VARCHAR(255) NOT NULL,
+            car_year VARCHAR(255) NOT NULL,
+            car_trans VARCHAR(255) NOT NULL,
             phone VARCHAR(20) NOT NULL,
             description TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -260,20 +270,22 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
     name := strings.TrimSpace(r.FormValue("name"))
     carBrand := strings.TrimSpace(r.FormValue("carBrand"))
     carModel := strings.TrimSpace(r.FormValue("carModel"))
+    carYear := strings.TrimSpace(r.FormValue("carYear"))
+    carTrans := strings.TrimSpace(r.FormValue("carTrans"))
     phone := strings.TrimSpace(r.FormValue("phone"))
     description := strings.TrimSpace(r.FormValue("description"))
 
     // Валидация обязательных полей
-    if name == "" || carBrand == "" || phone == "" || carModel == "" {
-        http.Error(w, `{"error": "Обязательные поля: name, carBrand, carModel, phone"}`, http.StatusBadRequest)
+    if name == "" || carBrand == "" || phone == "" || carModel == "" || carYear == "" || carTrans == "" {
+        http.Error(w, `{"error": "Обязательные поля: name, carBrand, carModel, carYear, carTrans, phone"}`, http.StatusBadRequest)
         return
     }
 
     // Вставляем заявку в базу данных SQLite
-    query := `INSERT INTO car_requests (name, car_brand, car_model, phone, description) 
-              VALUES (?, ?, ?, ?, ?)`
+    query := `INSERT INTO car_requests (name, car_brand, car_model, car_year, car_trans, phone, description) 
+              VALUES (?, ?, ?, ?, ?, ?, ?)`
     
-    result, err := db.Exec(query, name, carBrand, carModel, phone, description)
+    result, err := db.Exec(query, name, carBrand, carModel, carYear, carTrans, phone, description)
     if err != nil {
         log.Printf("Error inserting car request: %v", err)
         http.Error(w, `{"error": "Ошибка сохранения данных"}`, http.StatusInternalServerError)
@@ -290,7 +302,7 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
 
     // Отправляем уведомление в Telegram (БЕЗ ФОТО)
     go func() {
-        message := formatCarRequestMessage(name, carBrand, carModel, phone, description)
+        message := formatCarRequestMessage(name, carBrand, carModel, carYear, carTrans, phone, description)
         if err := sendTelegramMessage(message); err != nil {
             log.Printf("Error sending telegram message: %v", err)
         }
@@ -305,13 +317,15 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
             "name": name,
             "carBrand": carBrand,
             "carModel": carModel,
+            "carYear": carYear,
+            "carTrans": carTrans,
             "phone": phone,
             "description": description,
         },
     }
 
-    log.Printf("New car request created: ID=%d, Name=%s, Brand=%s ,Model=%s", 
-               carRequestID, name, carBrand , carModel)
+    log.Printf("New car request created: ID=%d, Name=%s, Brand=%s, Model=%s, Year=%s, Trans=%s", 
+            carRequestID, name, carBrand, carModel, carYear, carTrans)
 
     json.NewEncoder(w).Encode(response)
 }
@@ -339,7 +353,7 @@ func getCarRequestsHandler(w http.ResponseWriter, r *http.Request) {
     offset := (page - 1) * limit
 
     // Запрос заявок с пагинацией для SQLite
-    query := `SELECT id, name, car_brand, car_model, phone, description, created_at 
+    query := `SELECT id, name, car_brand, car_model, car_year, car_trans, phone, description, created_at 
               FROM car_requests 
               ORDER BY created_at DESC 
               LIMIT ? OFFSET ?`
@@ -355,7 +369,7 @@ func getCarRequestsHandler(w http.ResponseWriter, r *http.Request) {
     var requests []CarRequest
     for rows.Next() {
         var req CarRequest
-        err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.CarModel, &req.Phone, &req.Description, &req.CreatedAt)
+        err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.CarModel, &req.CarYear, &req.CarTrans, &req.Phone, &req.Description, &req.CreatedAt)
         if err != nil {
             log.Printf("Error scanning row: %v", err)
             continue
@@ -409,7 +423,7 @@ func getAdminRequestsHandler(w http.ResponseWriter, r *http.Request) {
     
     // Запрос заявок с количеством изображений
     query := `
-        SELECT id, name, car_brand, car_model, phone, description, created_at
+        SELECT id, name, car_brand, car_model, car_year, car_trans, phone, description, created_at
         FROM car_requests
         ORDER BY created_at DESC
         LIMIT ? OFFSET ?
@@ -426,7 +440,7 @@ func getAdminRequestsHandler(w http.ResponseWriter, r *http.Request) {
     var requests []AdminRequestResponse
     for rows.Next() {
         var req AdminRequestResponse
-        err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.CarModel, &req.Phone, 
+        err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.CarModel, &req.CarYear, &req.CarTrans, &req.Phone, 
                         &req.Description, &req.CreatedAt)
         if err != nil {
             log.Printf("Error scanning admin request row: %v", err)
