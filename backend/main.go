@@ -13,6 +13,7 @@ import (
     "strings"
     "time"
     "bytes"
+    "sync"
 
     _ "github.com/mattn/go-sqlite3"
     "github.com/gorilla/mux"
@@ -262,6 +263,41 @@ func getIP(r *http.Request) string {
         return forwarded
     }
     return r.RemoteAddr
+}
+
+var (
+    requestLimiter = make(map[string][]time.Time)
+    limiterMutex   sync.RWMutex
+)
+
+func checkRateLimit(ip string) bool {
+    limiterMutex.Lock()
+    defer limiterMutex.Unlock()
+    
+    now := time.Now()
+    
+    // Получаем список запросов для этого IP
+    requests := requestLimiter[ip]
+    
+    // Удаляем старые запросы (старше 10 минут)
+    var recent []time.Time
+    for _, t := range requests {
+        if now.Sub(t) < 10*time.Minute {
+            recent = append(recent, t)
+        }
+    }
+    
+    // Максимум 5 заявок за 10 минут с одного IP
+    if len(recent) >= 5 {
+        log.Printf("Rate limit exceeded for IP: %s", ip)
+        return false
+    }
+    
+    // Добавляем текущий запрос
+    recent = append(recent, now)
+    requestLimiter[ip] = recent
+    
+    return true
 }
 
 // Обработчик создания заявки на авто
