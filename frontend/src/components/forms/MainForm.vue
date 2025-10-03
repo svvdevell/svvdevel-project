@@ -437,14 +437,15 @@ const submitForm = async () => {
     successMessage.value = ''
 
     try {
-        const formData = new FormData()
-        formData.append('name', form.name.trim())
-        formData.append('carBrand', form.carBrand.trim())
-        formData.append('carModel', form.carModel.trim())
-        formData.append('carYear', form.carYear)
-        formData.append('carTrans', form.carTrans)
-        formData.append('phone', form.phone.trim())
-        formData.append('description', form.description.trim())
+        // Создаем URL-encoded данные вместо FormData
+        const params = new URLSearchParams()
+        params.append('name', form.name.trim())
+        params.append('carBrand', form.carBrand.trim())
+        params.append('carModel', form.carModel.trim())
+        params.append('carYear', form.carYear.toString())
+        params.append('carTrans', form.carTrans)
+        params.append('phone', form.phone.trim())
+        params.append('description', form.description.trim())
 
         const apiUrl = process.env.NODE_ENV === 'production'
             ? '/api/cars'
@@ -452,7 +453,10 @@ const submitForm = async () => {
 
         const response = await fetch(apiUrl, {
             method: 'POST',
-            body: formData,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString(),
         })
 
         if (response.ok) {
