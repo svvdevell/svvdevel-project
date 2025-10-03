@@ -256,6 +256,14 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(response)
 }
 
+func getIP(r *http.Request) string {
+    forwarded := r.Header.Get("X-FORWARDED-FOR")
+    if forwarded != "" {
+        return forwarded
+    }
+    return r.RemoteAddr
+}
+
 // Обработчик создания заявки на авто
 func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
@@ -263,6 +271,21 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
     // Парсим только обычные поля формы
     if err := r.ParseForm(); err != nil {
         http.Error(w, `{"error": "Ошибка парсинга формы"}`, http.StatusBadRequest)
+        return
+    }
+
+    fillTime := r.FormValue("_fillTime")
+    if fillTime != "" {
+        ft, _ := strconv.ParseInt(fillTime, 10, 64)
+        if ft < 3000 { // Меньше 3 секунд
+            http.Error(w, `{"error": "Форма заповнена занадто швидко"}`, http.StatusBadRequest)
+            return
+        }
+    }
+
+    ip := getIP(r)
+    if !checkRateLimit(ip) {
+        http.Error(w, `{"error": "Забагато запитів. Спробуйте пізніше"}`, http.StatusTooManyRequests)
         return
     }
 

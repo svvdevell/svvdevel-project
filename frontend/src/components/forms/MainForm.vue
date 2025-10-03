@@ -3,39 +3,33 @@
         <h2 class="form-title">Розкажіть про Ваше авто !</h2>
 
         <form @submit.prevent="submitForm" novalidate class="form-banner">
+            <!-- Honeypot поле (скрытое от пользователей) -->
+            <input type="text" v-model="honeypot" name="website"
+                style="position:absolute;left:-5000px;width:1px;height:1px" tabindex="-1" autocomplete="off"
+                aria-hidden="true">
+
             <!-- Поле имени -->
             <div class="input-group"
                 :class="{ 'has-error': errors.name, 'has-success': !errors.name && form.name.length > 0 }">
                 <input v-model="form.name" type="text" placeholder="Ваше Ім'я" required class="glass-input"
-                    @blur="validateName" @input="clearError('name')" maxlength="50">
+                    @blur="validateName" @input="clearError('name')" maxlength="30">
                 <div v-if="errors.name" class="error-message">{{ errors.name }}</div>
             </div>
 
             <!-- Поле марки авто с автокомплитом -->
             <div class="input-group autocomplete-group"
                 :class="{ 'has-error': errors.carBrand, 'has-success': !errors.carBrand && form.carBrand.length > 0 }">
-                <input 
-                    v-model="form.carBrand" 
-                    type="text" 
-                    placeholder="Марка авто" 
-                    required 
-                    class="glass-input"
-                    @input="onBrandInput"
-                    @focus="onBrandFocus"
-                    @blur="onBrandBlur"
-                    autocomplete="off">
-                
+                <input v-model="form.carBrand" type="text" placeholder="Марка авто" required class="glass-input"
+                    @input="onBrandInput" @focus="onBrandFocus" @blur="onBrandBlur" autocomplete="off">
+
                 <!-- Выпадающий список марок -->
                 <div v-if="showBrandDropdown && filteredBrands.length > 0" class="autocomplete-dropdown">
-                    <div 
-                        v-for="brand in filteredBrands" 
-                        :key="brand"
-                        class="autocomplete-item"
+                    <div v-for="brand in filteredBrands" :key="brand" class="autocomplete-item"
                         @mousedown="selectBrand(brand)">
                         {{ brand }}
                     </div>
                 </div>
-                
+
                 <div v-if="errors.carBrand" class="error-message">{{ errors.carBrand }}</div>
             </div>
 
@@ -50,57 +44,34 @@
             <!-- Селект года выпуска с автокомплитом -->
             <div class="input-group autocomplete-group"
                 :class="{ 'has-error': errors.carYear, 'has-success': !errors.carYear && form.carYear }">
-                <input 
-                    v-model="form.carYear" 
-                    type="text" 
-                    placeholder="Рік випуску" 
-                    required 
-                    class="glass-input"
-                    @input="onYearInput"
-                    @focus="onYearFocus"
-                    @blur="onYearBlur"
-                    autocomplete="off"
-                    maxlength="4">
-                
+                <input v-model="form.carYear" type="text" placeholder="Рік випуску" required class="glass-input"
+                    @input="onYearInput" @focus="onYearFocus" @blur="onYearBlur" autocomplete="off" maxlength="4">
+
                 <!-- Выпадающий список годов -->
                 <div v-if="showYearDropdown && filteredYears.length > 0" class="autocomplete-dropdown">
-                    <div 
-                        v-for="year in filteredYears.slice(0, 10)" 
-                        :key="year"
-                        class="autocomplete-item"
+                    <div v-for="year in filteredYears.slice(0, 10)" :key="year" class="autocomplete-item"
                         @mousedown="selectYear(year)">
                         {{ year }}
                     </div>
                 </div>
-                
+
                 <div v-if="errors.carYear" class="error-message">{{ errors.carYear }}</div>
             </div>
 
             <!-- Селект трансмиссии с автокомплитом -->
             <div class="input-group autocomplete-group"
                 :class="{ 'has-error': errors.carTrans, 'has-success': !errors.carTrans && form.carTrans }">
-                <input 
-                    v-model="form.carTrans" 
-                    type="text" 
-                    placeholder="Трансмісія" 
-                    required 
-                    class="glass-input"
-                    @input="onTransInput"
-                    @focus="onTransFocus"
-                    @blur="onTransBlur"
-                    autocomplete="off">
-                
+                <input v-model="form.carTrans" type="text" placeholder="Трансмісія" required class="glass-input"
+                    @input="onTransInput" @focus="onTransFocus" @blur="onTransBlur" autocomplete="off">
+
                 <!-- Выпадающий список трансмиссий -->
                 <div v-if="showTransDropdown && filteredTransmissions.length > 0" class="autocomplete-dropdown">
-                    <div 
-                        v-for="trans in filteredTransmissions" 
-                        :key="trans"
-                        class="autocomplete-item"
+                    <div v-for="trans in filteredTransmissions" :key="trans" class="autocomplete-item"
                         @mousedown="selectTrans(trans)">
                         {{ trans }}
                     </div>
                 </div>
-                
+
                 <div v-if="errors.carTrans" class="error-message">{{ errors.carTrans }}</div>
             </div>
 
@@ -116,8 +87,8 @@
             <div class="input-group"
                 :class="{ 'has-error': errors.description, 'has-success': !errors.description && form.description.length > 0 }">
                 <textarea v-model="form.description" placeholder="Розкажіть трошки про Ваше авто (необов'язково)"
-                    class="glass-textarea" rows="4" @blur="validateDescription"
-                    @input="clearError('description')" maxlength="500"></textarea>
+                    class="glass-textarea" rows="4" @blur="validateDescription" @input="clearError('description')"
+                    maxlength="500"></textarea>
                 <div v-if="errors.description" class="error-message">{{ errors.description }}</div>
                 <div v-if="form.description.length > 0" class="char-counter">
                     {{ form.description.length }} / 500
@@ -145,7 +116,7 @@ import { ref, reactive, computed } from 'vue'
 // Популярные марки автомобилей (расширенный список на основе украинского рынка)
 const carBrands = [
     'Acura', 'Alfa Romeo', 'Aston Martin', 'Audi', 'Bentley', 'BMW', 'Brilliance',
-    'Buick', 'BYD', 'Cadillac', 'Changan', 'Chery', 'Chevrolet', 'Chrysler', 
+    'Buick', 'BYD', 'Cadillac', 'Changan', 'Chery', 'Chevrolet', 'Chrysler',
     'Citroen', 'Cupra', 'Dacia', 'Daewoo', 'Daihatsu', 'Denza', 'Dodge', 'Dongfeng',
     'DS', 'FAW', 'Ferrari', 'Fiat', 'Ford', 'Foton', 'Gac', 'Geely', 'Genesis',
     'GMC', 'Great Wall', 'Haval', 'Honda', 'Hongqi', 'Hummer', 'Hyundai', 'Infiniti',
@@ -199,6 +170,11 @@ const errors = reactive({
 const isSubmitting = ref(false)
 const successMessage = ref('')
 
+// Защита от ботов
+const honeypot = ref('')
+const formStartTime = ref(Date.now())
+const formToken = ref('')
+
 // Для автокомплита марки
 const showBrandDropdown = ref(false)
 const brandSearchQuery = ref('')
@@ -214,9 +190,9 @@ const transSearchQuery = ref('')
 // Фильтрованный список марок
 const filteredBrands = computed(() => {
     if (!brandSearchQuery.value) return carBrands
-    
+
     const query = brandSearchQuery.value.toLowerCase()
-    return carBrands.filter(brand => 
+    return carBrands.filter(brand =>
         brand.toLowerCase().includes(query)
     )
 })
@@ -224,9 +200,9 @@ const filteredBrands = computed(() => {
 // Фильтрованный список годов
 const filteredYears = computed(() => {
     if (!yearSearchQuery.value) return years.value
-    
+
     const query = yearSearchQuery.value
-    return years.value.filter(year => 
+    return years.value.filter(year =>
         year.toString().includes(query)
     )
 })
@@ -234,9 +210,9 @@ const filteredYears = computed(() => {
 // Фильтрованный список трансмиссий
 const filteredTransmissions = computed(() => {
     if (!transSearchQuery.value) return transmissions
-    
+
     const query = transSearchQuery.value.toLowerCase()
-    return transmissions.filter(trans => 
+    return transmissions.filter(trans =>
         trans.toLowerCase().includes(query)
     )
 })
@@ -341,8 +317,8 @@ const validateName = () => {
         errors.name = 'Поле "Ім\'я" є обов\'язковим'
     } else if (form.name.trim().length < 2) {
         errors.name = 'Ім\'я повинно містити мінімум 2 символи'
-    } else if (form.name.trim().length > 50) {
-        errors.name = 'Ім\'я не може бути довшим за 50 символів'
+    } else if (form.name.trim().length > 30) {
+        errors.name = 'Ім\'я не може бути довшим за 30 символів'
     } else if (!/^[а-яА-ЯёЁіІїЇєЄa-zA-Z\s\-\']+$/.test(form.name)) {
         errors.name = 'Ім\'я може містити тільки букви, пробіли, дефіси та апострофи'
     } else {
@@ -473,6 +449,38 @@ const clearError = (field) => {
 }
 
 const submitForm = async () => {
+    // === ЗАЩИТА ОТ БОТОВ ===
+
+    // 1. Проверка honeypot поля (должно быть пустым)
+    if (honeypot.value !== '') {
+        console.warn('Bot detected: honeypot filled')
+        successMessage.value = 'Помилка відправки. Спробуйте пізніше.'
+        setTimeout(() => { successMessage.value = '' }, 3000)
+        return
+    }
+
+    // 2. Проверка времени заполнения (минимум 3 секунды)
+    const fillTime = Date.now() - formStartTime.value
+    if (fillTime < 3000) {
+        console.warn('Bot detected: form filled too fast')
+        successMessage.value = 'Помилка відправки. Заповніть форму повільніше.'
+        setTimeout(() => { successMessage.value = '' }, 3000)
+        return
+    }
+
+    // 3. Проверка, что форма не отправлялась недавно (защита от спама)
+    const lastSubmitTime = localStorage.getItem('lastFormSubmit')
+    if (lastSubmitTime) {
+        const timeSinceLastSubmit = Date.now() - parseInt(lastSubmitTime)
+        if (timeSinceLastSubmit < 60000) { // Минимум 1 минута между отправками
+            const secondsLeft = Math.ceil((60000 - timeSinceLastSubmit) / 1000)
+            successMessage.value = `Зачекайте ${secondsLeft} секунд перед наступною відправкою.`
+            setTimeout(() => { successMessage.value = '' }, 3000)
+            return
+        }
+    }
+
+    // === ВАЛИДАЦИЯ ФОРМЫ ===
     validateName()
     validateCarBrand()
     validateCarModel()
@@ -487,7 +495,7 @@ const submitForm = async () => {
     successMessage.value = ''
 
     try {
-        // Создаем URL-encoded данные вместо FormData
+        // Создаем URL-encoded данные
         const params = new URLSearchParams()
         params.append('name', form.name.trim())
         params.append('carBrand', form.carBrand.trim())
@@ -496,6 +504,9 @@ const submitForm = async () => {
         params.append('carTrans', form.carTrans)
         params.append('phone', form.phone.trim())
         params.append('description', form.description.trim())
+
+        // Добавляем время заполнения формы для дополнительной проверки на бэкенде
+        params.append('_fillTime', fillTime.toString())
 
         const apiUrl = process.env.NODE_ENV === 'production'
             ? '/api/cars'
@@ -512,6 +523,10 @@ const submitForm = async () => {
         if (response.ok) {
             const result = await response.json()
             successMessage.value = 'Дякуємо! Ваша заявка успішно відправлена.'
+
+            // Сохраняем время отправки
+            localStorage.setItem('lastFormSubmit', Date.now().toString())
+
             resetForm()
 
             setTimeout(() => {
@@ -568,6 +583,10 @@ const resetForm = () => {
         phone: null,
         description: null
     })
+
+    // Сбрасываем honeypot и время начала заполнения
+    honeypot.value = ''
+    formStartTime.value = Date.now()
 }
 </script>
 
@@ -625,6 +644,7 @@ const resetForm = () => {
     }
 
     &.has-error {
+
         .glass-input,
         .glass-textarea,
         .glass-select {
@@ -634,6 +654,7 @@ const resetForm = () => {
     }
 
     &.has-success {
+
         .glass-input,
         .glass-textarea,
         .glass-select {
@@ -675,7 +696,7 @@ const resetForm = () => {
     &::-webkit-scrollbar-thumb {
         background: #CCCCCC;
         border-radius: 10px;
-        
+
         &:hover {
             background: #999999;
         }
@@ -730,7 +751,7 @@ const resetForm = () => {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 10px center;
-    
+
     option {
         background: #FAFAFA;
         color: #000;
