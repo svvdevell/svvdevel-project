@@ -13,7 +13,6 @@ import (
     "strings"
     "time"
     "bytes"
-    "mime/multipart"
 
     _ "github.com/mattn/go-sqlite3"
     "github.com/gorilla/mux"
@@ -23,12 +22,6 @@ import (
 type TelegramMessage struct {
     ChatID    string `json:"chat_id"`
     Text      string `json:"text"`
-    ParseMode string `json:"parse_mode"`
-}
-
-type TelegramPhoto struct {
-    ChatID  string `json:"chat_id"`
-    Caption string `json:"caption"`
     ParseMode string `json:"parse_mode"`
 }
 
@@ -57,16 +50,6 @@ type AdminRequestResponse struct {
     Phone       string    `json:"phone"`
     Description string    `json:"description"`
     CreatedAt   time.Time `json:"createdAt"`
-    ImageCount  int       `json:"imageCount"`
-}
-
-type CarImageResponse struct {
-    ID           int       `json:"id"`
-    CarRequestID int       `json:"carRequestId"`
-    FileName     string    `json:"fileName"`
-    FileURL      string    `json:"fileUrl"`
-    FileSize     int       `json:"fileSize"`
-    CreatedAt    time.Time `json:"createdAt"`
 }
 
 type RequestDetailResponse struct {
@@ -77,7 +60,6 @@ type RequestDetailResponse struct {
     Phone       string             `json:"phone"`
     Description string             `json:"description"`
     CreatedAt   time.Time          `json:"createdAt"`
-    Images      []CarImageResponse `json:"images"`
 }
 
 var db *sql.DB
@@ -123,8 +105,6 @@ func main() {
     
     // Админ API роуты
     r.HandleFunc("/api/admin/requests", getAdminRequestsHandler).Methods("GET")
-    r.HandleFunc("/api/admin/requests/{id}", getAdminRequestDetailHandler).Methods("GET")
-    r.HandleFunc("/api/admin/requests/{id}/images", getRequestImagesHandler).Methods("GET")
     registerCarRoutes(r)
     // Статические файлы для изображений
     r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads/"))))
@@ -173,79 +153,23 @@ func sendTelegramMessage(message string) error {
     return nil
 }
 
-// Функция отправки фотографии в Telegram
-func sendTelegramPhoto(photoPath, caption string) error {
-    if telegramBotToken == "" || telegramChatID == "" {
-        return nil
-    }
-
-    telegramURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendPhoto", telegramBotToken)
-    
-    file, err := os.Open(photoPath)
-    if err != nil {
-        return fmt.Errorf("error opening photo: %v", err)
-    }
-    defer file.Close()
-    
-    var requestBody bytes.Buffer
-    writer := multipart.NewWriter(&requestBody)
-    
-    // Добавляем chat_id
-    writer.WriteField("chat_id", telegramChatID)
-    writer.WriteField("caption", caption)
-    writer.WriteField("parse_mode", "HTML")
-    
-    // Добавляем файл
-    part, err := writer.CreateFormFile("photo", filepath.Base(photoPath))
-    if err != nil {
-        return err
-    }
-    
-    _, err = io.Copy(part, file)
-    if err != nil {
-        return err
-    }
-    
-    writer.Close()
-    
-    req, err := http.NewRequest("POST", telegramURL, &requestBody)
-    if err != nil {
-        return err
-    }
-    req.Header.Set("Content-Type", writer.FormDataContentType())
-    
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        return fmt.Errorf("error sending photo to telegram: %v", err)
-    }
-    defer resp.Body.Close()
-    
-    if resp.StatusCode != 200 {
-        body, _ := io.ReadAll(resp.Body)
-        return fmt.Errorf("telegram photo API error: %s", string(body))
-    }
-    
-    return nil
-}
-
 // Функция формирования красивого сообщения о новой заявке
-func formatCarRequestMessage(name, carBrand, carModel, phone, description string, imageCount int) string {
-    message := fmt.Sprintf(`🚗 <b>Новая заявка на автомобиль</b>
+func formatCarRequestMessage(name, carBrand, carModel, phone, description string) string {
+    cleanPhone := strings.ReplaceAll(phone, " ", "")
+    cleanPhone = strings.ReplaceAll(cleanPhone, "(", "")
+    cleanPhone = strings.ReplaceAll(cleanPhone, ")", "")
+    cleanPhone = strings.ReplaceAll(cleanPhone, "-", "")
+    
+    message := fmt.Sprintf(`🚗 <b>Новая заявка на выкуп</b>
 
 👤 <b>Имя:</b> %s
-🚙 <b>Марка авто:</b> %s  
-🚙 <b>Модель авто:</b> %s 
-📞 <b>Телефон:</b> %s`, name, carBrand, carModel, phone)
+🚙 <b>Марка:</b> %s  
+🚗 <b>Модель:</b> %s 
+📞 <b>Телефон:</b> <a href="tel:%s">%s</a>`, name, carBrand, carModel, cleanPhone, phone)
 
     if description != "" {
         message += fmt.Sprintf(`
 📝 <b>Описание:</b> %s`, description)
-    }
-
-    if imageCount > 0 {
-        message += fmt.Sprintf(`
-📷 <b>Количество фото:</b> %d`, imageCount)
     }
 
     message += fmt.Sprintf(`
@@ -253,90 +177,6 @@ func formatCarRequestMessage(name, carBrand, carModel, phone, description string
 ⏰ <b>Время:</b> %s`, time.Now().Format("02.01.2006 15:04:05"))
 
     return message
-}
-
-func sendTelegramMediaGroup(photoPaths []string, caption string) error {
-    if telegramBotToken == "" || telegramChatID == "" || len(photoPaths) == 0 {
-        return nil
-    }
-
-    telegramURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMediaGroup", telegramBotToken)
-    
-    // Telegram поддерживает максимум 10 фото в группе
-    maxPhotos := len(photoPaths)
-    if maxPhotos > 10 {
-        maxPhotos = 10
-    }
-    
-    // Создаем массив медиа
-    var media []map[string]interface{}
-    
-    for i := 0; i < maxPhotos; i++ {
-        mediaItem := map[string]interface{}{
-            "type":  "photo",
-            "media": fmt.Sprintf("attach://photo%d", i),
-        }
-        
-        // Добавляем подпись только к первому фото
-        if i == 0 {
-            mediaItem["caption"] = caption
-            mediaItem["parse_mode"] = "HTML"
-        }
-        
-        media = append(media, mediaItem)
-    }
-    
-    mediaJSON, err := json.Marshal(media)
-    if err != nil {
-        return fmt.Errorf("error marshaling media group: %v", err)
-    }
-    
-    var requestBody bytes.Buffer
-    writer := multipart.NewWriter(&requestBody)
-    
-    // Добавляем параметры
-    writer.WriteField("chat_id", telegramChatID)
-    writer.WriteField("media", string(mediaJSON))
-    
-    // Добавляем файлы
-    for i := 0; i < maxPhotos; i++ {
-        file, err := os.Open(photoPaths[i])
-        if err != nil {
-            log.Printf("Error opening photo %d: %v", i, err)
-            continue
-        }
-        defer file.Close()
-        
-        part, err := writer.CreateFormFile(fmt.Sprintf("photo%d", i), filepath.Base(photoPaths[i]))
-        if err != nil {
-            log.Printf("Error creating form file %d: %v", i, err)
-            continue
-        }
-        
-        io.Copy(part, file)
-    }
-    
-    writer.Close()
-    
-    req, err := http.NewRequest("POST", telegramURL, &requestBody)
-    if err != nil {
-        return err
-    }
-    req.Header.Set("Content-Type", writer.FormDataContentType())
-    
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        return fmt.Errorf("error sending media group to telegram: %v", err)
-    }
-    defer resp.Body.Close()
-    
-    if resp.StatusCode != 200 {
-        body, _ := io.ReadAll(resp.Body)
-        return fmt.Errorf("telegram media group API error: %s", string(body))
-    }
-    
-    return nil
 }
 
 // CORS middleware
@@ -365,14 +205,6 @@ func createTables() {
             car_model VARCHAR(255) NOT NULL,
             phone VARCHAR(20) NOT NULL,
             description TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`,
-        `CREATE TABLE IF NOT EXISTS car_images (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            car_request_id INTEGER REFERENCES car_requests(id) ON DELETE CASCADE,
-            file_name VARCHAR(255) NOT NULL,
-            file_path VARCHAR(500) NOT NULL,
-            file_size INTEGER,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`,
     }
@@ -418,8 +250,11 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
 func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
-    // Ограничиваем размер загружаемых файлов (50MB)
-    r.ParseMultipartForm(50 << 20)
+    // Парсим только обычные поля формы
+    if err := r.ParseForm(); err != nil {
+        http.Error(w, `{"error": "Ошибка парсинга формы"}`, http.StatusBadRequest)
+        return
+    }
 
     // Получаем данные из формы
     name := strings.TrimSpace(r.FormValue("name"))
@@ -435,10 +270,10 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     // Вставляем заявку в базу данных SQLite
-    query := `INSERT INTO car_requests (name, car_brand, car_model,  phone, description) 
-              VALUES (?, ?, ?, ?)`
+    query := `INSERT INTO car_requests (name, car_brand, car_model, phone, description) 
+              VALUES (?, ?, ?, ?, ?)`
     
-    result, err := db.Exec(query, name, carBrand, carModel , phone, description)
+    result, err := db.Exec(query, name, carBrand, carModel, phone, description)
     if err != nil {
         log.Printf("Error inserting car request: %v", err)
         http.Error(w, `{"error": "Ошибка сохранения данных"}`, http.StatusInternalServerError)
@@ -453,91 +288,11 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Обработка загруженных изображений
-    uploadedFiles := []string{}
-    uploadedPaths := []string{}
-    
-    if files := r.MultipartForm.File["images"]; len(files) > 0 {
-        for i, fileHeader := range files {
-            if i >= 10 { // Ограничиваем максимум 10 файлов
-                break
-            }
-
-            file, err := fileHeader.Open()
-            if err != nil {
-                log.Printf("Error opening uploaded file: %v", err)
-                continue
-            }
-            defer file.Close()
-
-            // Проверяем размер файла (максимум 5MB)
-            if fileHeader.Size > 5<<20 {
-                log.Printf("File too large: %s", fileHeader.Filename)
-                continue
-            }
-
-            // Генерируем уникальное имя файла
-            ext := filepath.Ext(fileHeader.Filename)
-            fileName := fmt.Sprintf("car_%d_image_%d_%d%s", carRequestID, i+1, time.Now().Unix(), ext)
-            filePath := filepath.Join("uploads", fileName)
-
-            // Создаем файл на диске
-            dst, err := os.Create(filePath)
-            if err != nil {
-                log.Printf("Error creating file: %v", err)
-                continue
-            }
-            defer dst.Close()
-
-            // Копируем содержимое
-            if _, err := io.Copy(dst, file); err != nil {
-                log.Printf("Error saving file: %v", err)
-                os.Remove(filePath) // Удаляем файл при ошибке
-                continue
-            }
-
-            // Сохраняем информацию о файле в базе данных
-            imageQuery := `INSERT INTO car_images (car_request_id, file_name, file_path, file_size) 
-                          VALUES (?, ?, ?, ?)`
-            _, err = db.Exec(imageQuery, carRequestID, fileHeader.Filename, filePath, fileHeader.Size)
-            if err != nil {
-                log.Printf("Error saving image info to database: %v", err)
-                os.Remove(filePath) // Удаляем файл при ошибке сохранения в БД
-                continue
-            }
-
-            uploadedFiles = append(uploadedFiles, fileName)
-            uploadedPaths = append(uploadedPaths, filePath)
-        }
-    }
-
-    // Отправляем уведомление в Telegram
+    // Отправляем уведомление в Telegram (БЕЗ ФОТО)
     go func() {
-        // Формируем и отправляем текстовое сообщение
-        message := formatCarRequestMessage(name, carBrand, carModel, phone, description, len(uploadedFiles))
+        message := formatCarRequestMessage(name, carBrand, carModel, phone, description)
         if err := sendTelegramMessage(message); err != nil {
             log.Printf("Error sending telegram message: %v", err)
-        }
-
-        // Отправляем фотографии как альбом если их больше 1
-        if len(uploadedPaths) > 1 {
-            caption := fmt.Sprintf("Фотографии от %s (%s) - %d шт.", name, carBrand, carModel, len(uploadedPaths))
-            if err := sendTelegramMediaGroup(uploadedPaths, caption); err != nil {
-                log.Printf("Error sending telegram media group: %v", err)
-                // Если не получилось отправить группой, отправляем по одному
-                for i, path := range uploadedPaths {
-                    if i >= 5 { break } // Ограничиваем 5 фото
-                    singleCaption := fmt.Sprintf("Фото %d/%d от %s", i+1, len(uploadedPaths), name)
-                    sendTelegramPhoto(path, singleCaption)
-                    time.Sleep(500 * time.Millisecond)
-                }
-            }
-        } else if len(uploadedPaths) == 1 {
-            // Одно фото отправляем обычным способом
-            caption := fmt.Sprintf("Фото от %s (%s)", name, carBrand , carModel )
-            if err := sendTelegramPhoto(uploadedPaths[0], caption); err != nil {
-                log.Printf("Error sending telegram photo: %v", err)
-            }
         }
     }()
 
@@ -552,12 +307,11 @@ func createCarRequestHandler(w http.ResponseWriter, r *http.Request) {
             "carModel": carModel,
             "phone": phone,
             "description": description,
-            "uploadedImages": len(uploadedFiles),
         },
     }
 
-    log.Printf("New car request created: ID=%d, Name=%s, Brand=%s, Model=%s, Images=%d", 
-               carRequestID, name, carBrand, carModel, len(uploadedFiles))
+    log.Printf("New car request created: ID=%d, Name=%s, Brand=%s ,Model=%s", 
+               carRequestID, name, carBrand , carModel)
 
     json.NewEncoder(w).Encode(response)
 }
@@ -655,12 +409,9 @@ func getAdminRequestsHandler(w http.ResponseWriter, r *http.Request) {
     
     // Запрос заявок с количеством изображений
     query := `
-        SELECT cr.id, cr.name, cr.car_brand, cr.car_model, cr.phone, cr.description, cr.created_at,
-               COUNT(ci.id) as image_count
-        FROM car_requests cr
-        LEFT JOIN car_images ci ON cr.id = ci.car_request_id
-        GROUP BY cr.id, cr.name, cr.car_brand, cr.car_model, cr.phone, cr.description, cr.created_at
-        ORDER BY cr.created_at DESC
+        SELECT id, name, car_brand, car_model, phone, description, created_at
+        FROM car_requests
+        ORDER BY created_at DESC
         LIMIT ? OFFSET ?
     `
     
@@ -676,7 +427,7 @@ func getAdminRequestsHandler(w http.ResponseWriter, r *http.Request) {
     for rows.Next() {
         var req AdminRequestResponse
         err := rows.Scan(&req.ID, &req.Name, &req.CarBrand, &req.CarModel, &req.Phone, 
-                        &req.Description, &req.CreatedAt, &req.ImageCount)
+                        &req.Description, &req.CreatedAt)
         if err != nil {
             log.Printf("Error scanning admin request row: %v", err)
             continue
@@ -701,114 +452,6 @@ func getAdminRequestsHandler(w http.ResponseWriter, r *http.Request) {
             "total": total,
             "pages": (total + limit - 1) / limit,
         },
-    }
-    
-    json.NewEncoder(w).Encode(response)
-}
-
-// Получение детальной информации о заявке с изображениями
-func getAdminRequestDetailHandler(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-    
-    vars := mux.Vars(r)
-    requestID := vars["id"]
-    
-    // Получаем основную информацию о заявке
-    var req RequestDetailResponse
-    query := "SELECT id, name, car_brand, car_model, phone, description, created_at FROM car_requests WHERE id = ?"
-    err := db.QueryRow(query, requestID).Scan(&req.ID, &req.Name, &req.CarBrand, &req.CarModel
-                                             &req.Phone, &req.Description, &req.CreatedAt)
-    if err != nil {
-        if err == sql.ErrNoRows {
-            http.Error(w, `{"error": "Заявка не найдена"}`, http.StatusNotFound)
-        } else {
-            log.Printf("Error getting request detail: %v", err)
-            http.Error(w, `{"error": "Ошибка получения данных"}`, http.StatusInternalServerError)
-        }
-        return
-    }
-    
-    // Получаем изображения
-    imageQuery := "SELECT id, car_request_id, file_name, file_path, file_size, created_at FROM car_images WHERE car_request_id = ?"
-    imageRows, err := db.Query(imageQuery, requestID)
-    if err != nil {
-        log.Printf("Error getting request images: %v", err)
-    } else {
-        defer imageRows.Close()
-        
-        for imageRows.Next() {
-            var img CarImageResponse
-            var filePath string
-            err := imageRows.Scan(&img.ID, &img.CarRequestID, &img.FileName, 
-                                 &filePath, &img.FileSize, &img.CreatedAt)
-            if err != nil {
-                log.Printf("Error scanning image row: %v", err)
-                continue
-            }
-            
-            // Создаем URL для изображения
-            fileName := filepath.Base(filePath)
-            img.FileURL = "/uploads/" + fileName
-            
-            req.Images = append(req.Images, img)
-        }
-    }
-    
-    response := map[string]interface{}{
-        "status": "success",
-        "data":   req,
-    }
-    
-    json.NewEncoder(w).Encode(response)
-}
-
-// Получение только изображений для конкретной заявки
-func getRequestImagesHandler(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-    
-    vars := mux.Vars(r)
-    requestID := vars["id"]
-    
-    // Проверяем что заявка существует
-    var exists int
-    err := db.QueryRow("SELECT COUNT(*) FROM car_requests WHERE id = ?", requestID).Scan(&exists)
-    if err != nil || exists == 0 {
-        http.Error(w, `{"error": "Заявка не найдена"}`, http.StatusNotFound)
-        return
-    }
-    
-    // Получаем изображения
-    query := "SELECT id, car_request_id, file_name, file_path, file_size, created_at FROM car_images WHERE car_request_id = ? ORDER BY created_at ASC"
-    rows, err := db.Query(query, requestID)
-    if err != nil {
-        log.Printf("Error getting images: %v", err)
-        http.Error(w, `{"error": "Ошибка получения изображений"}`, http.StatusInternalServerError)
-        return
-    }
-    defer rows.Close()
-    
-    var images []CarImageResponse
-    for rows.Next() {
-        var img CarImageResponse
-        var filePath string
-        err := rows.Scan(&img.ID, &img.CarRequestID, &img.FileName, 
-                        &filePath, &img.FileSize, &img.CreatedAt)
-        if err != nil {
-            log.Printf("Error scanning image row: %v", err)
-            continue
-        }
-        
-        // Создаем URL для изображения
-        fileName := filepath.Base(filePath)
-        img.FileURL = "/uploads/" + fileName
-        
-        images = append(images, img)
-    }
-    
-    response := map[string]interface{}{
-        "status": "success",
-        "data":   images,
-        "count":  len(images),
     }
     
     json.NewEncoder(w).Encode(response)
