@@ -44,7 +44,7 @@
 .navigation {
     width: 100%;
     position: sticky;
-    padding: 28px 16px;
+    padding: 5px 16px;
     background-color: #FFF;
     z-index: 999;
     width: 100%;

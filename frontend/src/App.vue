@@ -25,10 +25,10 @@ import Footer from './components/global/Footer.vue'
 
 #app {
   background-color: #FFF;
-  padding: 0 16px;
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
+  // padding: 0 16px;
+  // width: 100%;
+  // max-width: 1440px;
+  // margin: 0 auto;
 
   & * {
     font-family: "Work Sans", sans-serif;

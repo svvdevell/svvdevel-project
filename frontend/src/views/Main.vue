@@ -1,10 +1,12 @@
 <template>
     <div class="main-page">
         <MainBanner />
-        <BagsBanner />
-        <ImageBanner />
-        <FactsBanner />
-        <ContactBanner />
+        <div class="wrapper">
+            <BagsBanner />
+            <ImageBanner />
+            <FactsBanner />
+            <ContactBanner />
+        </div>
     </div>
 </template>
 
@@ -41,6 +43,13 @@ import ContactBanner from '@/components/banners/ContactBanner.vue'
     & * {
         font-family: "Zalando Sans SemiExpanded", sans-serif;
     }
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 16px;
 }
 
 .video-container {

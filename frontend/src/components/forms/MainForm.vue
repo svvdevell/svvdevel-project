@@ -84,7 +84,7 @@
             </div>
 
             <!-- Поле описания (необязательное) -->
-            <div class="input-group"
+            <!-- <div class="input-group"
                 :class="{ 'has-error': errors.description, 'has-success': !errors.description && form.description.length > 0 }">
                 <textarea v-model="form.description" placeholder="Розкажіть трошки про Ваше авто (необов'язково)"
                     class="glass-textarea" rows="4" @blur="validateDescription" @input="clearError('description')"
@@ -93,7 +93,7 @@
                 <div v-if="form.description.length > 0" class="char-counter">
                     {{ form.description.length }} / 500
                 </div>
-            </div>
+            </div> -->
 
             <!-- Кнопка отправки -->
             <button type="submit" class="submit-btn" :class="{ 'loading': isSubmitting }"
@@ -598,8 +598,9 @@ const resetForm = () => {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 40px;
+    padding: 20px;
     border-radius: 20px;
+    margin-left: auto;
 }
 
 .form-title {
@@ -616,7 +617,7 @@ const resetForm = () => {
 .form-banner {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 5px;
     width: 100%;
 }
 

@@ -19,6 +19,8 @@ import (
     "github.com/gorilla/mux"
 )
 
+// TODO: delete description input from datatable 
+
 // Структуры для Telegram API
 type TelegramMessage struct {
     ChatID    string `json:"chat_id"`

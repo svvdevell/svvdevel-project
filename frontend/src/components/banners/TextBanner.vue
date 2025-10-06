@@ -17,6 +17,7 @@ import Link from '@/components/common/Link.vue';
 .text-banner {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 30px;
     max-width: 686px;
     width: 100%;
