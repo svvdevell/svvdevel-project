@@ -1,120 +1,78 @@
 <template>
-    <div class="admin-panel">
-        <div class="container">
-            <h1>Админ панель - Заявки на автомобили</h1>
-
-            <!-- Статистика -->
-            <div class="stats-bar">
-                <div class="stat">
-                    <span class="stat-number">{{ totalRequests }}</span>
-                    <span class="stat-label">Всего заявок</span>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="header-content">
+                <h1>🚗 Elegance Auto - Адмін панель</h1>
+                <div class="user-info">
+                    <span class="username">👤 {{ authStore.username }}</span>
+                    <button @click="handleLogout" class="btn-logout">Вийти</button>
                 </div>
-                <div class="stat">
-                    <span class="stat-number">{{ totalImages }}</span>
-                    <span class="stat-label">Всего фотографий</span>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div class="welcome-section">
+                <h2>Вітаємо в адміністративній панелі!</h2>
+                <p>Оберіть потрібну дію для управління каталогом автомобілів</p>
+            </div>
+
+            <div class="admin-cards">
+                <div class="admin-card" @click="goTo('/admin/add')">
+                    <div class="card-icon">➕</div>
+                    <h3>Додати автомобіль</h3>
+                    <p>Створити нове оголошення про продаж автомобіля</p>
+                    <button class="card-button">Перейти</button>
+                </div>
+
+                <div class="admin-card" @click="goTo('/admin/list')">
+                    <div class="card-icon">📋</div>
+                    <h3>Список автомобілів</h3>
+                    <p>Переглянути, редагувати або видалити існуючі автомобілі</p>
+                    <button class="card-button">Перейти</button>
+                </div>
+
+                <div class="admin-card" @click="goTo('/catalog')">
+                    <div class="card-icon">🏪</div>
+                    <h3>Публічний каталог</h3>
+                    <p>Переглянути каталог як його бачать відвідувачі</p>
+                    <button class="card-button">Перейти</button>
                 </div>
             </div>
 
-            <!-- Загрузка -->
-            <div v-if="loading" class="loading">
-                <div class="loading-spinner"></div>
-                <p>Загружаем данные...</p>
-            </div>
-
-            <!-- Ошибка -->
-            <div v-if="error" class="error">
-                <p>{{ error }}</p>
-                <button @click="fetchRequests" class="retry-btn">Попробовать снова</button>
-            </div>
-
-            <!-- Список заявок -->
-            <div v-if="!loading && !error" class="requests-list">
-                <div v-for="request in requests" :key="request.id" class="request-card">
-                    <!-- Основная информация -->
-                    <div class="request-header">
-                        <div class="request-info">
-                            <h3>{{ request.name }}</h3>
-                            <p class="car-brand">{{ request.carBrand }}</p>
-                            <p class="phone">{{ request.phone }}</p>
-                            <p class="date">{{ formatDate(request.createdAt) }}</p>
-                        </div>
-                        <div class="request-stats">
-                            <div class="photo-count">
-                                <span class="count">{{ request.imageCount }}</span>
-                                <span class="label">фото</span>
-                            </div>
-                            <button @click="toggleDetails(request.id)" class="details-btn">
-                                {{ expandedRequests.has(request.id) ? 'Скрыть' : 'Подробнее' }}
-                            </button>
-                        </div>
+            <div class="stats-section">
+                <h2>Статистика</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.total }}</div>
+                        <div class="stat-label">Всього автомобілів</div>
                     </div>
-
-                    <!-- Описание -->
-                    <div v-if="request.description" class="request-description">
-                        <p><strong>Описание:</strong> {{ request.description }}</p>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.active }}</div>
+                        <div class="stat-label">Активні</div>
                     </div>
-
-                    <!-- Детальная информация (разворачивается) -->
-                    <div v-if="expandedRequests.has(request.id)" class="request-details">
-                        <!-- Загрузка деталей -->
-                        <div v-if="loadingDetails.has(request.id)" class="loading-details">
-                            <div class="loading-spinner small"></div>
-                            <span>Загружаем фотографии...</span>
-                        </div>
-
-                        <!-- Ошибка загрузки деталей -->
-                        <div v-if="detailsErrors.has(request.id)" class="details-error">
-                            <p>Ошибка загрузки: {{ detailsErrors.get(request.id) }}</p>
-                            <button @click="fetchRequestDetails(request.id)" class="retry-btn small">Повторить</button>
-                        </div>
-
-                        <!-- Фотографии -->
-                        <div v-if="requestDetails.has(request.id)" class="photos-section">
-                            <h4>Фотографии ({{ requestDetails.get(request.id).images.length }})</h4>
-                            <div v-if="requestDetails.get(request.id).images.length > 0" class="photos-grid">
-                                <div v-for="image in requestDetails.get(request.id).images" :key="image.id"
-                                    class="photo-item">
-                                    <img :src="image.fileUrl" :alt="image.fileName" @click="openImageModal(image)"
-                                        @error="handleImageError" />
-                                    <div class="photo-info">
-                                        <p class="photo-name">{{ image.fileName }}</p>
-                                        <p class="photo-size">{{ formatFileSize(image.fileSize) }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-else class="no-photos">
-                                <p>Фотографии не загружены</p>
-                            </div>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.sold }}</div>
+                        <div class="stat-label">Продано</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ stats.new }}</div>
+                        <div class="stat-label">Новинки</div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Пагинация -->
-                <div v-if="totalPages > 1" class="pagination">
-                    <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1" class="page-btn">
-                        Предыдущая
+            <div class="quick-actions">
+                <h2>Швидкі дії</h2>
+                <div class="actions-list">
+                    <button @click="goTo('/admin/add')" class="action-btn">
+                        ➕ Додати новий автомобіль
                     </button>
-
-                    <span class="page-info">
-                        Страница {{ currentPage }} из {{ totalPages }}
-                    </span>
-
-                    <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages" class="page-btn">
-                        Следующая
+                    <button @click="refreshStats" class="action-btn">
+                        🔄 Оновити статистику
                     </button>
-                </div>
-            </div>
-
-            <!-- Модальное окно для просмотра изображения -->
-            <div v-if="selectedImage" class="image-modal" @click="closeImageModal">
-                <div class="modal-content" @click.stop>
-                    <button class="close-btn" @click="closeImageModal">&times;</button>
-                    <img :src="selectedImage.fileUrl" :alt="selectedImage.fileName" />
-                    <div class="image-info">
-                        <h4>{{ selectedImage.fileName }}</h4>
-                        <p>Размер: {{ formatFileSize(selectedImage.fileSize) }}</p>
-                        <p>Загружено: {{ formatDate(selectedImage.createdAt) }}</p>
-                    </div>
+                    <button @click="goTo('/')" class="action-btn">
+                        🏠 На головну сторінку
+                    </button>
                 </div>
             </div>
         </div>
@@ -122,514 +80,307 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-// Реактивные данные
-const requests = ref([])
-const loading = ref(false)
-const error = ref('')
-const currentPage = ref(1)
-const totalRequests = ref(0)
-const totalPages = ref(0)
+const router = useRouter()
+const authStore = useAuthStore()
 
-// Для управления развернутыми заявками
-const expandedRequests = reactive(new Set())
-const loadingDetails = reactive(new Set())
-const detailsErrors = reactive(new Map())
-const requestDetails = reactive(new Map())
-
-// Модальное окно
-const selectedImage = ref(null)
-
-// Вычисляемые свойства
-const totalImages = computed(() => {
-    return requests.value.reduce((sum, req) => sum + req.imageCount, 0)
+const stats = ref({
+    total: 0,
+    active: 0,
+    sold: 0,
+    new: 0
 })
 
-// Методы
-const fetchRequests = async () => {
-    loading.value = true
-    error.value = ''
-
+const loadStats = async () => {
     try {
-        const response = await fetch(`/api/admin/requests?page=${currentPage.value}&limit=10`)
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`)
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        
+        const response = await fetch(`${apiUrl}/api/cars-sale?limit=1000`)
+        
+        if (response.ok) {
+            const data = await response.json()
+            const cars = data.data || []
+            
+            stats.value = {
+                total: cars.length,
+                active: cars.filter(car => car.status === 'active').length,
+                sold: cars.filter(car => car.status === 'sold').length,
+                new: cars.filter(car => car.status === 'new').length
+            }
         }
-
-        const data = await response.json()
-
-        if (data.status === 'success') {
-            requests.value = data.data
-            totalRequests.value = data.pagination.total
-            totalPages.value = data.pagination.pages
-        } else {
-            throw new Error(data.error || 'Неизвестная ошибка')
-        }
-    } catch (err) {
-        error.value = `Ошибка загрузки данных: ${err.message}`
-        console.error('Fetch error:', err)
-    } finally {
-        loading.value = false
+    } catch (error) {
+        console.error('Error loading stats:', error)
     }
 }
 
-const toggleDetails = async (requestId) => {
-    if (expandedRequests.has(requestId)) {
-        // Скрываем детали
-        expandedRequests.delete(requestId)
-    } else {
-        // Показываем детали
-        expandedRequests.add(requestId)
-
-        // Загружаем детали если их еще нет
-        if (!requestDetails.has(requestId)) {
-            await fetchRequestDetails(requestId)
-        }
-    }
+const refreshStats = () => {
+    loadStats()
 }
 
-const fetchRequestDetails = async (requestId) => {
-    loadingDetails.add(requestId)
-    detailsErrors.delete(requestId)
+const goTo = (path) => {
+    router.push(path)
+}
 
+const handleLogout = async () => {
     try {
-        const response = await fetch(`/api/admin/requests/${requestId}`)
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`)
-        }
-
-        const data = await response.json()
-
-        if (data.status === 'success') {
-            requestDetails.set(requestId, data.data)
-        } else {
-            throw new Error(data.error || 'Неизвестная ошибка')
-        }
-    } catch (err) {
-        detailsErrors.set(requestId, err.message)
-        console.error('Fetch details error:', err)
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        
+        await fetch(`${apiUrl}/api/auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authStore.token}`
+            }
+        })
+    } catch (error) {
+        console.error('Logout error:', error)
     } finally {
-        loadingDetails.delete(requestId)
+        authStore.logout()
+        router.push('/login')
     }
 }
 
-const changePage = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages.value) {
-        currentPage.value = newPage
-        fetchRequests()
-    }
-}
-
-const openImageModal = (image) => {
-    selectedImage.value = image
-}
-
-const closeImageModal = () => {
-    selectedImage.value = null
-}
-
-const handleImageError = (event) => {
-    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZHk9Ii4zZW0iPtCk0L7RgtC+INC90LUg0L3QsNC50LTQtdC90L48L3RleHQ+Cjwvc3ZnPg=='
-}
-
-// Утилиты
-const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleString('uk-UA', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    })
-}
-
-const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-// Загружаем данные при монтировании компонента
 onMounted(() => {
-    fetchRequests()
+    loadStats()
 })
 </script>
 
-<style lang="scss" scoped>
-.admin-panel {
-    padding: 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+<style scoped>
+.admin-container {
     min-height: 100vh;
-    font-family: 'Arial', sans-serif;
+    background: #f5f7fa;
 }
 
-.container {
-    max-width: 1200px;
+.admin-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    max-width: 1400px;
     margin: 0 auto;
-}
-
-h1 {
-    color: white;
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 2.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.stats-bar {
     display: flex;
-    gap: 2rem;
-    justify-content: center;
-    margin-bottom: 2rem;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.stat {
+.admin-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.username {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.btn-logout {
+    padding: 0.6rem 1.2rem;
     background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    padding: 1rem 2rem;
-    border-radius: 15px;
-    text-align: center;
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-.stat-number {
-    display: block;
+.btn-logout:hover {
+    background: white;
+    color: #667eea;
+}
+
+.admin-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.welcome-section {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.welcome-section h2 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
     font-size: 2rem;
-    font-weight: bold;
+}
+
+.welcome-section p {
+    margin: 0;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.admin-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.admin-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.admin-card h3 {
+    margin: 0 0 1rem 0;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.admin-card p {
+    margin: 0 0 1.5rem 0;
+    color: #666;
+    line-height: 1.6;
+}
+
+.card-button {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.card-button:hover {
+    transform: scale(1.05);
+}
+
+.stats-section {
+    margin-bottom: 3rem;
+}
+
+.stats-section h2 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+    font-size: 1.8rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #667eea;
     margin-bottom: 0.5rem;
 }
 
 .stat-label {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.loading,
-.error {
-    text-align: center;
-    color: white;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    margin: 2rem 0;
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: white;
-    animation: spin 1s ease-in-out infinite;
-    margin: 0 auto 1rem;
-
-    &.small {
-        width: 20px;
-        height: 20px;
-        border-width: 2px;
-        display: inline-block;
-        margin: 0 0.5rem 0 0;
-    }
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.retry-btn {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    &.small {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
-    }
-}
-
-.request-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.request-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.request-info {
-    flex: 1;
-
-    h3 {
-        margin: 0 0 0.5rem 0;
-        color: #333;
-        font-size: 1.3rem;
-    }
-
-    .car-brand {
-        color: #666;
-        font-weight: bold;
-        margin: 0.25rem 0;
-    }
-
-    .phone {
-        color: #007bff;
-        margin: 0.25rem 0;
-    }
-
-    .date {
-        color: #999;
-        font-size: 0.9rem;
-        margin: 0.25rem 0;
-    }
-}
-
-.request-stats {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.photo-count {
-    text-align: center;
-
-    .count {
-        display: block;
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #007bff;
-    }
-
-    .label {
-        font-size: 0.8rem;
-        color: #666;
-    }
-}
-
-.details-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-        background: #0056b3;
-    }
-}
-
-.request-description {
-    color: #555;
-    font-style: italic;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background: rgba(0, 123, 255, 0.1);
-    border-radius: 10px;
-}
-
-.request-details {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #eee;
-}
-
-.loading-details,
-.details-error {
-    padding: 1rem;
-    text-align: center;
     color: #666;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
-.photos-section {
-    h4 {
-        color: #333;
-        margin-bottom: 1rem;
-    }
+.quick-actions h2 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+    font-size: 1.8rem;
 }
 
-.photos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+.actions-list {
+    display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
 }
 
-.photo-item {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-
-    &:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    img {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-    }
-}
-
-.photo-info {
-    padding: 0.5rem;
-
-    .photo-name {
-        font-size: 0.8rem;
-        color: #333;
-        margin: 0 0 0.25rem 0;
-        word-break: break-word;
-    }
-
-    .photo-size {
-        font-size: 0.7rem;
-        color: #999;
-        margin: 0;
-    }
-}
-
-.no-photos {
-    text-align: center;
-    color: #666;
-    font-style: italic;
-    padding: 2rem;
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-.page-btn {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover:not(:disabled) {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-}
-
-.page-info {
-    color: white;
-    font-weight: bold;
-}
-
-.image-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
+.action-btn {
+    padding: 1rem 1.5rem;
     background: white;
-    border-radius: 15px;
-    padding: 1rem;
-    max-width: 90vw;
-    max-height: 90vh;
-    position: relative;
-
-    img {
-        max-width: 100%;
-        max-height: 70vh;
-        object-fit: contain;
-    }
-}
-
-.close-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    font-size: 2rem;
+    color: #667eea;
+    border: 2px solid #667eea;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    color: #666;
-
-    &:hover {
-        color: #333;
-    }
+    transition: all 0.3s ease;
 }
 
-.image-info {
-    margin-top: 1rem;
-
-    h4 {
-        margin: 0 0 0.5rem 0;
-        color: #333;
-    }
-
-    p {
-        margin: 0.25rem 0;
-        color: #666;
-        font-size: 0.9rem;
-    }
+.action-btn:hover {
+    background: #667eea;
+    color: white;
 }
 
 @media (max-width: 768px) {
-    .admin-panel {
+    .admin-header {
         padding: 1rem;
     }
 
-    .request-header {
+    .header-content {
         flex-direction: column;
         gap: 1rem;
+        align-items: flex-start;
     }
 
-    .photos-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    .admin-header h1 {
+        font-size: 1.3rem;
     }
 
-    .stats-bar {
+    .admin-content {
+        padding: 1rem;
+    }
+
+    .welcome-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .admin-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .actions-list {
         flex-direction: column;
-        align-items: center;
+    }
+
+    .action-btn {
+        width: 100%;
     }
 }
 </style>

@@ -1,10 +1,10 @@
 <template>
     <div class="add-car-container">
         <div class="form-wrapper">
-            <h2>Добавить автомобиль в продажу</h2>
+            <h2>{{ isEditMode ? 'Редагувати автомобіль' : 'Додати автомобіль на продаж' }}</h2>
 
             <form @submit.prevent="submitForm" enctype="multipart/form-data">
-                <!-- Марка и модель -->
+                <!-- Марка та модель -->
                 <div class="form-row">
                     <div class="form-group">
                         <label for="brand">Марка *</label>
@@ -21,24 +21,33 @@
                     </div>
                 </div>
 
-                <!-- Год -->
-                <div class="form-group">
-                    <label for="year">Год выпуска *</label>
-                    <input v-model.number="form.year" type="number" id="year" required :min="1950"
-                        :max="new Date().getFullYear() + 1" placeholder="2020" :class="{ error: errors.year }">
-                    <span v-if="errors.year" class="error-text">{{ errors.year }}</span>
-                </div>
-
-                <!-- Топливо и трансмиссия -->
+                <!-- Рік та колір -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="fuel">Топливо *</label>
+                        <label for="year">Рік випуску *</label>
+                        <input v-model.number="form.year" type="number" id="year" required :min="1950"
+                            :max="new Date().getFullYear() + 1" placeholder="2020" :class="{ error: errors.year }">
+                        <span v-if="errors.year" class="error-text">{{ errors.year }}</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="color">Колір</label>
+                        <input v-model="form.color" type="text" id="color" placeholder="Чорний, Білий, Сріблястий..."
+                            :class="{ error: errors.color }">
+                        <span v-if="errors.color" class="error-text">{{ errors.color }}</span>
+                    </div>
+                </div>
+
+                <!-- Паливо та трансмісія -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fuel">Паливо *</label>
                         <select v-model="form.fuel" id="fuel" required :class="{ error: errors.fuel }">
-                            <option value="">Выберите тип топлива</option>
+                            <option value="">Оберіть тип палива</option>
                             <option value="Бензин">Бензин</option>
                             <option value="Дизель">Дизель</option>
-                            <option value="Гибрид">Гибрид</option>
-                            <option value="Электро">Электро</option>
+                            <option value="Гібрид">Гібрид</option>
+                            <option value="Електро">Електро</option>
                             <option value="Газ">Газ</option>
                             <option value="Газ/Бензин">Газ/Бензин</option>
                         </select>
@@ -46,64 +55,91 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="transmission">Трансмиссия *</label>
+                        <label for="transmission">Трансмісія *</label>
                         <select v-model="form.transmission" id="transmission" required
                             :class="{ error: errors.transmission }">
-                            <option value="">Выберите тип трансмиссии</option>
-                            <option value="Механическая">Механическая</option>
-                            <option value="Автоматическая">Автоматическая</option>
+                            <option value="">Оберіть тип трансмісії</option>
+                            <option value="Механічна">Механічна</option>
+                            <option value="Автоматична">Автоматична</option>
                             <option value="Робот">Робот</option>
-                            <option value="Вариатор">Вариатор</option>
+                            <option value="Варіатор">Варіатор</option>
                         </select>
                         <span v-if="errors.transmission" class="error-text">{{ errors.transmission }}</span>
                     </div>
                 </div>
 
-                <!-- Привод и пробег -->
+                <!-- Привід та пробіг -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="drive">Привод *</label>
+                        <label for="drive">Привід *</label>
                         <select v-model="form.drive" id="drive" required :class="{ error: errors.drive }">
-                            <option value="">Выберите тип привода</option>
-                            <option value="Передний">Передний</option>
-                            <option value="Задний">Задний</option>
-                            <option value="Полный">Полный</option>
+                            <option value="">Оберіть тип приводу</option>
+                            <option value="Передній">Передній</option>
+                            <option value="Задній">Задній</option>
+                            <option value="Повний">Повний</option>
                         </select>
                         <span v-if="errors.drive" class="error-text">{{ errors.drive }}</span>
                     </div>
 
                     <div class="form-group">
-                        <label for="mileage">Пробег (км) *</label>
+                        <label for="mileage">Пробіг (км) *</label>
                         <input v-model.number="form.mileage" type="number" id="mileage" required min="0"
                             placeholder="100000" :class="{ error: errors.mileage }">
                         <span v-if="errors.mileage" class="error-text">{{ errors.mileage }}</span>
                     </div>
                 </div>
 
-                <!-- Описание -->
+                <!-- Статус -->
                 <div class="form-group">
-                    <label for="description">Описание</label>
+                    <label for="status">Статус</label>
+                    <select v-model="form.status" id="status" :class="{ error: errors.status }">
+                        <option value="active">Активний</option>
+                        <option value="sold">Продано</option>
+                        <option value="new">Новинка</option>
+                        <option value="sale">Зі знижкою</option>
+                        <option value="super-price">Супер ціна</option>
+                    </select>
+                    <span v-if="errors.status" class="error-text">{{ errors.status }}</span>
+                </div>
+
+                <!-- Опис -->
+                <div class="form-group">
+                    <label for="description">Опис</label>
                     <textarea v-model="form.description" id="description" rows="4"
-                        placeholder="Дополнительная информация об автомобиле..."
+                        placeholder="Додаткова інформація про автомобіль..."
                         :class="{ error: errors.description }"></textarea>
                     <span v-if="errors.description" class="error-text">{{ errors.description }}</span>
                 </div>
 
-                <!-- Фотографии -->
+                <!-- Існуючі фотографії (в режимі редагування) -->
+                <div v-if="isEditMode && existingImages.length > 0" class="form-group">
+                    <label>Поточні фотографії</label>
+                    <div class="photos-preview">
+                        <div v-for="img in existingImages" :key="img.id" class="photo-preview">
+                            <img :src="img.fileUrl" :alt="img.fileName">
+                            <button type="button" @click="markImageForDeletion(img.id)" 
+                                    :class="['remove-photo', { 'marked-delete': imagesToDelete.includes(img.id) }]">
+                                {{ imagesToDelete.includes(img.id) ? '↶' : '×' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Нові фотографії -->
                 <div class="form-group">
-                    <label for="photos">Фотографии (до 10 штук)</label>
+                    <label for="photos">{{ isEditMode ? 'Додати нові фотографії' : 'Фотографії' }} (до 10 штук)</label>
                     <input ref="fileInput" type="file" id="photos" accept="image/*" multiple @change="handleFileUpload"
                         :class="{ error: errors.photos }">
                     <span v-if="errors.photos" class="error-text">{{ errors.photos }}</span>
 
                     <div class="file-info">
-                        Максимальный размер файла: 5MB. Поддерживаемые форматы: JPG, PNG, WebP
+                        Максимальний розмір файлу: 5MB. Підтримувані формати: JPG, PNG, WebP
                     </div>
 
-                    <!-- Превью фотографий -->
+                    <!-- Превью нових фотографій -->
                     <div v-if="photoPreviews.length > 0" class="photos-preview">
-                        <div v-for="(preview, index) in photoPreviews" :key="index" class="photo-preview">
-                            <img :src="preview" :alt="`Фото ${index + 1}`">
+                        <div v-for="(preview, index) in photoPreviews" :key="`new-${index}`" class="photo-preview">
+                            <img :src="preview" :alt="`Нове фото ${index + 1}`">
                             <button type="button" @click="removePhoto(index)" class="remove-photo">×</button>
                             <div class="photo-number">{{ index + 1 }}</div>
                         </div>
@@ -112,16 +148,20 @@
 
                 <!-- Кнопки -->
                 <div class="form-actions">
-                    <button type="button" @click="resetForm" class="btn-secondary" :disabled="isSubmitting">
-                        Очистить
+                    <button v-if="isEditMode" type="button" @click="cancelEdit" class="btn-secondary" 
+                            :disabled="isSubmitting">
+                        Скасувати
+                    </button>
+                    <button v-else type="button" @click="resetForm" class="btn-secondary" :disabled="isSubmitting">
+                        Очистити
                     </button>
                     <button type="submit" class="btn-primary" :disabled="isSubmitting">
-                        <span v-if="!isSubmitting">Добавить автомобиль</span>
-                        <span v-else>Сохранение...</span>
+                        <span v-if="!isSubmitting">{{ isEditMode ? 'Зберегти зміни' : 'Додати автомобіль' }}</span>
+                        <span v-else>Збереження...</span>
                     </button>
                 </div>
 
-                <!-- Сообщения -->
+                <!-- Повідомлення -->
                 <div v-if="successMessage" class="success-message">
                     {{ successMessage }}
                 </div>
@@ -135,17 +175,29 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-// Реактивные данные
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+
+// Режим редагування
+const isEditMode = computed(() => !!route.params.id)
+const carId = computed(() => route.params.id)
+
+// Реактивні дані
 const form = reactive({
     brand: '',
     model: '',
     year: null,
+    color: '',
     fuel: '',
     transmission: '',
     drive: '',
     mileage: null,
+    status: 'active',
     description: '',
     photos: []
 })
@@ -154,10 +206,12 @@ const errors = reactive({
     brand: null,
     model: null,
     year: null,
+    color: null,
     fuel: null,
     transmission: null,
     drive: null,
     mileage: null,
+    status: null,
     description: null,
     photos: null
 })
@@ -167,88 +221,141 @@ const successMessage = ref('')
 const errorMessage = ref('')
 const photoPreviews = ref([])
 const fileInput = ref(null)
+const existingImages = ref([])
+const imagesToDelete = ref([])
 
-// Валидация
+// Завантаження даних автомобіля при редагуванні
+onMounted(async () => {
+    if (isEditMode.value) {
+        await loadCarData()
+    }
+})
+
+const loadCarData = async () => {
+    try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+
+        const response = await fetch(`${apiUrl}/api/cars-sale/${carId.value}`)
+        
+        if (!response.ok) {
+            throw new Error('Не вдалося завантажити дані автомобіля')
+        }
+
+        const result = await response.json()
+        const carData = result.data
+
+        // Заповнюємо форму
+        Object.assign(form, {
+            brand: carData.brand,
+            model: carData.model,
+            year: carData.year,
+            color: carData.color || '',
+            fuel: carData.fuel,
+            transmission: carData.transmission,
+            drive: carData.drive,
+            mileage: carData.mileage,
+            status: carData.status || 'active',
+            description: carData.description || '',
+            photos: []
+        })
+
+        // Зберігаємо існуючі зображення
+        existingImages.value = carData.images || []
+
+    } catch (error) {
+        console.error('Error loading car data:', error)
+        errorMessage.value = 'Помилка завантаження даних автомобіля'
+    }
+}
+
+// Відмітити зображення для видалення
+const markImageForDeletion = (imageId) => {
+    const index = imagesToDelete.value.indexOf(imageId)
+    if (index > -1) {
+        imagesToDelete.value.splice(index, 1)
+    } else {
+        imagesToDelete.value.push(imageId)
+    }
+}
+
+// Валідація
 const validateForm = () => {
-    // Очищаем предыдущие ошибки
     Object.keys(errors).forEach(key => errors[key] = null)
 
     let isValid = true
 
-    // Проверяем обязательные поля
     if (!form.brand.trim()) {
-        errors.brand = 'Марка обязательна'
+        errors.brand = 'Марка обов\'язкова'
         isValid = false
     }
 
     if (!form.model.trim()) {
-        errors.model = 'Модель обязательна'
+        errors.model = 'Модель обов\'язкова'
         isValid = false
     }
 
     if (!form.year || form.year < 1950 || form.year > new Date().getFullYear() + 1) {
-        errors.year = 'Введите корректный год'
+        errors.year = 'Введіть коректний рік'
         isValid = false
     }
 
     if (!form.fuel) {
-        errors.fuel = 'Выберите тип топлива'
+        errors.fuel = 'Оберіть тип палива'
         isValid = false
     }
 
     if (!form.transmission) {
-        errors.transmission = 'Выберите тип трансмиссии'
+        errors.transmission = 'Оберіть тип трансмісії'
         isValid = false
     }
 
     if (!form.drive) {
-        errors.drive = 'Выберите тип привода'
+        errors.drive = 'Оберіть тип приводу'
         isValid = false
     }
 
     if (form.mileage === null || form.mileage < 0) {
-        errors.mileage = 'Введите корректный пробег'
+        errors.mileage = 'Введіть коректний пробіг'
         isValid = false
     }
 
     return isValid
 }
 
-// Обработка загрузки файлов
+// Обробка завантаження файлів
 const handleFileUpload = (event) => {
     const files = Array.from(event.target.files)
 
     if (files.length === 0) return
 
-    if (files.length > 10) {
-        errors.photos = 'Максимум 10 фотографий'
+    const totalImages = existingImages.value.length - imagesToDelete.value.length + files.length
+    
+    if (totalImages > 10) {
+        errors.photos = 'Максимум 10 фотографій всього'
         if (fileInput.value) fileInput.value.value = ''
         return
     }
 
-    // Валидация файлов
     const maxSize = 5 * 1024 * 1024 // 5MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
 
     for (const file of files) {
         if (!allowedTypes.includes(file.type.toLowerCase())) {
-            errors.photos = 'Разрешены только изображения (JPG, PNG, WebP, GIF)'
+            errors.photos = 'Дозволені тільки зображення (JPG, PNG, WebP, GIF)'
             if (fileInput.value) fileInput.value.value = ''
             return
         }
 
         if (file.size > maxSize) {
-            errors.photos = `Файл "${file.name}" слишком большой. Максимум 5MB`
+            errors.photos = `Файл "${file.name}" занадто великий. Максимум 5MB`
             if (fileInput.value) fileInput.value.value = ''
             return
         }
     }
 
-    // Сохраняем файлы и создаем превью
     form.photos = files
     errors.photos = null
 
-    // Создаем превью
     photoPreviews.value = []
     files.forEach(file => {
         const reader = new FileReader()
@@ -259,13 +366,12 @@ const handleFileUpload = (event) => {
     })
 }
 
-// Удаление фото
+// Видалення нового фото
 const removePhoto = (index) => {
     const newFiles = Array.from(form.photos).filter((_, i) => i !== index)
     form.photos = newFiles
     photoPreviews.value.splice(index, 1)
 
-    // Обновляем input
     if (fileInput.value) {
         const dt = new DataTransfer()
         newFiles.forEach(file => dt.items.add(file))
@@ -273,7 +379,7 @@ const removePhoto = (index) => {
     }
 }
 
-// Отправка формы
+// Відправка форми
 const submitForm = async () => {
     if (!validateForm()) return
 
@@ -284,34 +390,52 @@ const submitForm = async () => {
     try {
         const formData = new FormData()
 
-        // Добавляем все поля
         formData.append('brand', form.brand.trim())
         formData.append('model', form.model.trim())
         formData.append('year', form.year.toString())
+        formData.append('color', form.color.trim())
         formData.append('fuel', form.fuel)
         formData.append('transmission', form.transmission)
         formData.append('drive', form.drive)
         formData.append('mileage', form.mileage.toString())
+        formData.append('status', form.status)
         formData.append('description', form.description.trim())
 
-        // Добавляем фотографии
+        // Додаємо ID зображень для видалення
+        if (isEditMode.value && imagesToDelete.value.length > 0) {
+            formData.append('deleteImages', imagesToDelete.value.join(','))
+        }
+
+        // Додаємо нові фотографії
         form.photos.forEach(photo => {
             formData.append('images', photo)
         })
 
-        const apiUrl = process.env.NODE_ENV === 'production'
-            ? '/api/cars-sale'
-            : 'http://localhost:8001/api/cars-sale'
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        const endpoint = isEditMode.value ? `/api/cars-sale/${carId.value}` : '/api/cars-sale'
 
-        const response = await fetch(apiUrl, {
-            method: 'POST',
+        const response = await fetch(`${apiUrl}${endpoint}`, {
+            method: isEditMode.value ? 'PUT' : 'POST',
+            headers: {
+                'Authorization': `Bearer ${authStore.token}`
+            },
             body: formData
         })
 
         if (response.ok) {
             const result = await response.json()
-            successMessage.value = 'Автомобиль успешно добавлен в каталог!'
-            resetForm()
+            successMessage.value = isEditMode.value 
+                ? 'Автомобіль успішно оновлено!' 
+                : 'Автомобіль успішно додано в каталог!'
+            
+            if (!isEditMode.value) {
+                resetForm()
+            } else {
+                // Перезавантажуємо дані після редагування
+                setTimeout(() => {
+                    router.push('/admin/list')
+                }, 1500)
+            }
         } else {
             const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
             throw new Error(errorData.error || `HTTP ${response.status}`)
@@ -319,28 +443,37 @@ const submitForm = async () => {
 
     } catch (error) {
         console.error('Submission error:', error)
-        errorMessage.value = 'Ошибка сохранения. Попробуйте еще раз.'
+        errorMessage.value = 'Помилка збереження. Спробуйте ще раз.'
     } finally {
         isSubmitting.value = false
     }
 }
 
-// Сброс формы
+// Скасування редагування
+const cancelEdit = () => {
+    router.push('/admin/list')
+}
+
+// Скидання форми
 const resetForm = () => {
     Object.assign(form, {
         brand: '',
         model: '',
         year: null,
+        color: '',
         fuel: '',
         transmission: '',
         drive: '',
         mileage: null,
+        status: 'active',
         description: '',
         photos: []
     })
 
     Object.keys(errors).forEach(key => errors[key] = null)
     photoPreviews.value = []
+    existingImages.value = []
+    imagesToDelete.value = []
     successMessage.value = ''
     errorMessage.value = ''
 
@@ -396,6 +529,7 @@ textarea {
     border-radius: 4px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
+    box-sizing: border-box;
 }
 
 input:focus,
@@ -461,10 +595,19 @@ textarea.error {
     justify-content: center;
     font-size: 16px;
     line-height: 1;
+    transition: background 0.3s ease;
 }
 
 .remove-photo:hover {
     background: #dc3545;
+}
+
+.remove-photo.marked-delete {
+    background: rgba(255, 193, 7, 0.9);
+}
+
+.remove-photo.marked-delete:hover {
+    background: #ffc107;
 }
 
 .photo-number {

@@ -14,6 +14,9 @@ import (
     "time"
     "bytes"
     "sync"
+    "crypto/rand"
+    "encoding/base64"
+    "golang.org/x/crypto/bcrypt"
 
     _ "github.com/mattn/go-sqlite3"
     "github.com/gorilla/mux"
@@ -72,15 +75,14 @@ type RequestDetailResponse struct {
 }
 
 var db *sql.DB
-
 func main() {
-    // Подключение к SQLite БД
+    // Підключення до SQLite БД
     dbPath := os.Getenv("DB_PATH")
     if dbPath == "" {
         dbPath = "./data/database.db"
     }
     
-    // Создаем папку для БД если её нет
+    // Створюємо папку для БД якщо її немає
     if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
         log.Printf("Error creating database directory: %v", err)
     }
@@ -91,36 +93,56 @@ func main() {
         log.Printf("Database connection error: %v", err)
     } else {
         log.Printf("SQLite database connected successfully: %s", dbPath)
-        // Создаем таблицы при подключении
+        // Створюємо таблиці при підключенні
         createTables()
         createCarTables()
+        createAuthTables() // ДОДАНО
     }
 
-    // Создаем папку для загрузок если её нет
+    // Створюємо папку для завантажень якщо її немає
     if err := os.MkdirAll("uploads", 0755); err != nil {
         log.Printf("Error creating uploads directory: %v", err)
     }
 
     r := mux.NewRouter()
     
-    // Добавляем CORS middleware
+    // Додаємо CORS middleware
     r.Use(corsMiddleware)
     
-    // Основные роуты
+    // Роути аутентифікації (ДОДАНО)
+    r.HandleFunc("/api/auth/login", loginHandler).Methods("POST", "OPTIONS")
+    r.HandleFunc("/api/auth/logout", logoutHandler).Methods("POST", "OPTIONS")
+    r.HandleFunc("/api/auth/verify", verifyTokenHandler).Methods("GET", "OPTIONS")
+    
+    // Основні роути
     r.HandleFunc("/health", healthHandler).Methods("GET")
     r.HandleFunc("/api/status", statusHandler).Methods("GET")
     r.HandleFunc("/api/cars", createCarRequestHandler).Methods("POST")
     r.HandleFunc("/api/cars", getCarRequestsHandler).Methods("GET")
     
-    // Админ API роуты
+    // Публічні роути для автомобілів
+    r.HandleFunc("/api/cars-sale", getCarsHandler).Methods("GET")
+    r.HandleFunc("/api/cars-sale/{id}", getCarDetailHandler).Methods("GET")
+    
+    // Захищені роути для автомобілів (ЗМІНЕНО)
+    r.HandleFunc("/api/cars-sale", authMiddleware(createCarHandler)).Methods("POST")
+    r.HandleFunc("/api/cars-sale/{id}", authMiddleware(updateCarHandler)).Methods("PUT")
+    r.HandleFunc("/api/cars-sale/{id}", authMiddleware(deleteCarHandler)).Methods("DELETE")
+    
+    // Адмін API роути (можна також захистити)
     r.HandleFunc("/api/admin/requests", getAdminRequestsHandler).Methods("GET")
-    registerCarRoutes(r)
-    // Статические файлы для изображений
+    
+    // Статичні файли для зображень
     r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads/"))))
     
+    // Запуск очищення застарілих сесій (ДОДАНО)
+    cleanupExpiredSessions()
+    
     log.Println("🚀 Go API server starting on :8080")
+    log.Println("🔐 Admin credentials: login=admin, password=eleganceautoadminpass777!")
     log.Fatal(http.ListenAndServe(":8080", r))
 }
+
 
 var (
     telegramBotToken = os.Getenv("TELEGRAM_BOT_TOKEN")
