@@ -363,7 +363,7 @@
 // Responsive
 @media (max-width: 768px) {
     .contacts-section {
-        padding: 40px 16px;
+        padding: 40px 0px;
     }
 
     .hero-block {

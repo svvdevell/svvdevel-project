@@ -1,7 +1,8 @@
 <template>
     <section class="banner">
         <div class="video">
-            <video src="../../assets/video/1.mp4"></video>
+            <video src="../../assets/video/1.mp4" v-if="!isMobile"></video>
+            <video src="../../assets/video/mob_ferrari.mp4" v-else></video>
         </div>
         <div class="block">
             <TextBanner />
@@ -13,7 +14,9 @@
 <script setup>
 import MainForm from '@/components/forms/MainForm.vue'
 import TextBanner from '@/components/banners/TextBanner.vue';
+import { useScreenSize } from '@/composables/useScreenSize';
 
+const { isMobile } = useScreenSize();
 </script>
 
 <style lang="scss" scoped>
@@ -61,6 +64,9 @@ import TextBanner from '@/components/banners/TextBanner.vue';
         display: flex;
         flex-direction: column-reverse;
         gap: 20px;
+    }
+    .video video {
+        filter: brightness(0.9) blur(5px);
     }
 }
 </style>

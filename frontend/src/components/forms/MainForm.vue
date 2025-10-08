@@ -936,5 +936,8 @@ const resetForm = () => {
     .form-inner {
         padding: 0 16px;
     }
+    .submit-btn {
+        padding: 10px;
+    }
 }
 </style>
