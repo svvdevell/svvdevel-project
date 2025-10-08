@@ -93,6 +93,7 @@ onMounted(() => {
         flex-direction: column;
         gap: 20px;
         padding: 20px 16px;
+        padding-bottom: 40px;
         justify-content: flex-end;
     }
     
