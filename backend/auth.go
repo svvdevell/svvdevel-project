@@ -16,7 +16,7 @@ import (
 const (
     ADMIN_USERNAME      = "admin"
     // Пароль: eleganceautoadminpass777!
-    ADMIN_PASSWORD_HASH = "$2a$10$X8L5vZjKQJ3YHx5FqP6xfOrYN4gFqPxV6K5cPZrF7uXnGZQ2VrQea"
+    ADMIN_PASSWORD_HASH = "$2a$10$rEkN9X2vB5aH.Ux8gVzKxOqP7Y6ZC3mJ8nQwRtDfLsVpKhGjMuNxS"
 )
 
 // Структуры
@@ -126,6 +126,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
             http.Error(w, `{"status":"error","message":"Невірний формат даних"}`, http.StatusBadRequest)
             return
         }
+        
         req.Username = r.FormValue("username")
         req.Password = r.FormValue("password")
         log.Printf("📝 Form data - Username: '%s', Password length: %d", req.Username, len(req.Password))
@@ -138,6 +139,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
         }
         log.Printf("📝 JSON data - Username: '%s', Password length: %d", req.Username, len(req.Password))
     }
+
+    req.Username = strings.TrimSpace(req.Username)
+    req.Password = strings.TrimSpace(req.Password)
 
     // Валідація
     if req.Username == "" || req.Password == "" {
