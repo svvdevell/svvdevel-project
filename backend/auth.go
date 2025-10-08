@@ -12,7 +12,7 @@ import (
     "golang.org/x/crypto/bcrypt"
 )
 
-// Учетные данные администратора (в реальном проекте хранить в БД)
+// Учетные данные администратора
 const (
     ADMIN_USERNAME      = "admin"
     // Пароль: eleganceautoadminpass777!
@@ -103,7 +103,6 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 }
 
 // Авторизация
-// Авторизація з детальним логуванням для дебагу
 func loginHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     if r.Method == "OPTIONS" {
@@ -112,36 +111,21 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     log.Println("🔍 Login attempt received")
-    log.Printf("Content-Type: %s", r.Header.Get("Content-Type"))
     
     var req LoginRequest
     
-    // Перевіряємо Content-Type
-    contentType := r.Header.Get("Content-Type")
-    
-    if strings.Contains(contentType, "application/x-www-form-urlencoded") {
-        log.Println("📋 Parsing form data...")
-        if err := r.ParseForm(); err != nil {
-            log.Printf("❌ Form parse error: %v", err)
-            http.Error(w, `{"status":"error","message":"Невірний формат даних"}`, http.StatusBadRequest)
-            return
-        }
-        
-        req.Username = r.FormValue("username")
-        req.Password = r.FormValue("password")
-        log.Printf("📝 Form data - Username: '%s', Password length: %d", req.Username, len(req.Password))
-    } else {
-        log.Println("📋 Parsing JSON data...")
-        if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-            log.Printf("❌ JSON parse error: %v", err)
-            http.Error(w, `{"status":"error","message":"Невірний формат даних"}`, http.StatusBadRequest)
-            return
-        }
-        log.Printf("📝 JSON data - Username: '%s', Password length: %d", req.Username, len(req.Password))
+    // Парсим JSON
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        log.Printf("❌ JSON parse error: %v", err)
+        http.Error(w, `{"status":"error","message":"Невірний формат даних"}`, http.StatusBadRequest)
+        return
     }
 
+    // Очищаємо від пробілів
     req.Username = strings.TrimSpace(req.Username)
     req.Password = strings.TrimSpace(req.Password)
+
+    log.Printf("📝 Login attempt - Username: '%s', Password length: %d", req.Username, len(req.Password))
 
     // Валідація
     if req.Username == "" || req.Password == "" {
@@ -151,29 +135,28 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     // Перевірка username
-    log.Printf("🔍 Comparing usernames: received='%s', expected='%s'", req.Username, ADMIN_USERNAME)
     if req.Username != ADMIN_USERNAME {
-        log.Println("❌ Username mismatch")
+        log.Printf("❌ Username mismatch: '%s' != '%s'", req.Username, ADMIN_USERNAME)
         time.Sleep(2 * time.Second)
         http.Error(w, `{"status":"error","message":"Невірний логін або пароль"}`, http.StatusUnauthorized)
         return
     }
 
     // Перевірка пароля
-    log.Println("🔐 Checking password hash...")
-    log.Printf("Password to check: '%s'", req.Password)
-    log.Printf("Hash in constant: %s", ADMIN_PASSWORD_HASH)
+    log.Println("🔐 Checking password...")
     
+    // bcrypt в Go підтримує як $2a$, так і $2b$
     err := bcrypt.CompareHashAndPassword([]byte(ADMIN_PASSWORD_HASH), []byte(req.Password))
     if err != nil {
-        log.Printf("❌ Password hash mismatch: %v", err)
+        log.Printf("❌ Password verification failed: %v", err)
         time.Sleep(2 * time.Second)
         http.Error(w, `{"status":"error","message":"Невірний логін або пароль"}`, http.StatusUnauthorized)
         return
     }
 
-    log.Println("✅ Password verified successfully")
+    log.Println("✅ Password verified successfully!")
 
+    // Генеруємо токен
     token, err := generateToken()
     if err != nil {
         log.Printf("❌ Token generation error: %v", err)
@@ -181,6 +164,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    // Створюємо сесію
     session := &Session{
         Token:     token,
         Username:  req.Username,
@@ -189,7 +173,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     sessions[token] = session
-    log.Printf("✅ Successful login for %s, token: %s", req.Username, token[:10]+"...")
+    log.Printf("✅ Successful login for %s, token: %s...", req.Username, token[:10])
 
     json.NewEncoder(w).Encode(LoginResponse{
         Status:  "success",
@@ -212,6 +196,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
         if len(parts) == 2 && parts[0] == "Bearer" {
             token := parts[1]
             delete(sessions, token)
+            log.Printf("👋 User logged out, token deleted")
         }
     }
 
