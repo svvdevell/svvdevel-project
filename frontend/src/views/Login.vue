@@ -75,10 +75,6 @@ const handleLogin = async () => {
     loading.value = true
 
     try {
-        const params = new URLSearchParams()
-        params.append('username', username.value.trim())
-        params.append('password', password.value.trim())
-
         const apiUrl = process.env.NODE_ENV === 'production'
             ? '/api/auth/login'
             : 'http://localhost:8001/api/auth/login'
@@ -86,9 +82,12 @@ const handleLogin = async () => {
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
             },
-            body: params.toString(),
+            body: JSON.stringify({
+                username: username.value.trim(),
+                password: password.value.trim()
+            }),
         })
 
         const data = await response.json()
