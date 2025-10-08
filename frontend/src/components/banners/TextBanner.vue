@@ -51,7 +51,7 @@ import Link from '@/components/common/Link.vue';
 
 @media (max-width: 768px) {
     .text-banner {
-        gap: 15px;
+        gap: 30px;
         align-items: center;
         padding: 0 16px;
 

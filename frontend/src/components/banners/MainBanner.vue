@@ -62,7 +62,7 @@ const { isMobile } = useScreenSize();
 @media (max-width: 768px) {
     .block {
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
         gap: 20px;
     }
     .video video {
