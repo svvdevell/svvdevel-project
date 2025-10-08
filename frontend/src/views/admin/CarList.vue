@@ -158,7 +158,7 @@ const loadCars = async (page = 1) => {
     loading.value = true
     
     try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
         
         const response = await fetch(`${apiUrl}/api/cars-sale?page=${page}&limit=${pagination.limit}`)
         
@@ -260,7 +260,7 @@ const deleteCar = async () => {
     deleteModal.error = ''
 
     try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
 
         const response = await fetch(`${apiUrl}/api/cars-sale/${deleteModal.car.id}`, {
             method: 'DELETE',

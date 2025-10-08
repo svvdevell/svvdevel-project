@@ -233,7 +233,7 @@ onMounted(async () => {
 
 const loadCarData = async () => {
     try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
 
         const response = await fetch(`${apiUrl}/api/cars-sale/${carId.value}`)
         
@@ -411,7 +411,7 @@ const submitForm = async () => {
             formData.append('images', photo)
         })
 
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
         const endpoint = isEditMode.value ? `/api/cars-sale/${carId.value}` : '/api/cars-sale'
 
         const response = await fetch(`${apiUrl}${endpoint}`, {

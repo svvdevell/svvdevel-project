@@ -96,7 +96,7 @@ const stats = ref({
 
 const loadStats = async () => {
     try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
         
         const response = await fetch(`${apiUrl}/api/cars-sale?limit=1000`)
         
@@ -126,7 +126,7 @@ const goTo = (path) => {
 
 const handleLogout = async () => {
     try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
         
         await fetch(`${apiUrl}/api/auth/logout`, {
             method: 'POST',

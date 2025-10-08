@@ -33,7 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+            const apiUrl = process.env.NODE_ENV
 
             const response = await fetch(`${apiUrl}/api/auth/verify`, {
                 headers: {
