@@ -75,17 +75,20 @@ const handleLogin = async () => {
     loading.value = true
 
     try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        const params = new URLSearchParams()
+        params.append('username', username.value.trim())
+        params.append('password', password.value.trim())
+
+        const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/api/cars'
+            : 'http://localhost:8001'
         
         const response = await fetch(`${apiUrl}/api/auth/login`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: JSON.stringify({
-                username: username.value,
-                password: password.value
-            })
+            body: params.toString(),
         })
 
         const data = await response.json()
