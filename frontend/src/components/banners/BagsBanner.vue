@@ -68,6 +68,7 @@
 @media (max-width: 768px) {
     .container {
         grid-template-columns: repeat(1, minmax(0, 1fr));
+        align-items: center;
     }
 }
 </style>
