@@ -158,9 +158,11 @@ const loadCars = async (page = 1) => {
     loading.value = true
     
     try {
-        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/api/cars-sale?page='
+            : 'http://localhost:8001/api/cars-sale?page='
         
-        const response = await fetch(`${apiUrl}/api/cars-sale?page=${page}&limit=${pagination.limit}`)
+        const response = await fetch(`${apiUrl}${page}&limit=${pagination.limit}`)
         
         if (!response.ok) {
             throw new Error('Помилка завантаження даних')
@@ -260,9 +262,11 @@ const deleteCar = async () => {
     deleteModal.error = ''
 
     try {
-        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/api/cars-sale'
+            : 'http://localhost:8001/api/cars-sale'
 
-        const response = await fetch(`${apiUrl}/api/cars-sale/${deleteModal.car.id}`, {
+        const response = await fetch(`${apiUrl}${deleteModal.car.id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${authStore.token}`

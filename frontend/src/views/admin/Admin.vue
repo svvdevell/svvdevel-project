@@ -96,9 +96,12 @@ const stats = ref({
 
 const loadStats = async () => {
     try {
-        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/api/cars-sale?limit=1000'
+            : 'http://localhost:8001/api/cars-sale?limit=1000'
         
-        const response = await fetch(`${apiUrl}/api/cars-sale?limit=1000`)
+        
+        const response = await fetch(apiUrl)
         
         if (response.ok) {
             const data = await response.json()
@@ -126,9 +129,11 @@ const goTo = (path) => {
 
 const handleLogout = async () => {
     try {
-        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/api/auth/logout'
+            : 'http://localhost:8001/api/auth/logout'
         
-        await fetch(`${apiUrl}/api/auth/logout`, {
+        await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${authStore.token}`

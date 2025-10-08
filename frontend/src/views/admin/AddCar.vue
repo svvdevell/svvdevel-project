@@ -233,9 +233,11 @@ onMounted(async () => {
 
 const loadCarData = async () => {
     try {
-        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/api/cars-sale/'
+            : 'http://localhost:8001/api/cars-sale/'
 
-        const response = await fetch(`${apiUrl}/api/cars-sale/${carId.value}`)
+        const response = await fetch(`${apiUrl}${carId.value}`)
         
         if (!response.ok) {
             throw new Error('Не вдалося завантажити дані автомобіля')
@@ -411,8 +413,11 @@ const submitForm = async () => {
             formData.append('images', photo)
         })
 
-        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
-        const endpoint = isEditMode.value ? `/api/cars-sale/${carId.value}` : '/api/cars-sale'
+        const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/api/cars-sale/'
+            : 'http://localhost:8001/api/cars-sale/'
+
+        const endpoint = isEditMode.value ? `${carId.value}` : ''
 
         const response = await fetch(`${apiUrl}${endpoint}`, {
             method: isEditMode.value ? 'PUT' : 'POST',

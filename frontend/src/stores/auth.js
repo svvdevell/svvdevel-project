@@ -33,9 +33,11 @@ export const useAuthStore = defineStore('auth', () => {
         }
 
         try {
-            const apiUrl = process.env.NODE_ENV
+            const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/api/auth/verify'
+            : 'http://localhost:8001/api/auth/verify'
 
-            const response = await fetch(`${apiUrl}/api/auth/verify`, {
+            const response = await fetch(apiUrl, {
                 headers: {
                     'Authorization': `Bearer ${token.value}`
                 }
