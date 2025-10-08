@@ -18,8 +18,8 @@
             <div v-for="car in cars" :key="car.id" class="car-card">
                 <div class="car-image">
                     <img v-if="car.images && car.images.length > 0" :src="car.images[0].fileUrl"
-                        :alt="`${car.brand} ${car.model}`" @error="handleImageError">
-                    <div v-else class="no-image">Немає фото</div>
+                        :alt="`${car.brand} ${car.model}`">
+                    <div v-else class="no-image">📷 Немає фото</div>
 
                     <!-- Бейдж статусу -->
                     <div v-if="car.status && car.status !== 'active'" class="status-badge"
@@ -211,11 +211,6 @@ const getStatusLabel = (status) => {
     return labels[status] || status
 }
 
-// Обробка помилки зображення
-const handleImageError = (event) => {
-    event.target.src = '/placeholder-car.jpg'
-}
-
 // Навігація
 const goToAddCar = () => {
     router.push('/admin/add')
@@ -262,7 +257,6 @@ const deleteCar = async () => {
             ? '/api/cars-sale'
             : 'http://localhost:8001/api/cars-sale'
 
-        // ВИПРАВЛЕНО: додано слеш перед ID
         const response = await fetch(`${apiUrl}/${deleteModal.car.id}`, {
             method: 'DELETE',
             headers: {

@@ -3,9 +3,9 @@
         <div class="container">
             <!-- Header -->
             <div class="catalog-header">
-                <h1>Автомобили в продаже</h1>
+                <h1>Автомобілі в продажу</h1>
                 <div class="stats">
-                    <span class="total-count">Всего: {{ totalCars }}</span>
+                    <span class="total-count">Всього: {{ totalCars }}</span>
                 </div>
             </div>
 
@@ -13,28 +13,40 @@
             <div class="filters">
                 <div class="filter-group">
                     <select v-model="filters.fuel" @change="applyFilters">
-                        <option value="">Все виды топлива</option>
+                        <option value="">Всі види палива</option>
                         <option value="Бензин">Бензин</option>
                         <option value="Дизель">Дизель</option>
-                        <option value="Гибрид">Гибрид</option>
-                        <option value="Электро">Электро</option>
+                        <option value="Гібрид">Гібрид</option>
+                        <option value="Електро">Електро</option>
                         <option value="Газ">Газ</option>
+                        <option value="Газ/Бензин">Газ/Бензин</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
                     <select v-model="filters.transmission" @change="applyFilters">
-                        <option value="">Все трансмиссии</option>
-                        <option value="Механическая">Механическая</option>
-                        <option value="Автоматическая">Автоматическая</option>
+                        <option value="">Всі трансмісії</option>
+                        <option value="Механічна">Механічна</option>
+                        <option value="Автоматична">Автоматична</option>
                         <option value="Робот">Робот</option>
-                        <option value="Вариатор">Вариатор</option>
+                        <option value="Варіатор">Варіатор</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
-                    <input v-model="filters.search" type="text" placeholder="Поиск по марке или модели..."
-                        @input="debouncedSearch">
+                    <select v-model="filters.drive" @change="applyFilters">
+                        <option value="">Всі типи приводу</option>
+                        <option value="Передній">Передній</option>
+                        <option value="Задній">Задній</option>
+                        <option value="Повний">Повний</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <input v-model="filters.search" 
+                           type="text" 
+                           placeholder="Пошук по марці або моделі..."
+                           @input="debouncedSearch">
                 </div>
 
                 <div class="filter-group">
@@ -46,25 +58,25 @@
                     </select>
                 </div>
 
-                <button @click="clearFilters" class="clear-filters">Очистить</button>
+                <button @click="clearFilters" class="clear-filters">Очистити</button>
             </div>
 
             <!-- Loading -->
             <div v-if="loading" class="loading">
                 <div class="loading-spinner"></div>
-                <p>Загружаем автомобили...</p>
+                <p>Завантажуємо автомобілі...</p>
             </div>
 
             <!-- Error -->
             <div v-if="error" class="error">
                 <p>{{ error }}</p>
-                <button @click="fetchCars" class="retry-btn">Попробовать снова</button>
+                <button @click="fetchCars" class="retry-btn">Спробувати знову</button>
             </div>
 
             <!-- Cars Grid -->
             <div v-if="!loading && !error" class="cars-grid">
                 <CarCard 
-                    v-for="car in cars" 
+                    v-for="car in filteredCars" 
                     :key="car.id" 
                     :car="car"
                     @open-details="openCarModal"
@@ -72,26 +84,32 @@
             </div>
 
             <!-- Empty State -->
-            <div v-if="!loading && !error && cars.length === 0" class="empty-state">
-                <p>Автомобили не найдены</p>
-                <button @click="clearFilters" class="clear-filters">Показать все</button>
+            <div v-if="!loading && !error && filteredCars.length === 0" class="empty-state">
+                <p>Автомобілі не знайдені</p>
+                <button @click="clearFilters" class="clear-filters">Показати всі</button>
             </div>
 
             <!-- Pagination -->
             <div v-if="totalPages > 1" class="pagination">
-                <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1" class="page-btn">
-                    Предыдущая
+                <button @click="changePage(currentPage - 1)" 
+                        :disabled="currentPage <= 1" 
+                        class="page-btn">
+                    Попередня
                 </button>
 
                 <div class="page-numbers">
-                    <button v-for="page in visiblePages" :key="page" @click="changePage(page)"
-                        :class="['page-btn', { active: page === currentPage }]">
+                    <button v-for="page in visiblePages" 
+                            :key="page" 
+                            @click="changePage(page)"
+                            :class="['page-btn', { active: page === currentPage }]">
                         {{ page }}
                     </button>
                 </div>
 
-                <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages" class="page-btn">
-                    Следующая
+                <button @click="changePage(currentPage + 1)" 
+                        :disabled="currentPage >= totalPages" 
+                        class="page-btn">
+                    Наступна
                 </button>
             </div>
         </div>
@@ -109,12 +127,16 @@
                     <!-- Images -->
                     <div v-if="selectedCarImages.length > 0" class="car-images">
                         <div class="main-image">
-                            <img :src="selectedCarImages[currentImageIndex].fileUrl" :alt="selectedCar.brand">
+                            <img :src="selectedCarImages[currentImageIndex].fileUrl" 
+                                 :alt="selectedCar.brand">
                         </div>
                         <div v-if="selectedCarImages.length > 1" class="image-thumbnails">
-                            <img v-for="(image, index) in selectedCarImages" :key="image.id" :src="image.fileUrl"
-                                :alt="`Фото ${index + 1}`" :class="{ active: index === currentImageIndex }"
-                                @click="currentImageIndex = index">
+                            <img v-for="(image, index) in selectedCarImages" 
+                                 :key="image.id" 
+                                 :src="image.fileUrl"
+                                 :alt="`Фото ${index + 1}`" 
+                                 :class="{ active: index === currentImageIndex }"
+                                 @click="currentImageIndex = index">
                         </div>
                     </div>
 
@@ -130,33 +152,37 @@
                                 <span class="value">{{ selectedCar.model }}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="label">Год выпуска:</span>
+                                <span class="label">Рік випуску:</span>
                                 <span class="value">{{ selectedCar.year }}</span>
                             </div>
+                            <div v-if="selectedCar.color" class="detail-item">
+                                <span class="label">Колір:</span>
+                                <span class="value">{{ selectedCar.color }}</span>
+                            </div>
                             <div class="detail-item">
-                                <span class="label">Пробег:</span>
+                                <span class="label">Пробіг:</span>
                                 <span class="value">{{ formatMileage(selectedCar.mileage) }}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="label">Топливо:</span>
+                                <span class="label">Паливо:</span>
                                 <span class="value">{{ selectedCar.fuel }}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="label">Трансмиссия:</span>
+                                <span class="label">Трансмісія:</span>
                                 <span class="value">{{ selectedCar.transmission }}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="label">Привод:</span>
+                                <span class="label">Привід:</span>
                                 <span class="value">{{ selectedCar.drive }}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="label">Дата добавления:</span>
+                                <span class="label">Дата додавання:</span>
                                 <span class="value">{{ formatDate(selectedCar.createdAt) }}</span>
                             </div>
                         </div>
 
                         <div v-if="selectedCar.description" class="full-description">
-                            <h4>Описание:</h4>
+                            <h4>Опис:</h4>
                             <p>{{ selectedCar.description }}</p>
                         </div>
                     </div>
@@ -185,12 +211,39 @@ const currentImageIndex = ref(0)
 const filters = reactive({
     fuel: '',
     transmission: '',
+    drive: '',
     search: ''
 })
 
 let searchTimeout = null
 
 // Computed
+const filteredCars = computed(() => {
+    let result = cars.value
+
+    if (filters.fuel) {
+        result = result.filter(car => car.fuel === filters.fuel)
+    }
+
+    if (filters.transmission) {
+        result = result.filter(car => car.transmission === filters.transmission)
+    }
+
+    if (filters.drive) {
+        result = result.filter(car => car.drive === filters.drive)
+    }
+
+    if (filters.search) {
+        const search = filters.search.toLowerCase()
+        result = result.filter(car =>
+            car.brand.toLowerCase().includes(search) ||
+            car.model.toLowerCase().includes(search)
+        )
+    }
+
+    return result
+})
+
 const visiblePages = computed(() => {
     const pages = []
     const start = Math.max(1, currentPage.value - 2)
@@ -231,10 +284,10 @@ const fetchCars = async () => {
             totalCars.value = data.pagination?.total || 0
             totalPages.value = data.pagination?.pages || 0
         } else {
-            throw new Error(data.error || 'Неизвестная ошибка')
+            throw new Error(data.error || 'Невідома помилка')
         }
     } catch (err) {
-        error.value = `Ошибка загрузки: ${err.message}`
+        error.value = `Помилка завантаження: ${err.message}`
         console.error('Fetch error:', err)
     } finally {
         loading.value = false
@@ -286,44 +339,7 @@ const changeItemsPerPage = () => {
 }
 
 const applyFilters = () => {
-    currentPage.value = 1
-    fetchFilteredCars()
-}
-
-const fetchFilteredCars = async () => {
-    loading.value = true
-    error.value = ''
-
-    try {
-        let filteredCars = cars.value
-
-        if (filters.fuel) {
-            filteredCars = filteredCars.filter(car => car.fuel === filters.fuel)
-        }
-
-        if (filters.transmission) {
-            filteredCars = filteredCars.filter(car => car.transmission === filters.transmission)
-        }
-
-        if (filters.search) {
-            const search = filters.search.toLowerCase()
-            filteredCars = filteredCars.filter(car =>
-                car.brand.toLowerCase().includes(search) ||
-                car.model.toLowerCase().includes(search)
-            )
-        }
-
-        if (!filters.fuel && !filters.transmission && !filters.search) {
-            await fetchCars()
-        } else {
-            cars.value = filteredCars
-            totalCars.value = filteredCars.length
-        }
-    } catch (err) {
-        error.value = `Ошибка фильтрации: ${err.message}`
-    } finally {
-        loading.value = false
-    }
+    // Фільтри застосовуються автоматично через computed filteredCars
 }
 
 const debouncedSearch = () => {
@@ -336,18 +352,21 @@ const debouncedSearch = () => {
 const clearFilters = () => {
     filters.fuel = ''
     filters.transmission = ''
+    filters.drive = ''
     filters.search = ''
-    currentPage.value = 1
-    fetchCars()
 }
 
 const formatMileage = (mileage) => {
-    return new Intl.NumberFormat('ru-RU').format(mileage) + ' км'
+    return new Intl.NumberFormat('uk-UA').format(mileage) + ' км'
 }
 
 const formatDate = (dateString) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('ru-RU')
+    return date.toLocaleDateString('uk-UA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    })
 }
 
 // Lifecycle
@@ -659,6 +678,7 @@ onMounted(() => {
     margin: 0;
     color: #666;
     line-height: 1.5;
+    white-space: pre-wrap;
 }
 
 @media (max-width: 768px) {
