@@ -6,10 +6,30 @@
             <form @submit.prevent="submitForm" enctype="multipart/form-data">
                 <!-- Марка та модель -->
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrapper">
                         <label for="brand">Марка *</label>
-                        <input v-model="form.brand" type="text" id="brand" required
-                            placeholder="BMW, Mercedes, Toyota..." :class="{ error: errors.brand }">
+                        <input 
+                            v-model="form.brand" 
+                            type="text" 
+                            id="brand" 
+                            required
+                            placeholder="Почніть вводити марку..."
+                            :class="{ error: errors.brand }"
+                            @input="onBrandInput"
+                            @focus="onBrandFocus"
+                            @blur="onBrandBlur"
+                            autocomplete="off">
+                        
+                        <!-- Dropdown зі списком марок -->
+                        <div v-if="showBrandDropdown && filteredBrands.length > 0" class="dropdown-list">
+                            <div v-for="brand in filteredBrands" 
+                                 :key="brand" 
+                                 class="dropdown-item"
+                                 @mousedown="selectBrand(brand)">
+                                {{ brand }}
+                            </div>
+                        </div>
+                        
                         <span v-if="errors.brand" class="error-text">{{ errors.brand }}</span>
                     </div>
 
@@ -183,9 +203,36 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 
+// Список марок автомобілів
+const carBrands = [
+    'Acura', 'Alfa Romeo', 'Aston Martin', 'Audi', 'Bentley', 'BMW', 'Brilliance',
+    'Buick', 'BYD', 'Cadillac', 'Changan', 'Chery', 'Chevrolet', 'Chrysler',
+    'Citroen', 'Cupra', 'Dacia', 'Daewoo', 'Daihatsu', 'Denza', 'Dodge', 'Dongfeng',
+    'DS', 'FAW', 'Ferrari', 'Fiat', 'Ford', 'Foton', 'Gac', 'Geely', 'Genesis',
+    'GMC', 'Great Wall', 'Haval', 'Honda', 'Hongqi', 'Hummer', 'Hyundai', 'Infiniti',
+    'Isuzu', 'Iveco', 'JAC', 'Jaguar', 'Jeep', 'Jetour', 'Kia', 'Lamborghini',
+    'Lancia', 'Land Rover', 'Lexus', 'Lifan', 'Lincoln', 'Lotus', 'Mahindra',
+    'Maserati', 'Maxus', 'Maybach', 'Mazda', 'McLaren', 'Mercedes-Benz', 'Mercury',
+    'MG', 'MINI', 'Mitsubishi', 'Nissan', 'Opel', 'Peugeot', 'Polestar', 'Pontiac',
+    'Porsche', 'Proton', 'Ram', 'Ravon', 'Renault', 'Rolls-Royce', 'Rover', 'Saab',
+    'Samsung', 'SEAT', 'Skoda', 'Smart', 'SsangYong', 'Subaru', 'Suzuki', 'TATA',
+    'Tesla', 'Toyota', 'Volkswagen', 'Volvo', 'Xpeng', 'Zeekr', 'Zotye',
+    'Богдан', 'ВАЗ', 'ГАЗ', 'ЗАЗ', 'ЗИЛ', 'ІЖ', 'ЛуАЗ', 'Москвич', 'УАЗ'
+].sort()
+
 // Режим редагування
 const isEditMode = computed(() => !!route.params.id)
 const carId = computed(() => route.params.id)
+
+// Автокомпліт для марок
+const showBrandDropdown = ref(false)
+const brandSearchQuery = ref('')
+
+const filteredBrands = computed(() => {
+    if (!brandSearchQuery.value) return carBrands
+    const query = brandSearchQuery.value.toLowerCase()
+    return carBrands.filter(brand => brand.toLowerCase().includes(query))
+})
 
 // Реактивні дані
 const form = reactive({
@@ -223,6 +270,32 @@ const photoPreviews = ref([])
 const fileInput = ref(null)
 const existingImages = ref([])
 const imagesToDelete = ref([])
+
+// Функції для автокомпліту марок
+const onBrandInput = (event) => {
+    form.brand = event.target.value
+    brandSearchQuery.value = event.target.value
+    showBrandDropdown.value = true
+    errors.brand = null
+}
+
+const selectBrand = (brand) => {
+    form.brand = brand
+    brandSearchQuery.value = brand
+    showBrandDropdown.value = false
+    errors.brand = null
+}
+
+const onBrandFocus = () => {
+    brandSearchQuery.value = form.brand
+    showBrandDropdown.value = true
+}
+
+const onBrandBlur = () => {
+    setTimeout(() => {
+        showBrandDropdown.value = false
+    }, 200)
+}
 
 // Завантаження даних автомобіля при редагуванні
 onMounted(async () => {
@@ -288,6 +361,9 @@ const validateForm = () => {
 
     if (!form.brand.trim()) {
         errors.brand = 'Марка обов\'язкова'
+        isValid = false
+    } else if (!carBrands.includes(form.brand.trim())) {
+        errors.brand = 'Оберіть марку зі списку'
         isValid = false
     }
 
@@ -413,7 +489,6 @@ const submitForm = async () => {
             formData.append('images', photo)
         })
 
-        // ВИПРАВЛЕНО: прибрано зайвий слеш
         const apiUrl = process.env.NODE_ENV === 'production'
             ? '/api/cars-sale'
             : 'http://localhost:8001/api/cars-sale'
@@ -481,6 +556,8 @@ const resetForm = () => {
     imagesToDelete.value = []
     successMessage.value = ''
     errorMessage.value = ''
+    brandSearchQuery.value = ''
+    showBrandDropdown.value = false
 
     if (fileInput.value) {
         fileInput.value.value = ''
@@ -517,6 +594,11 @@ h2 {
 
 .form-group {
     margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.autocomplete-wrapper {
+    position: relative;
 }
 
 label {
@@ -549,6 +631,59 @@ input.error,
 select.error,
 textarea.error {
     border-color: #dc3545;
+}
+
+/* Dropdown для автокомпліту */
+.dropdown-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+.dropdown-item:first-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.dropdown-item:last-child {
+    border-radius: 0 0 6px 6px;
 }
 
 .error-text {
