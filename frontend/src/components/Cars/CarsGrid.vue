@@ -168,7 +168,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import CarCard from './CarCard.vue'
+import CarCard from '@/components/Cars/CarCard.vue'
 
 // Reactive data
 const cars = ref([])
