@@ -69,6 +69,7 @@
     .container {
         grid-template-columns: repeat(1, minmax(0, 1fr));
         align-items: center;
+        justify-items: center;
     }
 }
 </style>
