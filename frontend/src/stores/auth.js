@@ -1,3 +1,4 @@
+// stores/auth.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
@@ -34,8 +35,8 @@ export const useAuthStore = defineStore('auth', () => {
 
         try {
             const apiUrl = process.env.NODE_ENV === 'production'
-            ? '/api/auth/verify'
-            : 'http://localhost:8001/api/auth/verify'
+                ? '/api/auth/verify'
+                : 'http://localhost:8001/api/auth/verify'
 
             const response = await fetch(apiUrl, {
                 headers: {
@@ -45,7 +46,8 @@ export const useAuthStore = defineStore('auth', () => {
 
             if (response.ok) {
                 const data = await response.json()
-                return data.valid
+                // ИСПРАВЛЕНО: проверяем data.status вместо data.valid
+                return data.status === 'success'
             }
 
             // Токен невалідний
@@ -54,6 +56,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         } catch (error) {
             console.error('Token verification error:', error)
+            logout()
             return false
         }
     }
