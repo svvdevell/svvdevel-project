@@ -930,7 +930,7 @@ const resetForm = () => {
         padding: 10px;
 
         & input {
-            font-size: 12px;
+            font-size: 16px;
         }
     }
     .form-inner {

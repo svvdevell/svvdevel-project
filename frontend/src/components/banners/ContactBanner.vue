@@ -399,9 +399,12 @@
         }
     }
 
-    .map iframe {
-        min-height: 300px;
+    .map {
+        padding: 10px;
+
+        & iframe {
+            min-height: 300px;
+        }
     }
 }
-
 </style>

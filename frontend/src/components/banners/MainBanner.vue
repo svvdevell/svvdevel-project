@@ -1,8 +1,24 @@
 <template>
     <section class="banner">
         <div class="video">
-            <video src="../../assets/video/1.mp4" v-if="!isMobile"></video>
-            <video src="../../assets/video/mob_ferrari.mp4" v-else></video>
+            <video 
+                v-if="!isMobile"
+                src="../../assets/video/1.mp4"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+            ></video>
+            <video 
+                v-else
+                src="../../assets/video/mob_ferrari.mp4"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+            ></video>
         </div>
         <div class="block">
             <TextBanner />
@@ -12,11 +28,23 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import MainForm from '@/components/forms/MainForm.vue'
 import TextBanner from '@/components/banners/TextBanner.vue';
 import { useScreenSize } from '@/composables/useScreenSize';
 
 const { isMobile } = useScreenSize();
+const videoRef = ref(null);
+
+// Принудительный запуск видео для iOS
+onMounted(() => {
+    const videos = document.querySelectorAll('video');
+    videos.forEach(video => {
+        video.play().catch(err => {
+            console.log('Video autoplay prevented:', err);
+        });
+    });
+});
 </script>
 
 <style lang="scss" scoped>
@@ -26,11 +54,6 @@ const { isMobile } = useScreenSize();
     align-items: center;
     justify-content: space-between;
     gap: 40px;
-    width: 100%;
-    // background: #aa3535;
-    // border-radius: 40px;
-    // margin: 50px 0;
-    // padding: 78px 72px;
     position: relative;
     overflow: hidden;
 }
@@ -38,9 +61,12 @@ const { isMobile } = useScreenSize();
 .video {
     width: 100%;
     height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
 
     & video {
-        width: 100vw;
+        width: 100%;
         height: 100vh;
         object-fit: cover;
         filter: brightness(0.7) blur(5px);
@@ -49,14 +75,16 @@ const { isMobile } = useScreenSize();
 
 .block {
     width: 100%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
+    z-index: 2;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
     max-width: 1440px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    min-height: 100vh;
+    align-items: center;
 }
 
 @media (max-width: 768px) {
@@ -64,7 +92,9 @@ const { isMobile } = useScreenSize();
         display: flex;
         flex-direction: column;
         gap: 20px;
+        padding: 60px 16px;
     }
+    
     .video video {
         filter: brightness(0.9) blur(5px);
     }
