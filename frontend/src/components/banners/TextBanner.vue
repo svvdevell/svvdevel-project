@@ -48,4 +48,23 @@ import Link from '@/components/common/Link.vue';
         gap: 20px;
     }
 }
+
+@media (max-width: 768px) {
+    .text-banner {
+        gap: 15px;
+        align-items: center;
+        padding: 0 16px;
+
+        & h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        & h3 {
+            text-align: center;
+            font-size: 14px;
+        }
+
+    }
+}
 </style>

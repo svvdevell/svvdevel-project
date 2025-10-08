@@ -1,90 +1,91 @@
 <template>
-    <div class="form-container">
-        <h2 class="form-title">Розкажіть про Ваше авто !</h2>
+    <div class="form-inner">
+        <div class="form-container">
+            <h2 class="form-title">Розкажіть про Ваше авто !</h2>
 
-        <form @submit.prevent="submitForm" novalidate class="form-banner">
-            <!-- Honeypot поле (скрытое от пользователей) -->
-            <input type="text" v-model="honeypot" name="website"
-                style="position:absolute;left:-5000px;width:1px;height:1px" tabindex="-1" autocomplete="off"
-                aria-hidden="true">
+            <form @submit.prevent="submitForm" novalidate class="form-banner">
+                <!-- Honeypot поле (скрытое от пользователей) -->
+                <input type="text" v-model="honeypot" name="website"
+                    style="position:absolute;left:-5000px;width:1px;height:1px" tabindex="-1" autocomplete="off"
+                    aria-hidden="true">
 
-            <!-- Поле имени -->
-            <div class="input-group"
-                :class="{ 'has-error': errors.name, 'has-success': !errors.name && form.name.length > 0 }">
-                <input v-model="form.name" type="text" placeholder="Ваше Ім'я" required class="glass-input"
-                    @blur="validateName" @input="clearError('name')" maxlength="30">
-                <div v-if="errors.name" class="error-message">{{ errors.name }}</div>
-            </div>
-
-            <!-- Поле марки авто с автокомплитом -->
-            <div class="input-group autocomplete-group"
-                :class="{ 'has-error': errors.carBrand, 'has-success': !errors.carBrand && form.carBrand.length > 0 }">
-                <input v-model="form.carBrand" type="text" placeholder="Марка авто" required class="glass-input"
-                    @input="onBrandInput" @focus="onBrandFocus" @blur="onBrandBlur" autocomplete="off">
-
-                <!-- Выпадающий список марок -->
-                <div v-if="showBrandDropdown && filteredBrands.length > 0" class="autocomplete-dropdown">
-                    <div v-for="brand in filteredBrands" :key="brand" class="autocomplete-item"
-                        @mousedown="selectBrand(brand)">
-                        {{ brand }}
-                    </div>
+                <!-- Поле имени -->
+                <div class="input-group"
+                    :class="{ 'has-error': errors.name, 'has-success': !errors.name && form.name.length > 0 }">
+                    <input v-model="form.name" type="text" placeholder="Ваше Ім'я" required class="glass-input"
+                        @blur="validateName" @input="clearError('name')" maxlength="30">
+                    <div v-if="errors.name" class="error-message">{{ errors.name }}</div>
                 </div>
 
-                <div v-if="errors.carBrand" class="error-message">{{ errors.carBrand }}</div>
-            </div>
+                <!-- Поле марки авто с автокомплитом -->
+                <div class="input-group autocomplete-group"
+                    :class="{ 'has-error': errors.carBrand, 'has-success': !errors.carBrand && form.carBrand.length > 0 }">
+                    <input v-model="form.carBrand" type="text" placeholder="Марка авто" required class="glass-input"
+                        @input="onBrandInput" @focus="onBrandFocus" @blur="onBrandBlur" autocomplete="off">
 
-            <!-- Поле модели авто -->
-            <div class="input-group"
-                :class="{ 'has-error': errors.carModel, 'has-success': !errors.carModel && form.carModel.length > 0 }">
-                <input v-model="form.carModel" type="text" placeholder="Модель авто" required class="glass-input"
-                    @blur="validateCarModel" @input="clearError('carModel')" maxlength="50">
-                <div v-if="errors.carModel" class="error-message">{{ errors.carModel }}</div>
-            </div>
-
-            <!-- Селект года выпуска с автокомплитом -->
-            <div class="input-group autocomplete-group"
-                :class="{ 'has-error': errors.carYear, 'has-success': !errors.carYear && form.carYear }">
-                <input v-model="form.carYear" type="text" placeholder="Рік випуску" required class="glass-input"
-                    @input="onYearInput" @focus="onYearFocus" @blur="onYearBlur" autocomplete="off" maxlength="4">
-
-                <!-- Выпадающий список годов -->
-                <div v-if="showYearDropdown && filteredYears.length > 0" class="autocomplete-dropdown">
-                    <div v-for="year in filteredYears.slice(0, 10)" :key="year" class="autocomplete-item"
-                        @mousedown="selectYear(year)">
-                        {{ year }}
+                    <!-- Выпадающий список марок -->
+                    <div v-if="showBrandDropdown && filteredBrands.length > 0" class="autocomplete-dropdown">
+                        <div v-for="brand in filteredBrands" :key="brand" class="autocomplete-item"
+                            @mousedown="selectBrand(brand)">
+                            {{ brand }}
+                        </div>
                     </div>
+
+                    <div v-if="errors.carBrand" class="error-message">{{ errors.carBrand }}</div>
                 </div>
 
-                <div v-if="errors.carYear" class="error-message">{{ errors.carYear }}</div>
-            </div>
-
-            <!-- Селект трансмиссии с автокомплитом -->
-            <div class="input-group autocomplete-group"
-                :class="{ 'has-error': errors.carTrans, 'has-success': !errors.carTrans && form.carTrans }">
-                <input v-model="form.carTrans" type="text" placeholder="Трансмісія" required class="glass-input"
-                    @input="onTransInput" @focus="onTransFocus" @blur="onTransBlur" autocomplete="off">
-
-                <!-- Выпадающий список трансмиссий -->
-                <div v-if="showTransDropdown && filteredTransmissions.length > 0" class="autocomplete-dropdown">
-                    <div v-for="trans in filteredTransmissions" :key="trans" class="autocomplete-item"
-                        @mousedown="selectTrans(trans)">
-                        {{ trans }}
-                    </div>
+                <!-- Поле модели авто -->
+                <div class="input-group"
+                    :class="{ 'has-error': errors.carModel, 'has-success': !errors.carModel && form.carModel.length > 0 }">
+                    <input v-model="form.carModel" type="text" placeholder="Модель авто" required class="glass-input"
+                        @blur="validateCarModel" @input="clearError('carModel')" maxlength="50">
+                    <div v-if="errors.carModel" class="error-message">{{ errors.carModel }}</div>
                 </div>
 
-                <div v-if="errors.carTrans" class="error-message">{{ errors.carTrans }}</div>
-            </div>
+                <!-- Селект года выпуска с автокомплитом -->
+                <div class="input-group autocomplete-group"
+                    :class="{ 'has-error': errors.carYear, 'has-success': !errors.carYear && form.carYear }">
+                    <input v-model="form.carYear" type="text" placeholder="Рік випуску" required class="glass-input"
+                        @input="onYearInput" @focus="onYearFocus" @blur="onYearBlur" autocomplete="off" maxlength="4">
 
-            <!-- Поле телефона -->
-            <div class="input-group"
-                :class="{ 'has-error': errors.phone, 'has-success': !errors.phone && form.phone.length > 0 }">
-                <input v-model="form.phone" type="tel" placeholder="+380 (XX) XXX-XX-XX" required class="glass-input"
-                    @input="formatPhone" @blur="validatePhone" maxlength="19">
-                <div v-if="errors.phone" class="error-message">{{ errors.phone }}</div>
-            </div>
+                    <!-- Выпадающий список годов -->
+                    <div v-if="showYearDropdown && filteredYears.length > 0" class="autocomplete-dropdown">
+                        <div v-for="year in filteredYears.slice(0, 10)" :key="year" class="autocomplete-item"
+                            @mousedown="selectYear(year)">
+                            {{ year }}
+                        </div>
+                    </div>
 
-            <!-- Поле описания (необязательное) -->
-            <!-- <div class="input-group"
+                    <div v-if="errors.carYear" class="error-message">{{ errors.carYear }}</div>
+                </div>
+
+                <!-- Селект трансмиссии с автокомплитом -->
+                <div class="input-group autocomplete-group"
+                    :class="{ 'has-error': errors.carTrans, 'has-success': !errors.carTrans && form.carTrans }">
+                    <input v-model="form.carTrans" type="text" placeholder="Трансмісія" required class="glass-input"
+                        @input="onTransInput" @focus="onTransFocus" @blur="onTransBlur" autocomplete="off">
+
+                    <!-- Выпадающий список трансмиссий -->
+                    <div v-if="showTransDropdown && filteredTransmissions.length > 0" class="autocomplete-dropdown">
+                        <div v-for="trans in filteredTransmissions" :key="trans" class="autocomplete-item"
+                            @mousedown="selectTrans(trans)">
+                            {{ trans }}
+                        </div>
+                    </div>
+
+                    <div v-if="errors.carTrans" class="error-message">{{ errors.carTrans }}</div>
+                </div>
+
+                <!-- Поле телефона -->
+                <div class="input-group"
+                    :class="{ 'has-error': errors.phone, 'has-success': !errors.phone && form.phone.length > 0 }">
+                    <input v-model="form.phone" type="tel" placeholder="+380 (XX) XXX-XX-XX" required
+                        class="glass-input" @input="formatPhone" @blur="validatePhone" maxlength="19">
+                    <div v-if="errors.phone" class="error-message">{{ errors.phone }}</div>
+                </div>
+
+                <!-- Поле описания (необязательное) -->
+                <!-- <div class="input-group"
                 :class="{ 'has-error': errors.description, 'has-success': !errors.description && form.description.length > 0 }">
                 <textarea v-model="form.description" placeholder="Розкажіть трошки про Ваше авто (необов'язково)"
                     class="glass-textarea" rows="4" @blur="validateDescription" @input="clearError('description')"
@@ -95,18 +96,19 @@
                 </div>
             </div> -->
 
-            <!-- Кнопка отправки -->
-            <button type="submit" class="submit-btn" :class="{ 'loading': isSubmitting }"
-                :disabled="isSubmitting || !isFormValid">
-                <span v-if="!isSubmitting">Надіслати нам</span>
-                <span v-else class="loading-spinner"></span>
-            </button>
+                <!-- Кнопка отправки -->
+                <button type="submit" class="submit-btn" :class="{ 'loading': isSubmitting }"
+                    :disabled="isSubmitting || !isFormValid">
+                    <span v-if="!isSubmitting">Надіслати нам</span>
+                    <span v-else class="loading-spinner"></span>
+                </button>
 
-            <!-- Сообщение об успехе -->
-            <div v-if="successMessage" class="success-message">
-                {{ successMessage }}
-            </div>
-        </form>
+                <!-- Сообщение об успехе -->
+                <div v-if="successMessage" class="success-message">
+                    {{ successMessage }}
+                </div>
+            </form>
+        </div>
     </div>
 </template>
 
@@ -922,6 +924,17 @@ const resetForm = () => {
 
     .form-title {
         font-size: 1.5rem;
+    }
+
+    .input-group {
+        padding: 10px;
+
+        & input {
+            font-size: 12px;
+        }
+    }
+    .form-inner {
+        padding: 0 16px;
     }
 }
 </style>

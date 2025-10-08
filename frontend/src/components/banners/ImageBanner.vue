@@ -7,34 +7,34 @@
             <div class="block">
                 <div>
                     <h5>1</h5>
-                    <h4>Erat at semper</h4>
+                    <h4>Викуп будь-яких автомобілів</h4>
                 </div>
-                <p>Non amet fermentum est in enim at sit ullamcorper. Sit elementum rhoncus nullam feugiat. Risus sem
-                    fermentum</p>
+                <p>Купуємо авто будь-якої марки та року випуску. Працюємо з легковими та комерційними транспортними
+                    засобами в будь-якому стані</p>
             </div>
             <div class="block">
                 <div>
                     <h5>2</h5>
-                    <h4>Urna nec vivamus risus duis arcu </h4>
+                    <h4>Оцінка та оплата за 30 хвилин</h4>
                 </div>
-                <p>Aliquam adipiscing velit semper morbi. Purus non eu cursus porttitor tristique et gravida. Quis nunc
-                    interdum gravida ullamcorper</p>
+                <p>Швидка професійна оцінка вашого автомобіля. Миттєва виплата готівкою або переказом на картку одразу
+                    після угоди</p>
             </div>
             <div class="block">
                 <div>
                     <h5>3</h5>
-                    <h4>Lobortis euismod imperdiet tempus </h4>
+                    <h4>Максимальна ціна за ваше авто</h4>
                 </div>
-                <p>Viverra scelerisque mauris et nullam molestie et. Augue adipiscing praesent nisl cras nunc luctus
-                    viverra nisi</p>
+                <p>Пропонуємо найвищі ціни на ринку автовикупу в Одесі. Аналізуємо ринкову вартість та гарантуємо чесну
+                    оцінку</p>
             </div>
             <div class="block">
                 <div>
                     <h5>4</h5>
-                    <h4>Cras nulla aliquet nam eleifend amet et</h4>
+                    <h4>Чесна та прозора угода</h4>
                 </div>
-                <p>Aliquam adipiscing velit semper morbi. Purus non eu cursus porttitor tristique et gravida. Quis nunc
-                    interdum gravida ullamcorper sed integer. Quisque eleifend tincidunt vulputate libero </p>
+                <p>Справедлива ринкова оцінка без прихованих комісій. Повне юридичне супроводження угоди. Безпечне
+                    оформлення всіх документів</p>
             </div>
         </div>
     </section>
@@ -114,6 +114,19 @@
             line-height: 100%;
             letter-spacing: 0%;
             color: #00000099;
+            max-width: 85%;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .text {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+
+        & .block {
+            & p {
+                max-width: 100%;
+            }
         }
     }
 }

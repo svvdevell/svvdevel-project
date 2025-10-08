@@ -1,133 +1,407 @@
 <template>
-    <section class="container">
-        <div class="image">
-            <img src="../../assets/images/park-photo-3.jpg" alt="">
-        </div>
-        <div class="text">
-            <h2>Download mobile app</h2>
-            <p>Imperdiet ut tristique viverra nunc. Ultrices orci vel auctor cursus turpis nibh placerat massa.
-                Fermentum urna ut at et in. Turpis aliquet cras hendrerit enim condimentum. Condimentum interdum risus
-                bibendum urna</p>
-            <h3>Дзвони!</h3>
-            <div class="links">
-                <a href="tel:0734080999"><img src="../../assets/icons/phone.svg" alt="">+38 (073) 40 80 999</a>
-                <a href="tel:0631653737"><img src="../../assets/icons/phone.svg" alt="">+38 (063) 16 53 737</a>
-                <a href="tel:0963313331"><img src="../../assets/icons/phone.svg" alt="">+38 (096) 33 13 331</a>
+    <section class="contacts-section">
+        <div class="contacts-container">
+            <!-- Hero Block -->
+            <div class="hero-block">
+                <h2>Продайте авто швидко та вигідно</h2>
+                <p>Оцінимо ваш автомобіль протягом 30 хвилин. Виплата готівкою в день звернення</p>
             </div>
-            <h3>Пиши!</h3>
-            <div class="links">
-                <a href="https://t.me/trewqxm"><img src="../../assets/icons/telegram.svg" alt="">Менеджер у Телеграмі</a>
-                <a href="t.me/eleganceauto_odessa"><img src="../../assets/icons/telegram.svg" alt="">Наш Телеграм канал</a>
+
+            <!-- Main Contact Card -->
+            <div class="main-contact-card">
+                <div class="card-header">
+                    <div class="icon-badge">
+                        <img src="../../assets/icons/phone.svg" alt="">
+                    </div>
+                    <div>
+                        <h3>Телефонуйте зараз</h3>
+                        <p>Працюємо щодня з 9:00 до 20:00</p>
+                    </div>
+                </div>
+                <div class="phone-grid">
+                    <a href="tel:0734080999" class="phone-btn primary">
+                        <span class="phone-number">073 408 0999</span>
+                        <span class="phone-label">Kyivstar</span>
+                    </a>
+                    <a href="tel:0631653737" class="phone-btn primary">
+                        <span class="phone-number">063 165 3737</span>
+                        <span class="phone-label">Lifecell</span>
+                    </a>
+                    <a href="tel:0963313331" class="phone-btn primary">
+                        <span class="phone-number">096 331 3331</span>
+                        <span class="phone-label">Vodafone</span>
+                    </a>
+                </div>
             </div>
-            <h3>Дивись!</h3>
-            <div class="links">
-                <a href="https://www.instagram.com/elegance_auto_od/"><img src="../../assets/icons/instagram.svg" alt="">Instagram</a>
-                <a href="https://auto.ria.com/uk/pro/seller-4625376.html"><img src="../../assets/icons/auto-ria.png" alt="" class="bordered">Auto Ria</a>
-                <a href="https://www.google.com/maps?q=%D0%90%D0%B2%D1%82%D0%BE%D1%81%D0%B0%D0%BB%D0%BE%D0%BD+%22Elegance+Auto%22,+%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82+%D0%9D%D0%B5%D0%B1%D0%B5%D1%81%D0%BD%D0%BE%D1%97+%D0%A1%D0%BE%D1%82%D0%BD%D1%96,+100%5C1,+%D0%9E%D0%B4%D0%B5%D1%81%D0%B0,+%D0%9E%D0%B4%D0%B5%D1%81%D1%8C%D0%BA%D0%B0+%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C,+65000&ftid=0x40c7cdf97dcee44f:0x6a2762df677153ae&entry=gps&lucs=,94224825,94227247,94227248,94231188,47071704,47069508,94218641,94203019,47084304,94208458,94208447&g_ep=CAISEjI1LjE0LjEuNzQyMzk4MTI0MBgAIIgnKmMsOTQyMjQ4MjUsOTQyMjcyNDcsOTQyMjcyNDgsOTQyMzExODgsNDcwNzE3MDQsNDcwNjk1MDgsOTQyMTg2NDEsOTQyMDMwMTksNDcwODQzMDQsOTQyMDg0NTgsOTQyMDg0NDdCAlVB&skid=c399e3a0-b7c8-4cde-b6a7-fd7cfce4551f&g_st=com.google.maps.preview.copy">
-                    <img src="../../assets/icons/geo.svg" alt=""> Google Maps</a>
+
+            <!-- Messenger Block -->
+            <div class="messenger-block">
+                <h3>Або напишіть в месенджер</h3>
+                <div class="messenger-grid">
+                    <a href="https://t.me/trewqxm" class="messenger-card telegram">
+                        <img src="../../assets/icons/telegram.svg" alt="">
+                        <div>
+                            <span class="messenger-title">Telegram</span>
+                            <span class="messenger-desc">Швидка відповідь</span>
+                        </div>
+                    </a>
+                    <a href="https://t.me/eleganceauto_odessa" class="messenger-card telegram-channel">
+                        <img src="../../assets/icons/telegram.svg" alt="">
+                        <div>
+                            <span class="messenger-title">Telegram канал</span>
+                            <span class="messenger-desc">Актуальні пропозиції</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Social & Location -->
+            <div class="bottom-grid">
+                <a href="https://www.instagram.com/elegance_auto_od/" class="social-card instagram">
+                    <img src="../../assets/icons/instagram.svg" alt="">
+                    <div>
+                        <span class="social-title">Instagram</span>
+                        <span class="social-desc">Фото нових авто</span>
+                    </div>
+                </a>
+
+                <a href="https://auto.ria.com/uk/pro/seller-4625376.html" class="social-card autoria">
+                    <img src="../../assets/icons/auto-ria.png" alt="" class="bordered">
+                    <div>
+                        <span class="social-title">Auto.ria</span>
+                        <span class="social-desc">Наші оголошення</span>
+                    </div>
+                </a>
+
+                <a href="https://www.google.com/maps?q=%D0%90%D0%B2%D1%82%D0%BE%D1%81%D0%B0%D0%BB%D0%BE%D0%BD+%22Elegance+Auto%22"
+                    class="social-card maps">
+                    <img src="../../assets/icons/geo.svg" alt="">
+                    <div>
+                        <span class="social-title">Наша адреса</span>
+                        <span class="social-desc">пр. Небесної Сотні, 100/1</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Image Gallery -->
+            <div class="map">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2752.228414344547!2d30.702056776324614!3d46.38469457110396!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40c7cdf97dcee44f%3A0x6a2762df677153ae!2z0JDQstGC0L7RgdCw0LvQvtC9ICJFbGVnYW5jZSBBdXRvIg!5e0!3m2!1sru!2sua!4v1759929964549!5m2!1sru!2sua"
+                    style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>
 </template>
+
 <script setup>
-
 </script>
-<style lang="scss" scoped>
 
-.bordered {
-    border-radius: 50%;
+<style lang="scss" scoped>
+.contacts-section {
+    width: 100%;
+    padding: 50px 0;
 }
 
-.container {
+.contacts-container {
+    max-width: 1400px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    width: 100%;
     gap: 40px;
-    align-items: center;
+}
 
-    & .text {
-        display: flex;
-        flex-direction: column;
-        gap: 40px;
-        width: 100%;
-        align-items: center;
+// Hero Block
+.hero-block {
+    text-align: center;
+    margin-bottom: 20px;
 
-        & h2 {
-            font-family: Work Sans;
-            font-weight: 700;
-            font-style: Bold;
-            font-size: 50px;
-            leading-trim: NONE;
-            line-height: 100%;
-            letter-spacing: 0%;
-        }
-
-        & h3 {
-            font-family: Work Sans;
-            font-weight: 700;
-            font-style: Bold;
-            font-size: 50px;
-            leading-trim: NONE;
-            line-height: 100%;
-            letter-spacing: 0%;
-            text-transform: uppercase;
-        }
-
-        & p {
-            font-family: Work Sans;
-            font-weight: 400;
-            font-style: Regular;
-            font-size: 16px;
-            leading-trim: NONE;
-            line-height: 24px;
-            letter-spacing: 0%;
-            color: #00000099;
-            text-align: center;
-        }
+    h2 {
+        font-family: 'Work Sans', sans-serif;
+        font-size: 48px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 16px;
+        line-height: 1.2;
     }
 
-    & .image {
-        width: 100%;
-
-        & img {
-            width: 100%;
-            object-fit: contain;
-            border-radius: 20px;
-        }
+    p {
+        font-family: 'Work Sans', sans-serif;
+        font-size: 20px;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
     }
 }
 
-.links {
+// Main Contact Card
+.main-contact-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
     display: flex;
     align-items: center;
     gap: 20px;
-    justify-content: space-between;
-    width: 100%;
+    margin-bottom: 32px;
 
-    & a {
-        width: 100%;
-        background: #aa3535;
-        padding: 13px 28px;
-        gap: 10px;
-        border-radius: 12px;
-        font-family: Inter;
-        font-weight: 600;
-        font-style: Semi Bold;
-        font-size: 16px;
-        line-height: 100%;
-        letter-spacing: 0%;
-        text-decoration: none;
-        cursor: pointer;
-        color: #FFF;
-        text-align: center;
+    .icon-badge {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        border-radius: 16px;
         display: flex;
         align-items: center;
-        gap: 20px;
+        justify-content: center;
 
-        & img {
-            width: 64px;
-            height: 64px;
+        img {
+            width: 32px;
+            height: 32px;
         }
     }
+
+    h3 {
+        font-family: 'Work Sans', sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0;
+    }
+
+    p {
+        font-size: 16px;
+        color: #666;
+        margin: 4px 0 0 0;
+    }
 }
+
+.phone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.phone-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(76, 175, 80, 0.3);
+    }
+
+    .phone-number {
+        font-family: 'Work Sans', sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 4px;
+    }
+
+    .phone-label {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.9);
+    }
+}
+
+// Messenger Block
+.messenger-block {
+    h3 {
+        font-family: 'Work Sans', sans-serif;
+        font-size: 24px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+}
+
+.messenger-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.messenger-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px 32px;
+    background: white;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 2px solid transparent;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    &.telegram {
+        &:hover {
+            border-color: #0088cc;
+        }
+    }
+
+    &.telegram-channel {
+        &:hover {
+            border-color: #0088cc;
+        }
+    }
+
+    img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .messenger-title {
+        display: block;
+        font-family: 'Work Sans', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+
+    .messenger-desc {
+        display: block;
+        font-size: 14px;
+        color: #666;
+    }
+}
+
+// Bottom Grid
+.bottom-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.social-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px 32px;
+    background: white;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 2px solid transparent;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    &.instagram:hover {
+        border-color: #E4405F;
+    }
+
+    &.autoria:hover {
+        border-color: #aa3535;
+    }
+
+    &.maps:hover {
+        border-color: #4285F4;
+    }
+
+    img {
+        width: 48px;
+        height: 48px;
+
+        &.bordered {
+            border-radius: 12px;
+        }
+    }
+
+    .social-title {
+        display: block;
+        font-family: 'Work Sans', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+
+    .social-desc {
+        display: block;
+        font-size: 14px;
+        color: #666;
+    }
+}
+
+.map {
+    width: 100%;
+    padding: 24px 32px;
+    background: white;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 2px solid transparent;
+
+    & iframe {
+        width: 100%;
+        min-height: 600px;
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .contacts-section {
+        padding: 40px 16px;
+    }
+
+    .hero-block {
+        h2 {
+            font-size: 32px;
+        }
+
+        p {
+            font-size: 16px;
+        }
+    }
+
+    .main-contact-card {
+        padding: 24px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        text-align: center;
+
+        h3 {
+            font-size: 24px;
+        }
+    }
+
+    .phone-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .phone-btn {
+        .phone-number {
+            font-size: 20px;
+        }
+    }
+
+    .map iframe {
+        min-height: 300px;
+    }
+}
+
 </style>

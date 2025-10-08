@@ -55,4 +55,12 @@ import TextBanner from '@/components/banners/TextBanner.vue';
     gap: 20px;
     max-width: 1440px;
 }
+
+@media (max-width: 768px) {
+    .block {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 20px;
+    }
+}
 </style>

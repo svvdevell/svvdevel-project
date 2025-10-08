@@ -31,7 +31,7 @@ import Footer from './components/global/Footer.vue'
   // margin: 0 auto;
 
   & * {
-    font-family: "Work Sans", sans-serif;
+    font-family: 'SF Pro Text';
   }
 }
 

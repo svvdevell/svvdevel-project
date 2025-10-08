@@ -2,18 +2,18 @@
     <section class="container">
         <div>
             <img src="../../assets/icons/location.svg" alt="Icon">
-            <h3>Availability</h3>
-            <p>Diam tincidunt tincidunt erat at semper fermentum. Id ultricies quis</p>
+            <h3>Доступність</h3>
+            <p>Виїзд у будь-яку точку Одеси та області. Оцінка та оформлення на місці</p>
         </div>
         <div>
             <img src="../../assets/icons/car.svg" alt="Icon">
-            <h3>Comfort</h3>
-            <p>Gravida auctor fermentum morbi vulputate ac egestas orcietium convallis</p>
+            <h3>Комфорт</h3>
+            <p>Швидка та зручна процедура продажу без зайвих паперів та очікування</p>
         </div>
         <div>
             <img src="../../assets/icons/wallet.svg" alt="Icon">
-            <h3>Savings</h3>
-            <p>Pretium convallis id diam sed commodo vestibulum lobortis volutpat</p>
+            <h3>Вигода</h3>
+            <p>Справедлива ціна за ваш автомобіль з миттєвою виплатою готівкою</p>
         </div>
     </section>
 </template>
@@ -26,6 +26,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
     width: 100%;
+    padding: 50px 0;
 
     & div {
         display: flex;
@@ -53,7 +54,6 @@
         }
 
         & p {
-            font-family: Inter;
             font-weight: 400;
             font-style: Regular;
             font-size: 16px;
@@ -62,6 +62,12 @@
             letter-spacing: 0%;
             text-align: center;
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
     }
 }
 </style>

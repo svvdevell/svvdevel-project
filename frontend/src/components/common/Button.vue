@@ -20,7 +20,6 @@ const props = defineProps({
     padding: 13px 28px;
     gap: 10px;
     border-radius: 12px;
-    font-family: Inter;
     font-weight: 600;
     font-style: Semi Bold;
     font-size: 16px;

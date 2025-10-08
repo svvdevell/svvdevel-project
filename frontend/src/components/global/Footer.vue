@@ -1,207 +1,334 @@
 <template>
-    <footer class="container">
-        <div class="top">
-            <a href="" class="logo"><img src="../../assets/images/logo.png" alt=""></a>
-            <div class="link">
-                <a
-                    href="https://www.google.com/maps?q=%D0%90%D0%B2%D1%82%D0%BE%D1%81%D0%B0%D0%BB%D0%BE%D0%BD+%22Elegance+Auto%22,+%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82+%D0%9D%D0%B5%D0%B1%D0%B5%D1%81%D0%BD%D0%BE%D1%97+%D0%A1%D0%BE%D1%82%D0%BD%D1%96,+100%5C1,+%D0%9E%D0%B4%D0%B5%D1%81%D0%B0,+%D0%9E%D0%B4%D0%B5%D1%81%D1%8C%D0%BA%D0%B0+%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C,+65000&ftid=0x40c7cdf97dcee44f:0x6a2762df677153ae&entry=gps&lucs=,94224825,94227247,94227248,94231188,47071704,47069508,94218641,94203019,47084304,94208458,94208447&g_ep=CAISEjI1LjE0LjEuNzQyMzk4MTI0MBgAIIgnKmMsOTQyMjQ4MjUsOTQyMjcyNDcsOTQyMjcyNDgsOTQyMzExODgsNDcwNzE3MDQsNDcwNjk1MDgsOTQyMTg2NDEsOTQyMDMwMTksNDcwODQzMDQsOTQyMDg0NTgsOTQyMDg0NDdCAlVB&skid=c399e3a0-b7c8-4cde-b6a7-fd7cfce4551f&g_st=com.google.maps.preview.copy">
-                    <img src="../../assets/icons/geo.svg" alt="">
-                </a>
-                <div>
-                    <p>Адреса</p>
-                    <a
-                        href="https://www.google.com/maps?q=%D0%90%D0%B2%D1%82%D0%BE%D1%81%D0%B0%D0%BB%D0%BE%D0%BD+%22Elegance+Auto%22,+%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82+%D0%9D%D0%B5%D0%B1%D0%B5%D1%81%D0%BD%D0%BE%D1%97+%D0%A1%D0%BE%D1%82%D0%BD%D1%96,+100%5C1,+%D0%9E%D0%B4%D0%B5%D1%81%D0%B0,+%D0%9E%D0%B4%D0%B5%D1%81%D1%8C%D0%BA%D0%B0+%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C,+65000&ftid=0x40c7cdf97dcee44f:0x6a2762df677153ae&entry=gps&lucs=,94224825,94227247,94227248,94231188,47071704,47069508,94218641,94203019,47084304,94208458,94208447&g_ep=CAISEjI1LjE0LjEuNzQyMzk4MTI0MBgAIIgnKmMsOTQyMjQ4MjUsOTQyMjcyNDcsOTQyMjcyNDgsOTQyMzExODgsNDcwNzE3MDQsNDcwNjk1MDgsOTQyMTg2NDEsOTQyMDMwMTksNDcwODQzMDQsOTQyMDg0NTgsOTQyMDg0NDdCAlVB&skid=c399e3a0-b7c8-4cde-b6a7-fd7cfce4551f&g_st=com.google.maps.preview.copy">м.Одеса,
-                        Небесної Сотні 100/1</a>
+    <footer class="footer">
+        <!-- Main Footer Content -->
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="" class="logo">
+                        <img src="../../assets/images/logo.png" alt="Elegance Auto">
+                    </a>
+                    <p class="brand-description">
+                        Професійний автовикуп в Одесі. Швидка оцінка, чесна ціна, миттєва виплата.
+                    </p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/elegance_auto_od/" class="social-link instagram" aria-label="Instagram">
+                            <img src="../../assets/icons/instagram.svg" alt="">
+                        </a>
+                        <a href="https://t.me/eleganceauto_odessa" class="social-link telegram" aria-label="Telegram">
+                            <img src="../../assets/icons/telegram.svg" alt="">
+                        </a>
+                        <a href="https://auto.ria.com/uk/pro/seller-4625376.html" class="social-link autoria" aria-label="Auto.ria">
+                            <img src="../../assets/icons/auto-ria.png" alt="" class="bordered-icon">
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="footer-contacts">
+                    <h3 class="footer-title">Контакти</h3>
+                    <div class="contact-item">
+                        <img src="../../assets/icons/phone.svg" alt="" class="contact-icon">
+                        <div>
+                            <a href="tel:0734080999" class="contact-link">+38 (073) 40 80 999</a>
+                            <a href="tel:0631653737" class="contact-link">+38 (063) 16 53 737</a>
+                            <a href="tel:0963313331" class="contact-link">+38 (096) 33 13 331</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <img src="../../assets/icons/telegram.svg" alt="" class="contact-icon">
+                        <div>
+                            <a href="https://t.me/trewqxm" class="contact-link">Менеджер у Телеграмі</a>
+                            <a href="https://t.me/eleganceauto_odessa" class="contact-link">Наш канал</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="footer-address">
+                    <h3 class="footer-title">Наша адреса</h3>
+                    <div class="contact-item">
+                        <img src="../../assets/icons/geo.svg" alt="" class="contact-icon">
+                        <div>
+                            <a href="https://www.google.com/maps?q=%D0%90%D0%B2%D1%82%D0%BE%D1%81%D0%B0%D0%BB%D0%BE%D0%BD+%22Elegance+Auto%22" 
+                               class="contact-link address-link">
+                                м. Одеса,<br>
+                                пр. Небесної Сотні, 100/1
+                            </a>
+                            <p class="work-hours">Працюємо щодня: 9:00 - 20:00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-links">
+                    <h3 class="footer-title">Послуги</h3>
+                    <a href="#" class="footer-link">Викуп легкових авто</a>
+                    <a href="#" class="footer-link">Викуп позашляховиків</a>
+                    <a href="#" class="footer-link">Оцінка авто онлайн</a>
                 </div>
             </div>
-            <div class="link">
-                <a href="t.me/eleganceauto_odessa">
-                    <img src="../../assets/icons/telegram.svg" alt="">
-                </a>
-                <div>
-                    <p>Телеграм</p>
-                    <a href="t.me/eleganceauto_odessa">Elegance Auto</a>
-                </div>
-            </div>
-            <div class="link">
-                <a href="tel:0734080999">
-                    <img src="../../assets/icons/phone.svg" alt="">
-                </a>
-                <div>
-                    <p>Телефон</p>
-                    <a href="tel:0734080999">+38 (073) 40 80 999</a>
-                </div>
+
+            <!-- Map Section -->
+            <div class="footer-map">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3644.5524686286963!2d30.7046317!3d46.384694599999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40c7cdf97dcee44f%3A0x6a2762df677153ae!2z0JDQstGC0L7RgdCw0LvQvtC9ICJFbGVnYW5jZSBBdXRvIg!5e1!3m2!1sru!2sua!4v1759781170565!5m2!1sru!2sua" 
+                    width="100%" 
+                    height="300" 
+                    style="border:0; border-radius: 16px;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
             </div>
         </div>
-        <div class="mid">
-            <div class="left">
-                <p>Faucibus faucibus pellentesque dictum turpis. Id pellentesque turpis massa a </p>
-                <div class="links">
-                    <a href="">
-                        <img src="../../assets/icons/instagram.svg" alt="">
-                    </a>
-                    <a href="">
-                        <img src="../../assets/icons/telegram.svg" alt="">
-                    </a>
-                    <a href="">
-                        <img src="../../assets/icons/instagram.svg" alt="">
-                    </a>
-                    <a href="">
-                        <img src="../../assets/icons/instagram.svg" alt="">
-                    </a>
+
+        <!-- Bottom Bar -->
+        <div class="footer-bottom">
+            <div class="footer-container">
+                <div class="bottom-content">
+                    <p class="copyright">
+                        © 2025 Elegance Auto. Всі права захищені
+                    </p>
+                    <p class="developer">
+                        Розробка та дизайн: <a href="https://svvdevel.tech/" target="_blank" rel="noopener">svvdevel.tech</a>
+                    </p>
                 </div>
             </div>
-            <div class="block">
-                <h3>Телефони</h3>
-                <a href="">+38 (073) 40 80 999</a>
-                <a href="">+38 (063) 16 53 737</a>
-                <a href="">+38 (096) 33 13 331</a>
-            </div>
-            <div class="block">
-                <h3>Cоціальні мережі</h3>
-                <a href="">Менеджер у Телеграмі</a>
-                <a href="">Наш Телеграм канал</a>
-                <a href="">Instagram</a>
-                <a href="">Auto Ria</a>
-                <a href=""></a>
-            </div>
-            <!-- <div class="block">
-                <div class="map">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3644.5524686286963!2d30.7046317!3d46.384694599999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40c7cdf97dcee44f%3A0x6a2762df677153ae!2z0JDQstGC0L7RgdCw0LvQvtC9ICJFbGVnYW5jZSBBdXRvIg!5e1!3m2!1sru!2sua!4v1759781170565!5m2!1sru!2sua" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-            </div> -->
-        </div>
-        <div class="bottom">
-            <p> © Copyright Elegance Auto 2025. Design and Powered by <a href="https://svvdevel.tech/">svvdevel.tech</a>
-            </p>
         </div>
     </footer>
 </template>
 
 <script setup>
-
 </script>
 
 <style lang="scss" scoped>
-.container {
+.footer {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
-    padding: 60px 0;
-    align-items: center;
+    background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+    color: white;
+    padding: 0 16px;
 }
 
-.top {
-    width: 100%;
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
-    align-items: center;
-
-    & .logo {
-        width: 100%;
-        max-width: 160px;
-
-        & img {
-            width: 100%;
-        }
-    }
-
-    & .link {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-
-        & div {
-            display: flex;
-            flex-direction: column;
-
-            & p {
-                font-family: Work Sans;
-                font-weight: 400;
-                font-style: Regular;
-                font-size: 16px;
-                leading-trim: CAP_HEIGHT;
-                line-height: 26px;
-                letter-spacing: 0%;
-            }
-
-            & a {
-                font-family: Work Sans;
-                font-weight: 600;
-                font-style: SemiBold;
-                font-size: 16px;
-                leading-trim: CAP_HEIGHT;
-                line-height: 26px;
-                letter-spacing: 0%;
-                color: #000;
-                text-decoration: none;
-            }
-        }
-    }
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-.mid {
+// Top Section
+.footer-top {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
-    width: 100%;
+    grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
+    gap: 60px;
+    padding: 80px 0 60px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-    & .left {
-        width: 100%;
-        max-width: 280px;
+    @media (max-width: 1024px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px;
+    }
+
+    @media (max-width: 640px) {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 60px 0 40px;
+    }
+}
+
+// Brand Section
+.footer-brand {
+    .logo {
+        display: inline-block;
+        margin-bottom: 20px;
+
+        img {
+            width: 160px;
+            height: auto;
+        }
+    }
+
+    .brand-description {
+        font-size: 16px;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 24px;
+    }
+}
+
+.social-links {
+    display: flex;
+    gap: 12px;
+
+    .social-link {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+
+        &:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        img {
+            width: 24px;
+            height: 24px;
+
+            &.bordered-icon {
+                border-radius: 6px;
+            }
+        }
+
+        &.instagram:hover {
+            background: linear-gradient(135deg, #833AB4, #E1306C, #FD1D1D);
+        }
+
+        &.telegram:hover {
+            background: #0088cc;
+        }
+
+        &.autoria:hover {
+            background: #aa3535;
+        }
+    }
+}
+
+// Footer Sections
+.footer-title {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.contact-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    .contact-icon {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+        margin-top: 4px;
+    }
+
+    div {
         display: flex;
         flex-direction: column;
+        gap: 8px;
+    }
+
+    .contact-link {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-size: 16px;
+        transition: color 0.3s ease;
+
+        &:hover {
+            color: #4CAF50;
+        }
+
+        &.address-link {
+            line-height: 1.6;
+        }
+    }
+
+    .work-hours {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 4px;
+    }
+}
+
+// Footer Links
+.footer-links {
+    display: flex;
+    flex-direction: column;
+
+    .footer-link {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 15px;
+        padding: 8px 0;
+        transition: all 0.3s ease;
+        position: relative;
+
+        &:hover {
+            color: white;
+            padding-left: 8px;
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 2px;
+            background: #4CAF50;
+            transition: width 0.3s ease;
+        }
+
+        &:hover::before {
+            width: 4px;
+        }
+    }
+}
+
+// Map Section
+.footer-map {
+    padding: 40px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    iframe {
+        width: 100%;
+    }
+}
+
+// Bottom Bar
+.footer-bottom {
+    background: rgba(0, 0, 0, 0.3);
+
+    .bottom-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 0;
         gap: 20px;
 
-        & .links {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+        @media (max-width: 640px) {
+            flex-direction: column;
+            text-align: center;
+        }
 
-            & a {
+        .copyright,
+        .developer {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+
+            a {
+                color: #4CAF50;
                 text-decoration: none;
+                transition: color 0.3s ease;
 
-                & img {
-                    width: 34px;
-                    height: 34px;
+                &:hover {
+                    color: #66BB6A;
                 }
             }
         }
     }
-
-    & .block {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-
-        & h3 {
-            font-family: Work Sans;
-            font-weight: 600;
-            font-style: SemiBold;
-            font-size: 20px;
-            leading-trim: NONE;
-            line-height: 100%;
-            letter-spacing: 0%;
-        }
-
-        & a {
-            text-decoration: none;
-            font-family: Work Sans;
-            font-weight: 400;
-            font-style: Regular;
-            font-size: 16px;
-            leading-trim: CAP_HEIGHT;
-            line-height: 26px;
-            letter-spacing: 0%;
-            color: #000;
-        }
-
-        & .map {
-            width: 100%;
-            max-height: 300px;
-        }
-    }
 }
+
 </style>

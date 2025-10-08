@@ -1,35 +1,34 @@
 <template>
     <section class="container">
-        <h2>Facts in numbers</h2>
-        <p>Amet cras hac orci lacus. Faucibus ipsum arcu lectus nibh sapien bibendum ullamcorper in. Diam tincidunt
-            tincidunt erat at semper fermentum</p>
+        <h2>Наші досягнення в цифрах</h2>
+        <p>Ми працюємо чесно та прозоро, тому наші клієнти повертаються до нас знову. Довіра та професіоналізм - основа нашого бізнесу</p>
         <div class="block">
             <div class="text">
                 <img src="../../assets/icons/year.svg" alt="">
                 <div>
                     <h4>540+</h4>
-                    <span>Cars</span>
+                    <span>Авто викуплено</span>
                 </div>
             </div>
             <div class="text">
                 <img src="../../assets/icons/car-orange.svg" alt="">
                 <div>
-                    <h4>20k+</h4>
-                    <span>Customers</span>
+                    <h4>10k+</h4>
+                    <span>Задоволених клієнтів</span>
                 </div>
             </div>
             <div class="text">
                 <img src="../../assets/icons/customers.svg" alt="">
                 <div>
-                    <h4>25+</h4>
-                    <span>Years</span>
+                    <h4>15+</h4>
+                    <span>Років досвіду</span>
                 </div>
             </div>
             <div class="text">
                 <img src="../../assets/icons/speed.svg" alt="">
                 <div>
                     <h4>20m+</h4>
-                    <span>Miles</span>
+                    <span>Пройдено кілометрів</span>
                 </div>
             </div>
         </div>
@@ -124,11 +123,23 @@
                 leading-trim: NONE;
                 line-height: 100%;
                 letter-spacing: 0%;
-                text-align: center;
                 text-transform: capitalize;
                 color: #00000099;
             }
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 30px;
+
+        & h2 {
+            font-size: 30px;
+        }
+    }
+    .block {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
     }
 }
 </style>
