@@ -20,9 +20,7 @@
             <!-- Заголовок -->
             <div class="car-header">
                 <h1>{{ car.brand }} {{ car.model }}</h1>
-                <div v-if="car.status && car.status !== 'active'" 
-                     class="status-badge" 
-                     :class="`status-${car.status}`">
+                <div v-if="car.status && car.status !== 'active'" class="status-badge" :class="`status-${car.status}`">
                     {{ getStatusLabel(car.status) }}
                 </div>
             </div>
@@ -30,28 +28,23 @@
             <!-- Галерея изображений -->
             <div class="image-gallery">
                 <div v-if="car.images && car.images.length > 0" class="gallery-main">
-                    <img :src="currentImage.fileUrl" 
-                         :alt="`${car.brand} ${car.model}`"
-                         class="main-image">
-                    
+                    <img :src="currentImage.fileUrl" :alt="`${car.brand} ${car.model}`" class="main-image">
+
                     <div v-if="car.images.length > 1" class="gallery-controls">
                         <button @click="prevImage" class="gallery-btn">‹</button>
                         <span class="image-counter">{{ currentImageIndex + 1 }} / {{ car.images.length }}</span>
                         <button @click="nextImage" class="gallery-btn">›</button>
                     </div>
                 </div>
-                
+
                 <div v-else class="no-images">
                     <p>Нет фотографий</p>
                 </div>
 
                 <!-- Миниатюры -->
                 <div v-if="car.images && car.images.length > 1" class="gallery-thumbnails">
-                    <div v-for="(image, index) in car.images" 
-                         :key="image.id"
-                         class="thumbnail"
-                         :class="{ active: index === currentImageIndex }"
-                         @click="currentImageIndex = index">
+                    <div v-for="(image, index) in car.images" :key="image.id" class="thumbnail"
+                        :class="{ active: index === currentImageIndex }" @click="currentImageIndex = index">
                         <img :src="image.fileUrl" :alt="`Фото ${index + 1}`">
                     </div>
                 </div>
@@ -126,11 +119,11 @@
             <div class="modal" @click.stop>
                 <h3>Удалить автомобиль?</h3>
                 <p>
-                    Вы уверены, что хотите удалить 
+                    Вы уверены, что хотите удалить
                     <strong>{{ car?.brand }} {{ car?.model }}</strong>?
                 </p>
                 <p class="warning">Это действие нельзя отменить!</p>
-                
+
                 <div class="modal-actions">
                     <button @click="closeDeleteModal" class="btn-secondary" :disabled="deleteModal.deleting">
                         Отмена
@@ -149,11 +142,15 @@
 </template>
 
 <script setup>
+// Замініть ВЕСЬ <script setup> на цей:
+
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
 
 const car = ref(null)
 const loading = ref(true)
@@ -185,7 +182,7 @@ const loadCarData = async () => {
             : `http://localhost:8001/api/cars-sale/${carId}`
 
         const response = await fetch(apiUrl)
-        
+
         if (!response.ok) {
             throw new Error('Автомобиль не найден')
         }
@@ -208,9 +205,9 @@ const formatMileage = (mileage) => {
 
 const formatDate = (dateString) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('ru-RU', { 
-        year: 'numeric', 
-        month: 'long', 
+    return date.toLocaleDateString('uk-UA', {
+        year: 'numeric',
+        month: 'long',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
@@ -221,34 +218,34 @@ const getStatusLabel = (status) => {
     const labels = {
         'sold': 'Продано',
         'new': 'Новинка',
-        'sale': 'Скидка',
-        'super-price': 'Супер цена'
+        'sale': 'Знижка',
+        'super-price': 'Супер ціна'
     }
     return labels[status] || status
 }
 
 // Навигация по изображениям
 const nextImage = () => {
-    if (car.value?.images) {
+    if (car.value?.images && car.value.images.length > 1) {
         currentImageIndex.value = (currentImageIndex.value + 1) % car.value.images.length
     }
 }
 
 const prevImage = () => {
-    if (car.value?.images) {
-        currentImageIndex.value = currentImageIndex.value === 0 
-            ? car.value.images.length - 1 
+    if (car.value?.images && car.value.images.length > 1) {
+        currentImageIndex.value = currentImageIndex.value === 0
+            ? car.value.images.length - 1
             : currentImageIndex.value - 1
     }
 }
 
 // Навигация
 const goBack = () => {
-    router.push('/cars-sale')
+    router.push('/admin/list')
 }
 
 const editCar = () => {
-    router.push(`/cars-sale/edit/${route.params.id}`)
+    router.push(`/admin/edit/${route.params.id}`)
 }
 
 // Удаление
@@ -274,7 +271,10 @@ const deleteCar = async () => {
             : `http://localhost:8001/api/cars-sale/${route.params.id}`
 
         const response = await fetch(apiUrl, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${authStore.token}`
+            }
         })
 
         if (!response.ok) {
@@ -283,7 +283,7 @@ const deleteCar = async () => {
         }
 
         // Успешно удалено, возвращаемся к списку
-        router.push('/cars-sale')
+        router.push('/admin/list')
 
     } catch (err) {
         console.error('Delete error:', err)
@@ -303,6 +303,7 @@ onMounted(() => {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    padding-top: 150px;
 }
 
 .loading,

@@ -17,21 +17,20 @@
         <div v-else class="cars-grid">
             <div v-for="car in cars" :key="car.id" class="car-card">
                 <div class="car-image">
-                    <img v-if="car.imageCount > 0" 
-                         :src="`/uploads/car_sale_${car.id}_image_1_*.jpg`" 
-                         :alt="`${car.brand} ${car.model}`"
-                         @error="handleImageError">
+                    <img v-if="car.images && car.images.length > 0" :src="car.images[0].fileUrl"
+                        :alt="`${car.brand} ${car.model}`" @error="handleImageError">
                     <div v-else class="no-image">Немає фото</div>
-                    
+
                     <!-- Бейдж статусу -->
-                    <div v-if="car.status && car.status !== 'active'" class="status-badge" :class="`status-${car.status}`">
+                    <div v-if="car.status && car.status !== 'active'" class="status-badge"
+                        :class="`status-${car.status}`">
                         {{ getStatusLabel(car.status) }}
                     </div>
                 </div>
 
                 <div class="car-info">
                     <h3>{{ car.brand }} {{ car.model }}</h3>
-                    
+
                     <div class="car-details">
                         <div class="detail-row">
                             <span class="label">Рік:</span>
@@ -64,7 +63,7 @@
                     </p>
 
                     <div class="car-meta">
-                        <span class="photo-count">📷 {{ car.imageCount }} фото</span>
+                        <span class="photo-count">📷 {{ car.images?.length || 0 }} фото</span>
                         <span class="created-date">{{ formatDate(car.createdAt) }}</span>
                     </div>
 
@@ -85,19 +84,16 @@
 
         <!-- Пагінація -->
         <div v-if="pagination.pages > 1" class="pagination">
-            <button @click="changePage(pagination.page - 1)" 
-                    :disabled="pagination.page === 1"
-                    class="btn-page">
+            <button @click="changePage(pagination.page - 1)" :disabled="pagination.page === 1" class="btn-page">
                 ← Назад
             </button>
-            
+
             <span class="page-info">
                 Сторінка {{ pagination.page }} з {{ pagination.pages }}
             </span>
-            
-            <button @click="changePage(pagination.page + 1)" 
-                    :disabled="pagination.page === pagination.pages"
-                    class="btn-page">
+
+            <button @click="changePage(pagination.page + 1)" :disabled="pagination.page === pagination.pages"
+                class="btn-page">
                 Вперед →
             </button>
         </div>
@@ -107,11 +103,11 @@
             <div class="modal" @click.stop>
                 <h3>Видалити автомобіль?</h3>
                 <p>
-                    Ви впевнені, що хочете видалити 
+                    Ви впевнені, що хочете видалити
                     <strong>{{ deleteModal.car?.brand }} {{ deleteModal.car?.model }}</strong>?
                 </p>
                 <p class="warning">Цю дію неможливо скасувати!</p>
-                
+
                 <div class="modal-actions">
                     <button @click="closeDeleteModal" class="btn-secondary" :disabled="deleteModal.deleting">
                         Скасувати
@@ -156,21 +152,21 @@ const deleteModal = reactive({
 // Завантаження списку автомобілів
 const loadCars = async (page = 1) => {
     loading.value = true
-    
+
     try {
         const apiUrl = process.env.NODE_ENV === 'production'
             ? '/api/cars-sale?page='
             : 'http://localhost:8001/api/cars-sale?page='
-        
+
         const response = await fetch(`${apiUrl}${page}&limit=${pagination.limit}`)
-        
+
         if (!response.ok) {
             throw new Error('Помилка завантаження даних')
         }
 
         const result = await response.json()
         cars.value = result.data || []
-        
+
         if (result.pagination) {
             Object.assign(pagination, result.pagination)
         }
@@ -190,10 +186,10 @@ const formatMileage = (mileage) => {
 // Форматування дати
 const formatDate = (dateString) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('uk-UA', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+    return date.toLocaleDateString('uk-UA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
     })
 }
 
@@ -266,7 +262,8 @@ const deleteCar = async () => {
             ? '/api/cars-sale'
             : 'http://localhost:8001/api/cars-sale'
 
-        const response = await fetch(`${apiUrl}${deleteModal.car.id}`, {
+        // ВИПРАВЛЕНО: додано слеш перед ID
+        const response = await fetch(`${apiUrl}/${deleteModal.car.id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${authStore.token}`
@@ -280,7 +277,7 @@ const deleteCar = async () => {
 
         // Видаляємо зі списку
         cars.value = cars.value.filter(c => c.id !== deleteModal.car.id)
-        
+
         // Закриваємо модальне вікно
         closeDeleteModal()
 
@@ -308,6 +305,7 @@ onMounted(() => {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
+    padding-top: 150px;
 }
 
 .header {

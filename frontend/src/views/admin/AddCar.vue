@@ -234,10 +234,10 @@ onMounted(async () => {
 const loadCarData = async () => {
     try {
         const apiUrl = process.env.NODE_ENV === 'production'
-            ? '/api/cars-sale/'
-            : 'http://localhost:8001/api/cars-sale/'
+            ? '/api/cars-sale'
+            : 'http://localhost:8001/api/cars-sale'
 
-        const response = await fetch(`${apiUrl}${carId.value}`)
+        const response = await fetch(`${apiUrl}/${carId.value}`)
         
         if (!response.ok) {
             throw new Error('Не вдалося завантажити дані автомобіля')
@@ -413,11 +413,12 @@ const submitForm = async () => {
             formData.append('images', photo)
         })
 
+        // ВИПРАВЛЕНО: прибрано зайвий слеш
         const apiUrl = process.env.NODE_ENV === 'production'
-            ? '/api/cars-sale/'
-            : 'http://localhost:8001/api/cars-sale/'
+            ? '/api/cars-sale'
+            : 'http://localhost:8001/api/cars-sale'
 
-        const endpoint = isEditMode.value ? `${carId.value}` : ''
+        const endpoint = isEditMode.value ? `/${carId.value}` : ''
 
         const response = await fetch(`${apiUrl}${endpoint}`, {
             method: isEditMode.value ? 'PUT' : 'POST',
@@ -436,7 +437,6 @@ const submitForm = async () => {
             if (!isEditMode.value) {
                 resetForm()
             } else {
-                // Перезавантажуємо дані після редагування
                 setTimeout(() => {
                     router.push('/admin/list')
                 }, 1500)
@@ -493,6 +493,7 @@ const resetForm = () => {
     max-width: 800px;
     margin: 2rem auto;
     padding: 1rem;
+    padding-top: 150px;
 }
 
 .form-wrapper {
