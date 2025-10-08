@@ -103,6 +103,7 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 }
 
 // Авторизация
+// Авторизація з детальним логуванням для дебагу
 func loginHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     if r.Method == "OPTIONS" {
@@ -110,26 +111,68 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    log.Println("🔍 Login attempt received")
+    log.Printf("Content-Type: %s", r.Header.Get("Content-Type"))
+    
     var req LoginRequest
-    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-        http.Error(w, `{"status":"error","message":"Невірний формат даних"}`, http.StatusBadRequest)
+    
+    // Перевіряємо Content-Type
+    contentType := r.Header.Get("Content-Type")
+    
+    if strings.Contains(contentType, "application/x-www-form-urlencoded") {
+        log.Println("📋 Parsing form data...")
+        if err := r.ParseForm(); err != nil {
+            log.Printf("❌ Form parse error: %v", err)
+            http.Error(w, `{"status":"error","message":"Невірний формат даних"}`, http.StatusBadRequest)
+            return
+        }
+        req.Username = r.FormValue("username")
+        req.Password = r.FormValue("password")
+        log.Printf("📝 Form data - Username: '%s', Password length: %d", req.Username, len(req.Password))
+    } else {
+        log.Println("📋 Parsing JSON data...")
+        if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+            log.Printf("❌ JSON parse error: %v", err)
+            http.Error(w, `{"status":"error","message":"Невірний формат даних"}`, http.StatusBadRequest)
+            return
+        }
+        log.Printf("📝 JSON data - Username: '%s', Password length: %d", req.Username, len(req.Password))
+    }
+
+    // Валідація
+    if req.Username == "" || req.Password == "" {
+        log.Println("❌ Empty username or password")
+        http.Error(w, `{"status":"error","message":"Логін та пароль обов'язкові"}`, http.StatusBadRequest)
         return
     }
 
+    // Перевірка username
+    log.Printf("🔍 Comparing usernames: received='%s', expected='%s'", req.Username, ADMIN_USERNAME)
     if req.Username != ADMIN_USERNAME {
+        log.Println("❌ Username mismatch")
         time.Sleep(2 * time.Second)
         http.Error(w, `{"status":"error","message":"Невірний логін або пароль"}`, http.StatusUnauthorized)
         return
     }
 
-    if err := bcrypt.CompareHashAndPassword([]byte(ADMIN_PASSWORD_HASH), []byte(req.Password)); err != nil {
+    // Перевірка пароля
+    log.Println("🔐 Checking password hash...")
+    log.Printf("Password to check: '%s'", req.Password)
+    log.Printf("Hash in constant: %s", ADMIN_PASSWORD_HASH)
+    
+    err := bcrypt.CompareHashAndPassword([]byte(ADMIN_PASSWORD_HASH), []byte(req.Password))
+    if err != nil {
+        log.Printf("❌ Password hash mismatch: %v", err)
         time.Sleep(2 * time.Second)
         http.Error(w, `{"status":"error","message":"Невірний логін або пароль"}`, http.StatusUnauthorized)
         return
     }
+
+    log.Println("✅ Password verified successfully")
 
     token, err := generateToken()
     if err != nil {
+        log.Printf("❌ Token generation error: %v", err)
         http.Error(w, `{"status":"error","message":"Помилка сервера"}`, http.StatusInternalServerError)
         return
     }
@@ -142,7 +185,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     sessions[token] = session
-    log.Printf("✅ Successful login for %s", req.Username)
+    log.Printf("✅ Successful login for %s, token: %s", req.Username, token[:10]+"...")
 
     json.NewEncoder(w).Encode(LoginResponse{
         Status:  "success",
