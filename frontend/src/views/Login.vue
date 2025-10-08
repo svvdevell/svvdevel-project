@@ -79,9 +79,7 @@ const handleLogin = async () => {
         params.append('username', username.value.trim())
         params.append('password', password.value.trim())
 
-        const apiUrl = process.env.NODE_ENV === 'production'
-            ? '/api/cars'
-            : 'http://localhost:8001'
+        const apiUrl = process.env.NODE_ENV || 'http://localhost:8001'
         
         const response = await fetch(`${apiUrl}/api/auth/login`, {
             method: 'POST',
