@@ -14,9 +14,6 @@ import (
     "time"
     "bytes"
     "sync"
-    "crypto/rand"
-    "encoding/base64"
-    "golang.org/x/crypto/bcrypt"
 
     _ "github.com/mattn/go-sqlite3"
     "github.com/gorilla/mux"
