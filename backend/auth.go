@@ -16,7 +16,7 @@ import (
 const (
     ADMIN_USERNAME      = "admin"
     // Пароль: eleganceautoadminpass777!
-    ADMIN_PASSWORD_HASH = "$2a$10$rEkN9X2vB5aH.Ux8gVzKxOqP7Y6ZC3mJ8nQwRtDfLsVpKhGjMuNxS"
+    ADMIN_PASSWORD_HASH = "$2b$10$gytUP2mQ2vEuGCZ04JmX7O1uv4JM5/dhKR.QwHnhy4PmiWIp2tyNm"
 )
 
 // Структуры
