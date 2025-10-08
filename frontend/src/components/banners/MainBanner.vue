@@ -92,7 +92,8 @@ onMounted(() => {
         display: flex;
         flex-direction: column;
         gap: 20px;
-        padding: 60px 16px;
+        padding: 20px 16px;
+        justify-content: flex-end;
     }
     
     .video video {
