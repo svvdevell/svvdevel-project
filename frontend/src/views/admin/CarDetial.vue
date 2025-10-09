@@ -685,7 +685,8 @@ onMounted(() => {
 
 @media (max-width: 768px) {
     .car-detail-container {
-        padding: 1rem;
+        padding: 0;
+        padding-top: 150px;
     }
 
     .car-header {
