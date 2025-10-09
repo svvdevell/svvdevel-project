@@ -227,7 +227,7 @@ const toggleFaq = (index) => {
 }
 
 .info-container {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
 }
 
@@ -285,7 +285,7 @@ const toggleFaq = (index) => {
 .benefit-icon {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #aa3535;
     border-radius: 20px;
     display: flex;
     align-items: center;
@@ -345,7 +345,7 @@ const toggleFaq = (index) => {
 .step-number {
     width: 70px;
     height: 70px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #aa3535;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -383,7 +383,7 @@ const toggleFaq = (index) => {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 30px;
     padding: 50px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #aa3535;
     border-radius: 24px;
     box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
 }

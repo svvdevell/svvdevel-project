@@ -300,7 +300,7 @@ onMounted(() => {
 
 <style scoped>
 .car-detail-container {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 2rem;
     padding-top: 150px;

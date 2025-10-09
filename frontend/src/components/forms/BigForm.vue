@@ -548,8 +548,8 @@ const resetForm = () => {
     display: flex;
     justify-content: center;
     padding: 60px 20px;
-    padding-top: 150px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding-top: 200px;
+    background: #aa3535;
 }
 
 .form-container-large {
@@ -715,7 +715,7 @@ const resetForm = () => {
 .submit-button-large {
     width: 100%;
     padding: 22px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #aa3535;
     border: none;
     border-radius: 14px;
     color: #ffffff;

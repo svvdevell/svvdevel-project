@@ -118,7 +118,7 @@ const handleLogin = async () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #aa3535;
     padding: 1rem;
 }
 
@@ -229,7 +229,7 @@ const handleLogin = async () => {
 
 .btn-login {
     padding: 1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #aa3535;
     color: white;
     border: none;
     border-radius: 6px;

@@ -159,7 +159,7 @@ onMounted(() => {
 }
 
 .admin-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #aa3535;
     color: white;
     padding: 1.5rem 2rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -269,7 +269,7 @@ onMounted(() => {
 
 .card-button {
     padding: 0.75rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #aa3535;
     color: white;
     border: none;
     border-radius: 6px;

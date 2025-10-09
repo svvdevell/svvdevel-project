@@ -1,5 +1,5 @@
 <template>
-    <header class="navigation">
+    <header class="navigation" :class="{ 'scrolled': isScrolled }">
         <nav class="nav-container">
             <router-link to="/" class="logo">
                 <img src="../../assets/images/logo.png" alt="Elegance Auto">
@@ -58,31 +58,50 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 
-const isMenuOpen = ref(false);
-const route = useRoute();
+const isMenuOpen = ref(false)
+const isScrolled = ref(false)
+const route = useRoute()
+
+const handleScroll = () => {
+    // Якщо скрол більше 50px - додаємо клас
+    isScrolled.value = window.scrollY > 50
+}
 
 const toggleMenu = () => {
-    isMenuOpen.value = !isMenuOpen.value;
+    isMenuOpen.value = !isMenuOpen.value
     // Prevent body scroll when menu is open
     if (isMenuOpen.value) {
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden'
     } else {
-        document.body.style.overflow = '';
+        document.body.style.overflow = ''
     }
-};
+}
 
 const closeMenu = () => {
-    isMenuOpen.value = false;
-    document.body.style.overflow = '';
-};
+    isMenuOpen.value = false
+    document.body.style.overflow = ''
+}
 
 // Close menu on route change
 watch(route, () => {
-    closeMenu();
-});
+    closeMenu()
+})
+
+// Додаємо слухач скролу
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll)
+    // Перевіряємо стан при монтуванні
+    handleScroll()
+})
+
+// Прибираємо слухач при демонтуванні
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+    document.body.style.overflow = ''
+})
 </script>
 
 <style lang="scss" scoped>
@@ -108,6 +127,16 @@ watch(route, () => {
     backdrop-filter: blur(15px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+    // Стилі коли скролимо
+    &.scrolled {
+        background: rgba(26, 26, 26, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        padding: 8px 20px;
+    }
 }
 
 .nav-container {
@@ -246,6 +275,10 @@ watch(route, () => {
     .navigation {
         padding: 10px 16px;
         background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+
+        &.scrolled {
+            padding: 8px 16px;
+        }
     }
 
     .logo {

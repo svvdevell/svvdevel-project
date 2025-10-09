@@ -170,7 +170,7 @@ export default {
 <style scoped>
 .not-found-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #aa3535;
   display: flex;
   align-items: center;
   color: white;
@@ -179,7 +179,7 @@ export default {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 2rem 1rem;
   display: grid;
