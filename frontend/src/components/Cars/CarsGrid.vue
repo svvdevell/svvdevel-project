@@ -369,6 +369,8 @@ const formatDate = (dateString) => {
     })
 }
 
+
+
 // Lifecycle
 onMounted(() => {
     fetchCars()
