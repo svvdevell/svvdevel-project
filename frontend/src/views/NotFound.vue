@@ -9,80 +9,75 @@
           </div>
           <div class="error-number">4</div>
         </div>
-        
-        <h1>Страница не найдена</h1>
-        <p>К сожалению, запрашиваемая страница не существует или была перемещена.</p>
-        
+
+        <h1>Сторінку не знайдено</h1>
+        <p>На жаль, запитувана сторінка не існує або була переміщена.</p>
+
         <div class="suggestions">
-          <h3>Возможные причины:</h3>
+          <h3>Можливі причини:</h3>
           <ul>
-            <li>Страница была удалена или перемещена</li>
-            <li>Неправильно введен адрес</li>
-            <li>Ссылка устарела</li>
-            <li>У вас нет прав доступа к этой странице</li>
+            <li>Сторінку було видалено або переміщено</li>
+            <li>Неправильно введено адресу</li>
+            <li>Посилання застаріло</li>
+            <li>У вас немає прав доступу до цієї сторінки</li>
           </ul>
         </div>
 
         <div class="actions">
           <button @click="goHome" class="btn btn-primary">
-            🏠 На главную
+            🏠 На головну
           </button>
           <button @click="goBack" class="btn btn-secondary">
             ← Назад
           </button>
           <router-link to="/contact" class="btn btn-outline">
-            📞 Связаться с нами
+            📞 Зв'язатися з нами
           </router-link>
         </div>
 
         <div class="popular-pages">
-          <h3>Популярные страницы:</h3>
+          <h3>Популярні сторінки:</h3>
           <div class="page-links">
             <router-link to="/" class="page-link">
               <div class="link-icon">🏠</div>
               <div class="link-text">
-                <strong>Главная</strong>
-                <span>Начальная страница сайта</span>
+                <strong>Головна</strong>
+                <span>Початкова сторінка сайту</span>
               </div>
             </router-link>
-            
-            <router-link to="/brands" class="page-link">
+
+            <router-link to="/catalog" class="page-link">
               <div class="link-icon">🏷️</div>
               <div class="link-text">
-                <strong>Бренды</strong>
-                <span>Наши партнерские бренды</span>
+                <strong>Каталог</strong>
+                <span>Авто в продажу!</span>
               </div>
             </router-link>
-            
+
             <router-link to="/reviews" class="page-link">
               <div class="link-icon">⭐</div>
               <div class="link-text">
-                <strong>Отзывы</strong>
-                <span>Отзывы наших клиентов</span>
+                <strong>Відгуки</strong>
+                <span>Відгуки наших клієнтів</span>
               </div>
             </router-link>
-            
-            <router-link to="/form" class="page-link">
+
+            <router-link to="/contact" class="page-link">
               <div class="link-icon">📝</div>
               <div class="link-text">
                 <strong>Анкета</strong>
-                <span>Заполните форму</span>
+                <span>Заповніть форму</span>
               </div>
             </router-link>
           </div>
         </div>
 
         <div class="search-section">
-          <h3>Поиск по сайту:</h3>
+          <h3>Пошук по сайту:</h3>
           <div class="search-form">
-            <input 
-              v-model="searchQuery" 
-              type="text" 
-              placeholder="Что вы ищете?"
-              @keyup.enter="performSearch"
-            >
+            <input v-model="searchQuery" type="text" placeholder="Що ви шукаєте?" @keyup.enter="performSearch">
             <button @click="performSearch" class="search-btn">
-              🔍 Найти
+              🔍 Знайти
             </button>
           </div>
         </div>
@@ -101,13 +96,13 @@
             <div class="leg right"></div>
           </div>
         </div>
-        
+
         <div class="planets">
           <div class="planet planet1"></div>
           <div class="planet planet2"></div>
           <div class="planet planet3"></div>
         </div>
-        
+
         <div class="stars">
           <div class="star" v-for="star in 20" :key="star" :style="getStarStyle()"></div>
         </div>
@@ -116,55 +111,53 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'NotFound',
-  data() {
-    return {
-      searchQuery: ''
-    }
-  },
-  methods: {
-    goHome() {
-      this.$router.push('/')
-    },
-    
-    goBack() {
-      // Если есть история, идем назад, иначе на главную
-      if (window.history.length > 1) {
-        this.$router.go(-1)
-      } else {
-        this.$router.push('/')
-      }
-    },
-    
-    performSearch() {
-      if (this.searchQuery.trim()) {
-        // Здесь можно добавить логику поиска
-        // Для примера просто показываем alert
-        alert(`Поиск: "${this.searchQuery}". Функция поиска будет добавлена позже.`)
-        this.searchQuery = ''
-      }
-    },
-    
-    getStarStyle() {
-      return {
-        left: Math.random() * 100 + '%',
-        top: Math.random() * 100 + '%',
-        animationDelay: Math.random() * 3 + 's',
-        animationDuration: (Math.random() * 2 + 2) + 's'
-      }
-    }
-  },
-  
-  mounted() {
-    // Логирование 404 ошибки
-    console.log(`404 Error: Page not found - ${this.$route.fullPath}`)
-    
-    // Можно отправить статистику 404 ошибок
-    // analytics.track('404_error', { path: this.$route.fullPath })
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
+
+const searchQuery = ref('')
+
+const goHome = () => {
+  router.push('/')
+}
+
+const goBack = () => {
+  // Якщо є історія, йдемо назад, інакше на головну
+  if (window.history.length > 1) {
+    router.go(-1)
+  } else {
+    router.push('/')
   }
 }
+
+const performSearch = () => {
+  if (searchQuery.value.trim()) {
+    // Тут можна додати логіку пошуку
+    // Для прикладу просто показуємо alert
+    alert(`Пошук: "${searchQuery.value}". Функція пошуку буде додана пізніше.`)
+    searchQuery.value = ''
+  }
+}
+
+const getStarStyle = () => {
+  return {
+    left: Math.random() * 100 + '%',
+    top: Math.random() * 100 + '%',
+    animationDelay: Math.random() * 3 + 's',
+    animationDuration: (Math.random() * 2 + 2) + 's'
+  }
+}
+
+onMounted(() => {
+  // Логування 404 помилки
+  console.log(`404 Error: Page not found - ${route.fullPath}`)
+
+  // Можна відправити статистику 404 помилок
+  // analytics.track('404_error', { path: route.fullPath })
+})
 </script>
 
 <style scoped>
@@ -223,8 +216,13 @@ export default {
 }
 
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-content h1 {
@@ -234,7 +232,7 @@ export default {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.error-content > p {
+.error-content>p {
   font-size: 1.2rem;
   text-align: center;
   margin-bottom: 2rem;
@@ -427,7 +425,7 @@ export default {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Иллюстрация космонавта */
+/* Ілюстрація космонавта */
 .error-illustration {
   position: relative;
   height: 400px;
@@ -442,8 +440,15 @@ export default {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 .helmet {
@@ -565,8 +570,13 @@ export default {
 }
 
 @keyframes orbit {
-  from { transform: rotate(0deg) translateX(100px) rotate(0deg); }
-  to { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+  from {
+    transform: rotate(0deg) translateX(100px) rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg) translateX(100px) rotate(-360deg);
+  }
 }
 
 .stars {
@@ -586,8 +596,17 @@ export default {
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.5); }
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
 }
 
 @media (max-width: 768px) {
@@ -596,37 +615,37 @@ export default {
     gap: 2rem;
     text-align: center;
   }
-  
+
   .error-number {
     font-size: 6rem;
   }
-  
+
   .error-circle {
     width: 6rem;
     height: 6rem;
   }
-  
+
   .circle-inner {
     font-size: 4rem;
   }
-  
+
   .error-content h1 {
     font-size: 2.5rem;
   }
-  
+
   .actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .page-links {
     grid-template-columns: 1fr;
   }
-  
+
   .error-illustration {
     height: 300px;
   }
-  
+
   .astronaut {
     transform: scale(0.8);
   }

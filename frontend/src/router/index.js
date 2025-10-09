@@ -13,22 +13,26 @@ const routes = [
     {
         path: '/',
         name: 'Main',
-        component: Main
-    },
-    {
-        path: '/test',
-        name: 'Test',
-        component: () => import('@/views/Test.vue')
+        component: Main,
+        meta: {
+            title: 'Головна'
+        }
     },
     {
         path: '/catalog',
         name: 'CarsCatalog',
-        component: CarsCatalog
+        component: CarsCatalog,
+        meta: {
+            title: 'У продажі!'
+        }
     },
     {
         path: '/contact',
         name: 'Contact',
-        component: () => import('@/views/Contact.vue')
+        component: () => import('@/views/Contact.vue'),
+        meta: {
+            title: 'Контакти'
+        }
     },
     // Сторінка входу
     {
@@ -89,7 +93,10 @@ const routes = [
     {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
-        component: NotFound
+        component: NotFound,
+        meta: {
+            title: 'Сторінка не знайдена'
+        }
     }
 ]
 
