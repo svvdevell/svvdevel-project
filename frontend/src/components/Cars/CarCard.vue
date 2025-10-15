@@ -105,7 +105,7 @@
                     </svg>
                     {{ formatDate(car.createdAt) }}
                 </span>
-                <button @click="handleOpenDetails" class="view-btn">
+                <button @click="handleOpenDetails(car)" class="view-btn">
                     Детальніше
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -118,7 +118,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed ,ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
 
 const props = defineProps({
     car: {
@@ -139,8 +143,8 @@ const carImageUrl = computed(() => {
 })
 
 // Methods
-const handleOpenDetails = () => {
-    emit('CarsCatalog', props.car)
+const handleOpenDetails = (car) => {
+    router.push({ name: 'CarPage', params: { id: car.id } })
 }
 
 const handleImageError = (event) => {
