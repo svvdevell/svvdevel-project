@@ -156,7 +156,7 @@ onMounted(() => {
 .admin-container {
     min-height: 100vh;
     background: #f5f7fa;
-    padding-top: 150px;
+    
 }
 
 .admin-header {

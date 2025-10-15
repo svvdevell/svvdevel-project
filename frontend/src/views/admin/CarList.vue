@@ -299,7 +299,7 @@ onMounted(() => {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
-    padding-top: 150px;
+    
 }
 
 .header {
@@ -654,7 +654,7 @@ onMounted(() => {
 @media (max-width: 768px) {
     .cars-list-container {
         padding: 0;
-        padding-top: 150px;
+        
     }
 
     .header {

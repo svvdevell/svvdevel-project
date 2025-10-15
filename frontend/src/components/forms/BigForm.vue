@@ -548,7 +548,6 @@ const resetForm = () => {
     display: flex;
     justify-content: center;
     padding: 60px 20px;
-    padding-top: 200px;
     background: #aa3535;
 }
 

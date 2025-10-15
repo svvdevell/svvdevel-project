@@ -117,7 +117,7 @@ onUnmounted(() => {
 
 .navigation {
     width: 100%;
-    position: fixed;
+    position: sticky;
     padding: 12px 20px;
     z-index: 1000;
     top: 0;

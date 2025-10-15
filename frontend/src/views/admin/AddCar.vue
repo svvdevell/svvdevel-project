@@ -570,7 +570,7 @@ const resetForm = () => {
     max-width: 800px;
     margin: 2rem auto;
     padding: 1rem;
-    padding-top: 150px;
+    
 }
 
 .form-wrapper {

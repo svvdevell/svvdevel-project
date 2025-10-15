@@ -10,7 +10,7 @@ import CarsGrid from '@/components/Cars/CarsGrid.vue';
 <style lang="scss" scoped>
     .container {
         width: 100%;
-        padding-top: 150px;
+        
     }
 </style>
 
