@@ -98,6 +98,8 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Badge from '@/components/common/Badge.vue'
+
 
 const route = useRoute()
 const router = useRouter()
