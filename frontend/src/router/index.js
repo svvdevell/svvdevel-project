@@ -8,6 +8,8 @@ import Main from '@/views/Main.vue'
 import NotFound from '@/views/NotFound.vue'
 import CarsCatalog from '@/views/CarsCatalog.vue'
 import Login from '@/views/Login.vue'
+import CarPage from '@/views/CarPage.vue'
+
 
 const routes = [
     {
