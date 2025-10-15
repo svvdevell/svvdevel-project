@@ -786,6 +786,7 @@ const resetForm = () => {
 @media (max-width: 768px) {
     .form-wrapper {
         padding: 30px 16px;
+        padding-top: 100px;
     }
 
     .form-container-large {

@@ -8,10 +8,9 @@
             <!-- Desktop Menu -->
             <div class="nav-menu" :class="{ 'active': isMenuOpen }">
                 <router-link to="/" class="nav-link" @click="closeMenu">Головна</router-link>
-                <router-link to="/test" class="nav-link" @click="closeMenu">Test</router-link>
-                <router-link to="/form" class="nav-link" @click="closeMenu">Авто викуп</router-link>
+                <!-- <router-link to="/form" class="nav-link" @click="closeMenu">Авто викуп</router-link> -->
                 <router-link to="/catalog" class="nav-link" @click="closeMenu">У продажі</router-link>
-                <router-link to="/reviews" class="nav-link" @click="closeMenu">Відгуки</router-link>
+                <!-- <router-link to="/reviews" class="nav-link" @click="closeMenu">Відгуки</router-link> -->
                 <router-link to="/contact" class="nav-link" @click="closeMenu">Контакти</router-link>
 
                 <!-- Social Links in Mobile Menu -->

@@ -12,13 +12,15 @@
                         Професійний автовикуп в Одесі. Швидка оцінка, чесна ціна, миттєва виплата.
                     </p>
                     <div class="social-links">
-                        <a href="https://www.instagram.com/elegance_auto_od/" class="social-link instagram" aria-label="Instagram">
+                        <a href="https://www.instagram.com/elegance_auto_od/" class="social-link instagram"
+                            aria-label="Instagram">
                             <img src="../../assets/icons/instagram.svg" alt="">
                         </a>
                         <a href="https://t.me/eleganceauto_odessa" class="social-link telegram" aria-label="Telegram">
                             <img src="../../assets/icons/telegram.svg" alt="">
                         </a>
-                        <a href="https://auto.ria.com/uk/pro/seller-4625376.html" class="social-link autoria" aria-label="Auto.ria">
+                        <a href="https://auto.ria.com/uk/pro/seller-4625376.html" class="social-link autoria"
+                            aria-label="Auto.ria">
                             <img src="../../assets/icons/auto-ria.png" alt="" class="bordered-icon">
                         </a>
                     </div>
@@ -50,8 +52,8 @@
                     <div class="contact-item">
                         <img src="../../assets/icons/geo.svg" alt="" class="contact-icon">
                         <div>
-                            <a href="https://www.google.com/maps?q=%D0%90%D0%B2%D1%82%D0%BE%D1%81%D0%B0%D0%BB%D0%BE%D0%BD+%22Elegance+Auto%22" 
-                               class="contact-link address-link">
+                            <a href="https://www.google.com/maps?q=%D0%90%D0%B2%D1%82%D0%BE%D1%81%D0%B0%D0%BB%D0%BE%D0%BD+%22Elegance+Auto%22"
+                                class="contact-link address-link">
                                 м. Одеса,<br>
                                 пр. Небесної Сотні, 100/1
                             </a>
@@ -63,21 +65,17 @@
                 <!-- Quick Links -->
                 <div class="footer-links">
                     <h3 class="footer-title">Послуги</h3>
-                    <a href="#" class="footer-link">Викуп легкових авто</a>
-                    <a href="#" class="footer-link">Викуп позашляховиків</a>
-                    <a href="#" class="footer-link">Оцінка авто онлайн</a>
+                    <router-link to="/contact" class="footer-link">Викуп легкових авто</router-link>
+                    <router-link to="/contact" class="footer-link">Викуп позашляховиків</router-link>
+                    <router-link to="/contact" class="footer-link">Оцінка авто онлайн</router-link>
                 </div>
             </div>
 
             <!-- Map Section -->
             <div class="footer-map">
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3644.5524686286963!2d30.7046317!3d46.384694599999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40c7cdf97dcee44f%3A0x6a2762df677153ae!2z0JDQstGC0L7RgdCw0LvQvtC9ICJFbGVnYW5jZSBBdXRvIg!5e1!3m2!1sru!2sua!4v1759781170565!5m2!1sru!2sua" 
-                    width="100%" 
-                    height="300" 
-                    style="border:0; border-radius: 16px;" 
-                    allowfullscreen="" 
-                    loading="lazy" 
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3644.5524686286963!2d30.7046317!3d46.384694599999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40c7cdf97dcee44f%3A0x6a2762df677153ae!2z0JDQstGC0L7RgdCw0LvQvtC9ICJFbGVnYW5jZSBBdXRvIg!5e1!3m2!1sru!2sua!4v1759781170565!5m2!1sru!2sua"
+                    width="100%" height="300" style="border:0; border-radius: 16px;" allowfullscreen="" loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
             </div>
@@ -91,7 +89,8 @@
                         © 2025 Elegance Auto. Всі права захищені
                     </p>
                     <p class="developer">
-                        Розробка та дизайн: <a href="https://svvdevel.tech/" target="_blank" rel="noopener">svvdevel.tech</a>
+                        Розробка та дизайн: <a href="https://svvdevel.tech/" target="_blank"
+                            rel="noopener">svvdevel.tech</a>
                     </p>
                 </div>
             </div>
@@ -330,5 +329,4 @@
         }
     }
 }
-
 </style>

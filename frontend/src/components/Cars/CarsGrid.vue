@@ -394,7 +394,6 @@ onMounted(() => {
 }
 
 .catalog-header h1 {
-    color: #333;
     margin-bottom: 1rem;
     font-size: 2.5rem;
 }
@@ -427,6 +426,7 @@ onMounted(() => {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1rem;
+    color: #000;
 }
 
 .clear-filters {

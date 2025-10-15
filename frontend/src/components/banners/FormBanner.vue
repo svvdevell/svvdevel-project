@@ -223,7 +223,6 @@ const toggleFaq = (index) => {
 .info-section {
     width: 100%;
     padding: 80px 20px;
-    background: #f8f9fa;
 }
 
 .info-container {
@@ -241,7 +240,6 @@ const toggleFaq = (index) => {
     font-family: 'Work Sans', sans-serif;
     font-size: 48px;
     font-weight: 700;
-    color: #000;
     text-align: center;
     margin-bottom: 20px;
     line-height: 1.2;
@@ -251,9 +249,7 @@ const toggleFaq = (index) => {
     font-family: 'Work Sans', sans-serif;
     font-size: 20px;
     font-weight: 400;
-    color: #666;
     text-align: center;
-    max-width: 800px;
     margin: 0 auto;
     line-height: 1.6;
 }
@@ -459,6 +455,10 @@ const toggleFaq = (index) => {
     font-size: 18px;
     font-weight: 600;
     color: #000;
+
+    & span {
+        color: #000;
+    }
 }
 
 .faq-icon {
