@@ -302,6 +302,7 @@ onUnmounted(() => {
         z-index: 9999;
         top: 0;
         right: -100%;
+        display: none;
         width: 80%;
         max-width: 350px;
         height: 100vh;
@@ -315,6 +316,7 @@ onUnmounted(() => {
         box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
 
         &.active {
+            display: flex;
             right: 0;
         }
     }

@@ -260,11 +260,10 @@ onMounted(() => {
 .car-details-page {
     padding: 2rem;
     min-height: 100vh;
-    background: #f8f9fa;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
 }
 

@@ -140,7 +140,7 @@ const carImageUrl = computed(() => {
 
 // Methods
 const handleOpenDetails = () => {
-    emit('open-details', props.car)
+    emit('CarsCatalog', props.car)
 }
 
 const handleImageError = (event) => {
