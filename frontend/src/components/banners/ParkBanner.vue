@@ -57,11 +57,11 @@
         & p {
             font-weight: 400;
             font-style: Regular;
-            font-size: 22px;
+            font-size: 20px;
             leading-trim: NONE;
             line-height: 100%;
             letter-spacing: 0%;
-            color: rgba(0, 0, 0, 0.6);
+            color: rgb(255 255 255 / 72%);
         }
     }
 

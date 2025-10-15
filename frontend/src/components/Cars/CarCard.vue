@@ -249,7 +249,7 @@ const getImageTimestamp = (createdAt) => {
 }
 
 .car-title {
-    color: #1a1a1a;
+    color: #000;
     margin: 0 0 1.25rem 0;
     font-size: 1.5rem;
     font-weight: 600;
@@ -290,7 +290,7 @@ const getImageTimestamp = (createdAt) => {
 }
 
 .detail-row .value {
-    color: #1a1a1a;
+    color: #000;
     font-weight: 600;
     font-size: 0.95rem;
 }

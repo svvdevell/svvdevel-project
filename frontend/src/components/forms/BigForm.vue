@@ -570,7 +570,7 @@ const resetForm = () => {
     font-family: 'Work Sans', sans-serif;
     font-size: 42px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #000;
     margin-bottom: 16px;
     line-height: 1.2;
 }
@@ -632,7 +632,7 @@ const resetForm = () => {
     font-family: 'Work Sans', sans-serif;
     font-size: 18px;
     font-weight: 400;
-    color: #1a1a1a;
+    color: #000;
     background: #fafafa;
     border: 2px solid #e0e0e0;
     border-radius: 12px;
@@ -688,7 +688,7 @@ const resetForm = () => {
     cursor: pointer;
     font-family: 'Work Sans', sans-serif;
     font-size: 17px;
-    color: #1a1a1a;
+    color: #000;
     transition: background-color 0.2s ease;
 
     &:hover {

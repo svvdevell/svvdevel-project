@@ -21,10 +21,11 @@ import Footer from './components/global/Footer.vue'
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  color: #FFF;
 }
 
 #app {
-  background-color: #FFF;
+  background: rgba(26, 26, 26, .95);
   // padding: 0 16px;
   // width: 100%;
   // max-width: 1440px;

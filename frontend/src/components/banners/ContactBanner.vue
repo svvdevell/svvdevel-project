@@ -120,7 +120,6 @@
         font-family: 'Work Sans', sans-serif;
         font-size: 48px;
         font-weight: 700;
-        color: #1a1a1a;
         margin-bottom: 16px;
         line-height: 1.2;
     }
@@ -128,7 +127,6 @@
     p {
         font-family: 'Work Sans', sans-serif;
         font-size: 20px;
-        color: #666;
         max-width: 600px;
         margin: 0 auto;
     }
@@ -167,7 +165,7 @@
         font-family: 'Work Sans', sans-serif;
         font-size: 28px;
         font-weight: 700;
-        color: #1a1a1a;
+        color: #000;
         margin: 0;
     }
 
@@ -221,7 +219,6 @@
         font-family: 'Work Sans', sans-serif;
         font-size: 24px;
         font-weight: 600;
-        color: #1a1a1a;
         margin-bottom: 20px;
         text-align: center;
     }
@@ -272,7 +269,7 @@
         font-family: 'Work Sans', sans-serif;
         font-size: 20px;
         font-weight: 600;
-        color: #1a1a1a;
+        color: #000;
         margin-bottom: 4px;
     }
 
@@ -333,7 +330,7 @@
         font-family: 'Work Sans', sans-serif;
         font-size: 18px;
         font-weight: 600;
-        color: #1a1a1a;
+        color: #000;
         margin-bottom: 4px;
     }
 

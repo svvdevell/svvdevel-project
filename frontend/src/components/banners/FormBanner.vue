@@ -241,7 +241,7 @@ const toggleFaq = (index) => {
     font-family: 'Work Sans', sans-serif;
     font-size: 48px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #000;
     text-align: center;
     margin-bottom: 20px;
     line-height: 1.2;
@@ -301,7 +301,7 @@ const toggleFaq = (index) => {
     font-family: 'Work Sans', sans-serif;
     font-size: 22px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #000;
     margin-bottom: 12px;
 }
 
@@ -324,7 +324,7 @@ const toggleFaq = (index) => {
     font-family: 'Work Sans', sans-serif;
     font-size: 40px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #000;
     text-align: center;
     margin-bottom: 50px;
 }
@@ -366,7 +366,7 @@ const toggleFaq = (index) => {
     font-family: 'Work Sans', sans-serif;
     font-size: 20px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #000;
     margin-bottom: 10px;
 }
 
@@ -418,7 +418,7 @@ const toggleFaq = (index) => {
     font-family: 'Work Sans', sans-serif;
     font-size: 40px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #000;
     text-align: center;
     margin-bottom: 40px;
 }
@@ -458,7 +458,7 @@ const toggleFaq = (index) => {
     font-family: 'Work Sans', sans-serif;
     font-size: 18px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #000;
 }
 
 .faq-icon {

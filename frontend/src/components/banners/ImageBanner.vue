@@ -113,7 +113,6 @@
             leading-trim: NONE;
             line-height: 100%;
             letter-spacing: 0%;
-            color: #00000099;
             max-width: 85%;
         }
     }
