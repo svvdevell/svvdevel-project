@@ -25,7 +25,7 @@
                 <div class="car-header">
                     <h1>{{ car.brand }} {{ car.model }} {{ car.year }}</h1>
                     <div class="car-status">
-                        <span class="status-badge">{{ car.status }}</span>
+                        <Badge :badge="car.status"/>
                     </div>
                 </div>
 
@@ -156,6 +156,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Badge from '@/components/common/Badge.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -268,7 +269,7 @@ onMounted(() => {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
+    padding: 10px;
     background: white;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -277,6 +278,10 @@ onMounted(() => {
     color: #333;
     margin-bottom: 2rem;
     transition: all 0.3s ease;
+}
+
+.back-btn img {
+    width: 20px;
 }
 
 .back-btn:hover {

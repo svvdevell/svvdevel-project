@@ -22,9 +22,8 @@
                     <div v-else class="no-image">📷 Немає фото</div>
 
                     <!-- Бейдж статусу -->
-                    <div v-if="car.status && car.status !== 'active'" class="status-badge"
-                        :class="`status-${car.status}`">
-                        {{ getStatusLabel(car.status) }}
+                    <div class="status-badge">
+                        <Badge />
                     </div>
                 </div>
 
@@ -129,6 +128,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import Badge from '@/components/common/Badge.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
