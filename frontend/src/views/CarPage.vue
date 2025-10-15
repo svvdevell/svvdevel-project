@@ -348,15 +348,6 @@ onMounted(() => {
     font-size: 2rem;
 }
 
-.status-badge {
-    padding: 0.5rem 1rem;
-    background: #28a745;
-    color: white;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
 .car-gallery {
     margin-bottom: 2rem;
 }

@@ -393,11 +393,6 @@ onMounted(() => {
     position: absolute;
     top: 10px;
     right: 10px;
-    padding: 0.4rem 0.8rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: white;
     text-transform: uppercase;
 }
 

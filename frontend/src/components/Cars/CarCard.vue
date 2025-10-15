@@ -24,6 +24,10 @@
             </div>
         </div>
 
+        <div class="status-badge">
+            <Badge :status="car.status" />
+        </div>
+
         <!-- Car Info -->
         <div class="car-info">
             <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
@@ -154,6 +158,13 @@ const getImageTimestamp = (createdAt) => {
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
+}
+
+.status-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
 }
 
 .car-card:hover {
