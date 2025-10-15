@@ -43,10 +43,8 @@
                 </div>
 
                 <div class="filter-group">
-                    <input v-model="filters.search" 
-                           type="text" 
-                           placeholder="Пошук по марці або моделі..."
-                           @input="debouncedSearch">
+                    <input v-model="filters.search" type="text" placeholder="Пошук по марці або моделі..."
+                        @input="debouncedSearch">
                 </div>
 
                 <div class="filter-group">
@@ -75,12 +73,7 @@
 
             <!-- Cars Grid -->
             <div v-if="!loading && !error" class="cars-grid">
-                <CarCard 
-                    v-for="car in filteredCars" 
-                    :key="car.id" 
-                    :car="car"
-                    @open-details="openCarModal"
-                />
+                <CarCard v-for="car in filteredCars" :key="car.id" :car="car" @open-details="goToCarPage" />
             </div>
 
             <!-- Empty State -->
@@ -91,102 +84,20 @@
 
             <!-- Pagination -->
             <div v-if="totalPages > 1" class="pagination">
-                <button @click="changePage(currentPage - 1)" 
-                        :disabled="currentPage <= 1" 
-                        class="page-btn">
+                <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1" class="page-btn">
                     Попередня
                 </button>
 
                 <div class="page-numbers">
-                    <button v-for="page in visiblePages" 
-                            :key="page" 
-                            @click="changePage(page)"
-                            :class="['page-btn', { active: page === currentPage }]">
+                    <button v-for="page in visiblePages" :key="page" @click="changePage(page)"
+                        :class="['page-btn', { active: page === currentPage }]">
                         {{ page }}
                     </button>
                 </div>
 
-                <button @click="changePage(currentPage + 1)" 
-                        :disabled="currentPage >= totalPages" 
-                        class="page-btn">
+                <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages" class="page-btn">
                     Наступна
                 </button>
-            </div>
-        </div>
-
-        <!-- Car Detail Modal -->
-        <div v-if="selectedCar" class="car-modal" @click="closeCarModal">
-            <div class="modal-content" @click.stop>
-                <button class="close-btn" @click="closeCarModal">&times;</button>
-
-                <div class="modal-header">
-                    <h2>{{ selectedCar.brand }} {{ selectedCar.model }} {{ selectedCar.year }}</h2>
-                </div>
-
-                <div class="modal-body">
-                    <!-- Images -->
-                    <div v-if="selectedCarImages.length > 0" class="car-images">
-                        <div class="main-image">
-                            <img :src="selectedCarImages[currentImageIndex].fileUrl" 
-                                 :alt="selectedCar.brand">
-                        </div>
-                        <div v-if="selectedCarImages.length > 1" class="image-thumbnails">
-                            <img v-for="(image, index) in selectedCarImages" 
-                                 :key="image.id" 
-                                 :src="image.fileUrl"
-                                 :alt="`Фото ${index + 1}`" 
-                                 :class="{ active: index === currentImageIndex }"
-                                 @click="currentImageIndex = index">
-                        </div>
-                    </div>
-
-                    <!-- Car Details -->
-                    <div class="car-full-details">
-                        <div class="details-grid">
-                            <div class="detail-item">
-                                <span class="label">Марка:</span>
-                                <span class="value">{{ selectedCar.brand }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">Модель:</span>
-                                <span class="value">{{ selectedCar.model }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">Рік випуску:</span>
-                                <span class="value">{{ selectedCar.year }}</span>
-                            </div>
-                            <div v-if="selectedCar.color" class="detail-item">
-                                <span class="label">Колір:</span>
-                                <span class="value">{{ selectedCar.color }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">Пробіг:</span>
-                                <span class="value">{{ formatMileage(selectedCar.mileage) }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">Паливо:</span>
-                                <span class="value">{{ selectedCar.fuel }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">Трансмісія:</span>
-                                <span class="value">{{ selectedCar.transmission }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">Привід:</span>
-                                <span class="value">{{ selectedCar.drive }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">Дата додавання:</span>
-                                <span class="value">{{ formatDate(selectedCar.createdAt) }}</span>
-                            </div>
-                        </div>
-
-                        <div v-if="selectedCar.description" class="full-description">
-                            <h4>Опис:</h4>
-                            <p>{{ selectedCar.description }}</p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -194,7 +105,10 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import CarCard from '../Cars/CarCard.vue'
+
+const router = useRouter()
 
 // Reactive data
 const cars = ref([])
@@ -204,9 +118,6 @@ const currentPage = ref(1)
 const totalCars = ref(0)
 const totalPages = ref(0)
 const itemsPerPage = ref(12)
-const selectedCar = ref(null)
-const selectedCarImages = ref([])
-const currentImageIndex = ref(0)
 
 const filters = reactive({
     fuel: '',
@@ -294,35 +205,8 @@ const fetchCars = async () => {
     }
 }
 
-const fetchCarDetails = async (carId) => {
-    try {
-        const apiUrl = process.env.NODE_ENV === 'production'
-            ? `/api/cars-sale/${carId}`
-            : `http://localhost:8001/api/cars-sale/${carId}`
-
-        const response = await fetch(apiUrl)
-
-        if (response.ok) {
-            const data = await response.json()
-            if (data.status === 'success') {
-                selectedCarImages.value = data.data.images || []
-                currentImageIndex.value = 0
-            }
-        }
-    } catch (err) {
-        console.error('Error fetching car details:', err)
-    }
-}
-
-const openCarModal = async (car) => {
-    selectedCar.value = car
-    await fetchCarDetails(car.id)
-}
-
-const closeCarModal = () => {
-    selectedCar.value = null
-    selectedCarImages.value = []
-    currentImageIndex.value = 0
+const goToCarPage = (car) => {
+    router.push({ name: 'car-details', params: { id: car.id } })
 }
 
 const changePage = (newPage) => {
@@ -355,21 +239,6 @@ const clearFilters = () => {
     filters.drive = ''
     filters.search = ''
 }
-
-const formatMileage = (mileage) => {
-    return new Intl.NumberFormat('uk-UA').format(mileage) + ' км'
-}
-
-const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('uk-UA', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    })
-}
-
-
 
 // Lifecycle
 onMounted(() => {
@@ -536,152 +405,6 @@ onMounted(() => {
     color: white;
 }
 
-.car-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 2rem;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 15px;
-    width: 100%;
-    max-width: 800px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-}
-
-.close-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-    color: #666;
-    z-index: 1001;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-.close-btn:hover {
-    background: #f0f0f0;
-    color: #333;
-}
-
-.modal-header {
-    padding: 2rem 2rem 1rem;
-    border-bottom: 1px solid #eee;
-}
-
-.modal-header h2 {
-    margin: 0;
-    color: #333;
-}
-
-.modal-body {
-    padding: 2rem;
-}
-
-.car-images {
-    margin-bottom: 2rem;
-}
-
-.main-image {
-    margin-bottom: 1rem;
-}
-
-.main-image img {
-    width: 100%;
-    max-height: 400px;
-    object-fit: contain;
-    border-radius: 10px;
-}
-
-.image-thumbnails {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding: 0.5rem 0;
-}
-
-.image-thumbnails img {
-    width: 80px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 5px;
-    cursor: pointer;
-    opacity: 0.7;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.image-thumbnails img:hover,
-.image-thumbnails img.active {
-    opacity: 1;
-    border-color: #007bff;
-}
-
-.details-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.detail-item {
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.detail-item .label {
-    display: block;
-    color: #666;
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-}
-
-.detail-item .value {
-    display: block;
-    color: #333;
-    font-weight: 600;
-    font-size: 1rem;
-}
-
-.full-description {
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.full-description h4 {
-    margin: 0 0 0.5rem 0;
-    color: #333;
-}
-
-.full-description p {
-    margin: 0;
-    color: #666;
-    line-height: 1.5;
-    white-space: pre-wrap;
-}
-
 @media (max-width: 768px) {
     .cars-catalog {
         padding: 1rem;
@@ -697,18 +420,6 @@ onMounted(() => {
 
     .filter-group {
         min-width: auto;
-    }
-
-    .car-modal {
-        padding: 1rem;
-    }
-
-    .modal-body {
-        padding: 1rem;
-    }
-
-    .details-grid {
-        grid-template-columns: 1fr;
     }
 }
 </style>

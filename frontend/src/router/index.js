@@ -27,6 +27,14 @@ const routes = [
         }
     },
     {
+        path: '/cars/:id',
+        name: 'CarPage',
+        component: CarPage,
+        meta: {
+            title: 'Деталі автомобіля'
+        }
+    },
+    {
         path: '/contact',
         name: 'Contact',
         component: () => import('@/views/Contact.vue'),

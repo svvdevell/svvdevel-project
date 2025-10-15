@@ -11,7 +11,7 @@
                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                     <polyline points="21 15 16 10 5 21"></polyline>
                 </svg>
-                <span>Нет фото</span>
+                <span>Немає фото</span>
             </div>
             <div v-if="car.imageCount > 1" class="image-count">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -38,7 +38,7 @@
                             <line x1="8" y1="2" x2="8" y2="6"></line>
                             <line x1="3" y1="10" x2="21" y2="10"></line>
                         </svg>
-                        Год:
+                        Рік:
                     </span>
                     <span class="value">{{ car.year }}</span>
                 </div>
@@ -50,7 +50,7 @@
                             <circle cx="12" cy="12" r="10"></circle>
                             <polyline points="12 6 12 12 16 14"></polyline>
                         </svg>
-                        Пробег:
+                        Пробіг:
                     </span>
                     <span class="value">{{ formatMileage(car.mileage) }}</span>
                 </div>
@@ -61,7 +61,7 @@
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 2v20M2 12h20"></path>
                         </svg>
-                        Топливо:
+                        Паливо:
                     </span>
                     <span class="value">{{ car.fuel }}</span>
                 </div>
@@ -86,7 +86,7 @@
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="2" y1="12" x2="22" y2="12"></line>
                         </svg>
-                        Привод:
+                        Привід:
                     </span>
                     <span class="value">{{ car.drive }}</span>
                 </div>
@@ -106,7 +106,7 @@
                     {{ formatDate(car.createdAt) }}
                 </span>
                 <button @click="handleOpenDetails" class="view-btn">
-                    Подробнее
+                    Детальніше
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="9 18 15 12 9 6"></polyline>
@@ -148,12 +148,12 @@ const handleImageError = (event) => {
 }
 
 const formatMileage = (mileage) => {
-    return new Intl.NumberFormat('ru-RU').format(mileage) + ' км'
+    return new Intl.NumberFormat('uk-UA').format(mileage) + ' км'
 }
 
 const formatDate = (dateString) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('ru-RU')
+    return date.toLocaleDateString('uk-UA')
 }
 
 const truncateDescription = (description) => {
