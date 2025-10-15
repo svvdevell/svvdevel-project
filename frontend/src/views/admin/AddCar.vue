@@ -567,10 +567,9 @@ const resetForm = () => {
 
 <style scoped>
 .add-car-container {
-    max-width: 800px;
+    max-width: 1440px;
     margin: 2rem auto;
     padding: 1rem;
-    
 }
 
 .form-wrapper {

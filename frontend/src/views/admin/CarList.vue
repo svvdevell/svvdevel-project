@@ -294,7 +294,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .cars-list-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -311,7 +311,6 @@ onMounted(() => {
 
 .header h1 {
     margin: 0;
-    color: #333;
 }
 
 .btn-add {
@@ -470,6 +469,11 @@ onMounted(() => {
     border-top: 1px solid #eee;
     font-size: 0.85rem;
     color: #999;
+
+    & * {
+        font-size: 0.85rem;
+    color: #999;
+    }
 }
 
 .car-actions {
@@ -653,8 +657,7 @@ onMounted(() => {
 
 @media (max-width: 768px) {
     .cars-list-container {
-        padding: 0;
-        
+        padding: 16px;
     }
 
     .header {
