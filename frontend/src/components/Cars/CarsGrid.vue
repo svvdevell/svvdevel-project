@@ -206,7 +206,7 @@ const fetchCars = async () => {
 }
 
 const goToCarPage = (car) => {
-    router.push({ name: 'car-details', params: { id: car.id } })
+    router.push({ name: 'CarPage', params: { id: car.id } })
 }
 
 const changePage = (newPage) => {
