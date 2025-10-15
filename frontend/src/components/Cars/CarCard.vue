@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="status-badge">
+        <div class="status-badgex">
             <Badge :status="car.status" />
         </div>
 
