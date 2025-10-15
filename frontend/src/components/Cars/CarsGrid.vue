@@ -106,7 +106,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import CarCard from '../Cars/CarCard.vue'
+import CarCard from '@/components/Cars/CarCard.vue'
 
 const router = useRouter()
 

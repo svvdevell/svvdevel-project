@@ -204,7 +204,7 @@ const fetchCarDetails = async () => {
 }
 
 const goBack = () => {
-    router.push({ name: 'cars-catalog' })
+    router.push({ name: 'CarsCatalog' })
 }
 
 const nextImage = () => {
@@ -329,10 +329,7 @@ onMounted(() => {
 }
 
 .car-details-content {
-    background: white;
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
 }
 
 .car-header {
@@ -347,7 +344,6 @@ onMounted(() => {
 .car-header h1 {
     margin: 0;
     font-size: 2rem;
-    color: #333;
 }
 
 .status-badge {
@@ -477,7 +473,6 @@ onMounted(() => {
 
 .car-specs h2 {
     margin-bottom: 1.5rem;
-    color: #333;
     font-size: 1.5rem;
 }
 
@@ -488,10 +483,9 @@ onMounted(() => {
 }
 
 .spec-item {
-    padding: 1.25rem;
+    padding: 15px;
     background: #f8f9fa;
     border-radius: 10px;
-    border-left: 4px solid #007bff;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
