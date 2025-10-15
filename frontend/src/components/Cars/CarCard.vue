@@ -265,6 +265,8 @@ const getImageTimestamp = (createdAt) => {
 .detail-row .label img {
     flex-shrink: 0;
     object-fit: fill;
+    width: 20px;
+    object-fit: contain;
 }
 
 .detail-row .value {
@@ -300,8 +302,11 @@ const getImageTimestamp = (createdAt) => {
     font-size: 0.875rem;
 }
 
-.date svg {
-    color: #999;
+.date img {
+    flex-shrink: 0;
+    object-fit: fill;
+    width: 20px;
+    object-fit: contain;
 }
 
 .view-btn {
