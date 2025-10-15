@@ -1,5 +1,5 @@
 <template>
-    <div class="car-card">
+    <div class="car-card" @click="handleOpenDetails(car)">
         <!-- Car Image -->
         <div class="car-image" @click="handleOpenDetails">
             <img v-if="car.imageCount > 0" :src="carImageUrl" :alt="`${car.brand} ${car.model}`"
@@ -31,13 +31,7 @@
             <div class="car-details">
                 <div class="detail-row">
                     <span class="label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
+                        <img src="../../assets/icons/car.png" alt="">
                         Рік:
                     </span>
                     <span class="value">{{ car.year }}</span>
@@ -45,11 +39,7 @@
 
                 <div class="detail-row">
                     <span class="label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
+                        <img src="../../assets/icons/speedometer.png" alt="">
                         Пробіг:
                     </span>
                     <span class="value">{{ formatMileage(car.mileage) }}</span>
@@ -57,10 +47,7 @@
 
                 <div class="detail-row">
                     <span class="label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v20M2 12h20"></path>
-                        </svg>
+                        <img src="../../assets/icons/engine.png" alt="">
                         Паливо:
                     </span>
                     <span class="value">{{ car.fuel }}</span>
@@ -68,12 +55,7 @@
 
                 <div class="detail-row">
                     <span class="label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
+                        <img src="../../assets/icons/manual-transmission.png" alt="">
                         КПП:
                     </span>
                     <span class="value">{{ car.transmission }}</span>
@@ -81,11 +63,7 @@
 
                 <div class="detail-row">
                     <span class="label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                        </svg>
+                        <img src="../../assets/icons/suspension.png" alt="">
                         Привід:
                     </span>
                     <span class="value">{{ car.drive }}</span>
@@ -98,14 +76,10 @@
 
             <div class="car-footer">
                 <span class="date">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
+                    <img src="../../assets/icons/calendar.png" alt="">
                     {{ formatDate(car.createdAt) }}
                 </span>
-                <button @click="handleOpenDetails(car)" class="view-btn">
+                <button class="view-btn">
                     Детальніше
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -118,7 +92,7 @@
 </template>
 
 <script setup>
-import { computed ,ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -288,9 +262,9 @@ const getImageTimestamp = (createdAt) => {
     font-size: 0.95rem;
 }
 
-.detail-row .label svg {
-    color: #007bff;
+.detail-row .label img {
     flex-shrink: 0;
+    object-fit: fill;
 }
 
 .detail-row .value {
@@ -307,7 +281,6 @@ const getImageTimestamp = (createdAt) => {
     padding: 1rem;
     background: #f8f9fa;
     border-radius: 8px;
-    border-left: 3px solid #007bff;
 }
 
 .car-footer {
