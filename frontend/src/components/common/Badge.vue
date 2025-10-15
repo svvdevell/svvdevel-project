@@ -1,13 +1,13 @@
 <template>
-    <div v-if="car.status && car.status !== 'active'" class="status-badge" :class="`status-${car.status}`">
-        <h6>{{ getStatusLabel(car.status) }}</h6>
+    <div v-if="status && status !== 'active'" class="status-badge" :class="`status-${status}`">
+        <h6>{{ getStatusLabel(status) }}</h6>
     </div>
 </template>
 
 <script setup>
 
 const props = defineProps({
-    badge: {
+    status: {
         type: String,
         required: false
     }
