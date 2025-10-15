@@ -365,7 +365,7 @@ onMounted(() => {
     height: 500px;
     border-radius: 10px;
     overflow: hidden;
-    background: #f8f9fa;
+    /* background: #f8f9fa; */
     margin-bottom: 1rem;
 }
 
@@ -429,7 +429,7 @@ onMounted(() => {
 
 .thumbnail {
     flex-shrink: 0;
-    width: 120px;
+    width: 70px;
     height: 90px;
     border-radius: 8px;
     overflow: hidden;
@@ -581,7 +581,7 @@ onMounted(() => {
     }
 
     .main-image {
-        height: 300px;
+        height: 400px;
     }
 
     .specs-grid {
