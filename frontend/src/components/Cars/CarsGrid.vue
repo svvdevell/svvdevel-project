@@ -297,6 +297,11 @@ onMounted(() => {
     color: #000;
 }
 
+.filter-group select option {
+    color: #000;
+
+}
+
 .clear-filters {
     padding: 0.75rem 1.5rem;
     background: #6c757d;

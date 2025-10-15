@@ -340,9 +340,6 @@ onUnmounted(() => {
     .mobile-social {
         display: flex;
         gap: 16px;
-        margin-top: 32px;
-        padding-top: 32px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
         width: 100%;
 
         a {

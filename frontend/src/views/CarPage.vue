@@ -3,10 +3,7 @@
         <div class="container">
             <!-- Back Button -->
             <button @click="goBack" class="back-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
+                <img src="../assets/icons/back.png" alt="">
                 Назад до каталогу
             </button>
 
@@ -28,7 +25,7 @@
                 <div class="car-header">
                     <h1>{{ car.brand }} {{ car.model }} {{ car.year }}</h1>
                     <div class="car-status">
-                        <span class="status-badge">{{ car.status === 'active' ? 'Активне' : 'Неактивне' }}</span>
+                        <span class="status-badge">{{ car.status }}</span>
                     </div>
                 </div>
 
@@ -585,7 +582,7 @@ onMounted(() => {
     }
 
     .specs-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 
     .nav-arrow {
