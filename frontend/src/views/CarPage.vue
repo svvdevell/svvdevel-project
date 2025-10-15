@@ -567,7 +567,7 @@ onMounted(() => {
     }
 
     .car-details-content {
-        padding: 1.5rem;
+
     }
 
     .car-header {
