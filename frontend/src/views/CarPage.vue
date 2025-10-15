@@ -25,7 +25,7 @@
                 <div class="car-header">
                     <h1>{{ car.brand }} {{ car.model }} {{ car.year }}</h1>
                     <div class="car-status">
-                        <Badge :badge="car.status"/>
+                        <Badge :status="car.status"/>
                     </div>
                 </div>
 

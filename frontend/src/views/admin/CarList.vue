@@ -23,7 +23,7 @@
 
                     <!-- Бейдж статусу -->
                     <div class="status-badge">
-                        <Badge />
+                        <Badge :status="car.status" />
                     </div>
                 </div>
 
@@ -299,7 +299,7 @@ onMounted(() => {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
-    
+
 }
 
 .header {
@@ -472,7 +472,7 @@ onMounted(() => {
 
     & * {
         font-size: 0.85rem;
-    color: #999;
+        color: #999;
     }
 }
 

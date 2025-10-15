@@ -20,8 +20,8 @@
             <!-- Заголовок -->
             <div class="car-header">
                 <h1>{{ car.brand }} {{ car.model }}</h1>
-                <div v-if="car.status && car.status !== 'active'" class="status-badge" :class="`status-${car.status}`">
-                    {{ getStatusLabel(car.status) }}
+                <div class="status-badge">
+                    <Badge :status="car.status" />
                 </div>
             </div>
 
@@ -303,7 +303,7 @@ onMounted(() => {
     max-width: 1440px;
     margin: 0 auto;
     padding: 2rem;
-    
+
 }
 
 .loading,
@@ -384,32 +384,6 @@ onMounted(() => {
     margin: 0;
     color: #333;
     font-size: 2.5rem;
-}
-
-.status-badge {
-    padding: 0.6rem 1.2rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: white;
-    text-transform: uppercase;
-}
-
-.status-sold {
-    background: #dc3545;
-}
-
-.status-new {
-    background: #28a745;
-}
-
-.status-sale {
-    background: #ffc107;
-    color: #333;
-}
-
-.status-super-price {
-    background: #ff6b6b;
 }
 
 .image-gallery {
@@ -686,7 +660,7 @@ onMounted(() => {
 @media (max-width: 768px) {
     .car-detail-container {
         padding: 0;
-        
+
     }
 
     .car-header {
