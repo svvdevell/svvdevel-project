@@ -25,7 +25,7 @@ const getStatusLabel = (status) => {
 
 <style lang="scss" scoped>
 .status-badge {
-    padding: 0.6rem 1.2rem;
+    padding: 10px;
     border-radius: 4px;
 
     & h6 {

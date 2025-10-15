@@ -163,7 +163,7 @@ const getImageTimestamp = (createdAt) => {
     position: relative;
 }
 
-.status-badge {
+.status-badgex {
     position: absolute;
     top: 10px;
     left: 10px;

@@ -22,7 +22,7 @@
                     <div v-else class="no-image">📷 Немає фото</div>
 
                     <!-- Бейдж статусу -->
-                    <div class="status-badge">
+                    <div class="status-badgex">
                         <Badge :status="car.status" />
                     </div>
                 </div>
@@ -389,7 +389,7 @@ onMounted(() => {
     font-size: 1.1rem;
 }
 
-.status-badge {
+.status-badgex {
     position: absolute;
     top: 10px;
     right: 10px;
