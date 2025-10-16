@@ -613,6 +613,10 @@ h2 {
     position: relative;
 }
 
+.form-group * {
+    color: #000;
+}
+
 .autocomplete-wrapper {
     position: relative;
 }
