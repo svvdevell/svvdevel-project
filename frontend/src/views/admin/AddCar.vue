@@ -107,6 +107,13 @@
                             placeholder="100000" :class="{ error: errors.mileage }">
                         <span v-if="errors.mileage" class="error-text">{{ errors.mileage }}</span>
                     </div>
+
+                    <div class="form-group">
+                        <label for="price">Ціна ($) *</label>
+                        <input v-model.number="form.price" type="number" id="price" required min="3"
+                            placeholder="10000$" :class="{ error: errors.price }">
+                        <span v-if="errors.price" class="error-text">{{ errors.price }}</span>
+                    </div>
                 </div>
 
                 <!-- Статус -->
@@ -244,6 +251,7 @@ const form = reactive({
     transmission: '',
     drive: '',
     mileage: null,
+    price: null,
     status: 'active',
     description: '',
     photos: []
@@ -258,6 +266,7 @@ const errors = reactive({
     transmission: null,
     drive: null,
     mileage: null,
+    price: null,
     status: null,
     description: null,
     photos: null
@@ -329,6 +338,7 @@ const loadCarData = async () => {
             transmission: carData.transmission,
             drive: carData.drive,
             mileage: carData.mileage,
+            price: carData.price,
             status: carData.status || 'active',
             description: carData.description || '',
             photos: []
@@ -394,6 +404,11 @@ const validateForm = () => {
 
     if (form.mileage === null || form.mileage < 0) {
         errors.mileage = 'Введіть коректний пробіг'
+        isValid = false
+    }
+
+    if (form.price === null || form.price < 0) {
+        errors.price = 'Введіть коректну ціну'
         isValid = false
     }
 
@@ -476,6 +491,7 @@ const submitForm = async () => {
         formData.append('transmission', form.transmission)
         formData.append('drive', form.drive)
         formData.append('mileage', form.mileage.toString())
+        formData.append('price', form.price.toString())
         formData.append('status', form.status)
         formData.append('description', form.description.trim())
 
@@ -545,6 +561,7 @@ const resetForm = () => {
         transmission: '',
         drive: '',
         mileage: null,
+        price: null,
         status: 'active',
         description: '',
         photos: []

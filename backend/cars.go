@@ -27,6 +27,7 @@ type Car struct {
     Transmission string    `json:"transmission"`
     Drive        string    `json:"drive"`
     Mileage      int       `json:"mileage"`
+    Price        int       `json:"price"`
     Status       string    `json:"status"`
     Description  string    `json:"description"`
     CreatedAt    time.Time `json:"createdAt"`
@@ -61,6 +62,7 @@ func createCarTables() {
             transmission VARCHAR(50) NOT NULL,
             drive VARCHAR(50) NOT NULL,
             mileage INTEGER NOT NULL,
+            price INTEGER NOT NULL,
             status VARCHAR(20) DEFAULT 'active',
             description TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -112,6 +114,7 @@ func createCarHandler(w http.ResponseWriter, r *http.Request) {
     transmission := strings.TrimSpace(r.FormValue("transmission"))
     drive := strings.TrimSpace(r.FormValue("drive"))
     mileageStr := strings.TrimSpace(r.FormValue("mileage"))
+    priceStr := strings.TrimSpace(r.FormValue("price"))
     status := strings.TrimSpace(r.FormValue("status"))
     description := strings.TrimSpace(r.FormValue("description"))
 
@@ -120,7 +123,7 @@ func createCarHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     if brand == "" || model == "" || yearStr == "" || fuel == "" || 
-       transmission == "" || drive == "" || mileageStr == "" {
+       transmission == "" || drive == "" || mileageStr == "" || priceStr == "" {
         http.Error(w, `{"error": "Все поля обязательны кроме описания и цвета"}`, http.StatusBadRequest)
         return
     }
@@ -137,10 +140,16 @@ func createCarHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    query := `INSERT INTO cars (brand, model, year, color, fuel, transmission, drive, mileage, status, description) 
+    price, err := strconv.Atoi(priceStr)
+    if err != nil || price < 0 {
+        http.Error(w, `{"error": "Некорректная цена"}`, http.StatusBadRequest)
+        return
+    }
+
+    query := `INSERT INTO cars (brand, model, year, color, fuel, transmission, drive, mileage, price, status, description) 
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     
-    result, err := db.Exec(query, brand, model, year, color, fuel, transmission, drive, mileage, status, description)
+    result, err := db.Exec(query, brand, model, year, color, fuel, transmission, drive, mileage, price, status, description)
     if err != nil {
         log.Printf("Error inserting car: %v", err)
         http.Error(w, `{"error": "Ошибка сохранения автомобиля"}`, http.StatusInternalServerError)
@@ -244,7 +253,7 @@ func getCarsHandler(w http.ResponseWriter, r *http.Request) {
 
     query := `
         SELECT c.id, c.brand, c.model, c.year, c.color, c.fuel, c.transmission, c.drive, 
-               c.mileage, c.status, c.description, c.created_at, c.updated_at,
+               c.mileage, c.price , c.status, c.description, c.created_at, c.updated_at,
                COUNT(ci.id) as image_count
         FROM cars c
         LEFT JOIN car_images_sale ci ON c.id = ci.car_id
@@ -267,7 +276,7 @@ func getCarsHandler(w http.ResponseWriter, r *http.Request) {
         var color, status sql.NullString
         
         err := rows.Scan(&car.ID, &car.Brand, &car.Model, &car.Year, &color, &car.Fuel,
-                        &car.Transmission, &car.Drive, &car.Mileage, &status, &car.Description,
+                        &car.Transmission, &car.Drive, &car.Mileage, &car.Price , &status, &car.Description,
                         &car.CreatedAt, &car.UpdatedAt, &car.ImageCount)
         if err != nil {
             log.Printf("Error scanning car row: %v", err)
@@ -303,6 +312,7 @@ func getCarsHandler(w http.ResponseWriter, r *http.Request) {
             "transmission": car.Transmission,
             "drive":        car.Drive,
             "mileage":      car.Mileage,
+            "price":        car.Price,
             "status":       status.String,
             "description":  car.Description,
             "createdAt":    car.CreatedAt,
@@ -345,12 +355,12 @@ func getCarDetailHandler(w http.ResponseWriter, r *http.Request) {
     var car Car
     var color, status sql.NullString
     
-    query := `SELECT id, brand, model, year, color, fuel, transmission, drive, mileage, 
+    query := `SELECT id, brand, model, year, color, fuel, transmission, drive, mileage, price, 
                      status, description, created_at, updated_at 
               FROM cars WHERE id = ?`
     
     err := db.QueryRow(query, carID).Scan(&car.ID, &car.Brand, &car.Model, &car.Year,
-                                         &color, &car.Fuel, &car.Transmission, &car.Drive, &car.Mileage,
+                                         &color, &car.Fuel, &car.Transmission, &car.Drive, &car.Mileage, &car.Price,
                                          &status, &car.Description, &car.CreatedAt, &car.UpdatedAt)
     if err != nil {
         if err == sql.ErrNoRows {
@@ -431,12 +441,13 @@ func updateCarHandler(w http.ResponseWriter, r *http.Request) {
     transmission := strings.TrimSpace(r.FormValue("transmission"))
     drive := strings.TrimSpace(r.FormValue("drive"))
     mileageStr := strings.TrimSpace(r.FormValue("mileage"))
+    priceStr := strings.TrimSpace(r.FormValue("price"))
     status := strings.TrimSpace(r.FormValue("status"))
     description := strings.TrimSpace(r.FormValue("description"))
 
     // Валидация обязательных полей
     if brand == "" || model == "" || yearStr == "" || fuel == "" || 
-       transmission == "" || drive == "" || mileageStr == "" {
+       transmission == "" || drive == "" || mileageStr == "" || priceStr == "" {
         http.Error(w, `{"error": "Все поля обязательны кроме описания и цвета"}`, http.StatusBadRequest)
         return
     }
@@ -454,14 +465,19 @@ func updateCarHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    price, err := strconv.Atoi(priceStr)
+    if err != nil || price < 0 {
+        http.Error(w, `{"error": "Некорректная цена"}`, http.StatusBadRequest)
+        return
+    }
     // Обновляем данные автомобиля
     updateQuery := `UPDATE cars SET brand = ?, model = ?, year = ?, color = ?, fuel = ?, 
-                    transmission = ?, drive = ?, mileage = ?, status = ?, description = ?, 
+                    transmission = ?, drive = ?, mileage = ?, price = ?, status = ?, description = ?, 
                     updated_at = CURRENT_TIMESTAMP 
                     WHERE id = ?`
     
     _, err = db.Exec(updateQuery, brand, model, year, color, fuel, transmission, 
-                     drive, mileage, status, description, carID)
+                     drive, mileage, price, status, description, carID)
     if err != nil {
         log.Printf("Error updating car: %v", err)
         http.Error(w, `{"error": "Ошибка обновления автомобиля"}`, http.StatusInternalServerError)
