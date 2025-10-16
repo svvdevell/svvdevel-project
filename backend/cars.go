@@ -87,7 +87,8 @@ func createCarTables() {
     // Добавляем колонки если их нет (для существующих БД)
     db.Exec(`ALTER TABLE cars ADD COLUMN color VARCHAR(50)`)
     db.Exec(`ALTER TABLE cars ADD COLUMN status VARCHAR(20) DEFAULT 'active'`)
-    
+    db.Exec(`ALTER TABLE cars ADD COLUMN price INTEGER DEFAULT 0`)
+
     log.Println("Car tables initialized")
 }
 
@@ -147,7 +148,7 @@ func createCarHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     query := `INSERT INTO cars (brand, model, year, color, fuel, transmission, drive, mileage, price, status, description) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     
     result, err := db.Exec(query, brand, model, year, color, fuel, transmission, drive, mileage, price, status, description)
     if err != nil {
@@ -253,7 +254,7 @@ func getCarsHandler(w http.ResponseWriter, r *http.Request) {
 
     query := `
         SELECT c.id, c.brand, c.model, c.year, c.color, c.fuel, c.transmission, c.drive, 
-               c.mileage, c.price , c.status, c.description, c.created_at, c.updated_at,
+               c.mileage, c.price, c.status, c.description, c.created_at, c.updated_at,
                COUNT(ci.id) as image_count
         FROM cars c
         LEFT JOIN car_images_sale ci ON c.id = ci.car_id
