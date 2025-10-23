@@ -51,11 +51,12 @@ jobs:
           
           # Создаём .env файл с переменными окружения
           echo "Creating .env file..."
+          
           cat > .env << EOF
-              TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-              TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
-              EOF
-                        
+          TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+          TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+          EOF
+
           echo "🛑 Stopping containers..."
           docker-compose down
           
