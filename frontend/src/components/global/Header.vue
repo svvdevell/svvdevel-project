@@ -4,7 +4,7 @@
             <router-link to="/" class="logo">
                 <img src="../../assets/images/logo.png" alt="Elegance Auto">
             </router-link>
-
+фывфывфывфывйцуйцуйцуйцу
             <!-- Desktop Menu -->
             <div class="nav-menu" :class="{ 'active': isMenuOpen }">
                 <router-link to="/" class="nav-link" @click="closeMenu">Головна</router-link>
