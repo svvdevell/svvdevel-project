@@ -33,8 +33,6 @@
                         <img src="../../assets/icons/phone.svg" alt="" class="contact-icon">
                         <div>
                             <a href="tel:0734080999" class="contact-link">+38 (073) 40 80 999</a>
-                            <a href="tel:0631653737" class="contact-link">+38 (063) 16 53 737</a>
-                            <a href="tel:0963313331" class="contact-link">+38 (096) 33 13 331</a>
                         </div>
                     </div>
                     <div class="contact-item">

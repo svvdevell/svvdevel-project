@@ -7,33 +7,6 @@
                 <p>Оцінимо ваш автомобіль протягом 30 хвилин. Виплата готівкою в день звернення</p>
             </div>
 
-            <!-- Main Contact Card -->
-            <div class="main-contact-card">
-                <div class="card-header">
-                    <div class="icon-badge">
-                        <img src="../../assets/icons/phone.svg" alt="">
-                    </div>
-                    <div>
-                        <h3>Телефонуйте зараз</h3>
-                        <p>Працюємо щодня з 9:00 до 20:00</p>
-                    </div>
-                </div>
-                <div class="phone-grid">
-                    <a href="tel:0734080999" class="phone-btn primary">
-                        <span class="phone-number">073 408 0999</span>
-                        <span class="phone-label">Kyivstar</span>
-                    </a>
-                    <a href="tel:0631653737" class="phone-btn primary">
-                        <span class="phone-number">063 165 3737</span>
-                        <span class="phone-label">Lifecell</span>
-                    </a>
-                    <a href="tel:0963313331" class="phone-btn primary">
-                        <span class="phone-number">096 331 3331</span>
-                        <span class="phone-label">Vodafone</span>
-                    </a>
-                </div>
-            </div>
-
             <!-- Messenger Block -->
             <div class="messenger-block">
                 <h3>Або напишіть в месенджер</h3>
@@ -43,6 +16,13 @@
                         <div>
                             <span class="messenger-title">Telegram</span>
                             <span class="messenger-desc">Швидка відповідь</span>
+                        </div>
+                    </a>
+                    <a href="tel:0734080999" class="messenger-card telegram">
+                        <img src="../../assets/icons/phone.svg" alt="">
+                        <div>
+                            <span class="messenger-title">Lifecell</span>
+                            <span class="messenger-desc">073 408 0999</span>
                         </div>
                     </a>
                     <a href="https://t.me/eleganceauto_odessa" class="messenger-card telegram-channel">

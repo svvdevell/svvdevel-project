@@ -53,6 +53,13 @@
                 <span></span>
             </button>
         </nav>
+
+        <div class="mob-nav-menu" :class="{ 'active': isMenuOpen }">
+            <router-link to="/" class="nav-link">Головна</router-link>
+            <router-link to="/catalog" class="nav-link">У продажі</router-link>
+            <router-link to="/contact" class="nav-link">Контакти</router-link>
+
+        </div>
     </header>
 </template>
 
@@ -265,7 +272,7 @@ onUnmounted(() => {
 }
 
 // Mobile Social Links (hidden by default)
-.mobile-social {
+.mobile-social , .mob-nav-menu {
     display: none;
 }
 
@@ -322,6 +329,7 @@ onUnmounted(() => {
     }
 
     .nav-link {
+        text-align: center;
         width: 100%;
         font-size: 20px;
         padding: 16px 0;
@@ -366,6 +374,14 @@ onUnmounted(() => {
                 }
             }
         }
+    }
+
+    .mob-nav-menu {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
     }
 }
 

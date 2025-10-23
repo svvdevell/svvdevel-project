@@ -2,7 +2,7 @@
     <div class="car-card" @click="handleOpenDetails(car)">
         <!-- Car Image -->
         <div class="car-image" @click="handleOpenDetails">
-            <img v-if="car.imageCount > 0" :src="carImageUrl" :alt="`${car.brand} ${car.model}`"
+            <img v-if="car.imageCount > 0" :src="car?.images[0]?.fileUrl" :alt="`${car.brand} ${car.model}`"
                 @error="handleImageError">
             <div v-else class="no-image">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
@@ -12,15 +12,6 @@
                     <polyline points="21 15 16 10 5 21"></polyline>
                 </svg>
                 <span>Немає фото</span>
-            </div>
-            <div v-if="car.imageCount > 1" class="image-count">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                    <polyline points="21 15 16 10 5 21"></polyline>
-                </svg>
-                {{ car.imageCount }}
             </div>
         </div>
 
