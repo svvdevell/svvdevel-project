@@ -49,20 +49,17 @@ jobs:
           echo "✅ New commit: $(git rev-parse --short HEAD)"
           echo "📝 Latest commit message: $(git log -1 --pretty=%B)"
           
-          # Создаём .env файл с переменными окружения
-          echo "Creating .env file..."
+          # Экспортируем переменные окружения (они уже доступны из envs)
+          export TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN}"
+          export TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID}"
           
-          cat > .env << EOF
-          TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-          TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
-          EOF
-
           echo "🛑 Stopping containers..."
           docker-compose down
           
           echo "🗑️ Removing old images..."
           docker rmi -f svvdevel-project_frontend 2>/dev/null || true
           docker rmi -f svvdevel-project_backend 2>/dev/null || true
+          docker rmi -f svvdevel-project_nginx 2>/dev/null || true
           
           echo "🔨 Building with no cache..."
           docker-compose build --no-cache --pull
@@ -78,6 +75,9 @@ jobs:
           
           echo "📋 Backend logs (last 20 lines):"
           docker-compose logs --tail=20 backend
+          
+          echo "📋 Nginx logs (last 20 lines):"
+          docker-compose logs --tail=20 nginx
           
           echo "🧹 Cleanup..."
           docker image prune -af
