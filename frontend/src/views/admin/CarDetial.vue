@@ -74,6 +74,7 @@
                         <div class="info-row">
                             <span class="info-label">Об`єм Двигуна:</span>
                             <span class="info-value">{{ car.volume }}</span>
+                            
                         </div>
                         <div class="info-row">
                             <span class="info-label">Трансмиссия:</span>
