@@ -10,7 +10,6 @@ import CarsCatalog from '@/views/CarsCatalog.vue'
 import Login from '@/views/Login.vue'
 import CarPage from '@/views/CarPage.vue'
 
-
 const routes = [
     {
         path: '/',
@@ -94,7 +93,7 @@ const routes = [
     {
         path: '/admin/detail/:id',
         name: 'AdminCarDetail',
-        component: () => import('@/views/admin/CarDetial.vue'),
+        component: () => import('@/views/admin/CarDetail.vue'),
         meta: {
             title: 'Деталі автомобіля',
             requiresAuth: true
