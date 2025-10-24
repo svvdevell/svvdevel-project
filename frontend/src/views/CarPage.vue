@@ -114,7 +114,7 @@
                         </div>
                         <div class="spec-item">
                             <span class="spec-label">Об`єм двигуна</span>
-                            <span class="spec-value">{{ car.fuel }}</span>
+                            <span class="spec-value">{{ car.volume }}</span>
                         </div>
                         <div class="spec-item">
                             <span class="spec-label">Трансмісія</span>
