@@ -108,7 +108,7 @@ func registerCarRoutes(r *mux.Router) {
 func createCarHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
-    r.ParseMultipartForm(100 << 20)
+    r.ParseMultipartForm(50 << 20)
 
     brand := strings.TrimSpace(r.FormValue("brand"))
     model := strings.TrimSpace(r.FormValue("model"))
@@ -188,7 +188,7 @@ func createCarHandler(w http.ResponseWriter, r *http.Request) {
             }
             defer file.Close()
 
-            if fileHeader.Size > 10<<20 {
+            if fileHeader.Size > 5<<20 {
                 log.Printf("File too large: %s", fileHeader.Filename)
                 continue
             }
@@ -218,8 +218,7 @@ func createCarHandler(w http.ResponseWriter, r *http.Request) {
                 os.Remove(filePath)
                 continue
             }
-            log.Printf("Получен запрос на добавление автомобиля. Размер данных: %d байт", r.ContentLength)
-            log.Printf("Обработка файла %d: %s, размер: %d байт", i+1, fileHeader.Filename, fileHeader.Size)
+
             uploadedFiles = append(uploadedFiles, fileName)
         }
     }
@@ -443,7 +442,7 @@ func updateCarHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     // Ограничиваем размер загружаемых файлов (50MB)
-    r.ParseMultipartForm(100 << 20)
+    r.ParseMultipartForm(50 << 20)
 
     // Получаем данные из формы
     brand := strings.TrimSpace(r.FormValue("brand"))
@@ -548,7 +547,7 @@ func updateCarHandler(w http.ResponseWriter, r *http.Request) {
             defer file.Close()
 
             // Проверяем размер файла (максимум 5MB)
-            if fileHeader.Size > 10<<20 {
+            if fileHeader.Size > 5<<20 {
                 log.Printf("File too large: %s", fileHeader.Filename)
                 continue
             }
