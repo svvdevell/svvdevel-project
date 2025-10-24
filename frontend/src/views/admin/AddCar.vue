@@ -157,7 +157,8 @@
                     <span v-if="errors.photos" class="error-text">{{ errors.photos }}</span>
 
                     <div class="file-info">
-                        Максимальний розмір файлу: 10MB. Підтримувані формати: JPG, PNG, WebP. Фото будуть автоматично стиснуті.
+                        Максимальний розмір файлу: 10MB. Підтримувані формати: JPG, PNG, WebP. Фото будуть автоматично
+                        стиснуті.
                     </div>
 
                     <!-- Статус обробки зображень -->
@@ -171,7 +172,8 @@
                             <img :src="preview" :alt="`Нове фото ${index + 1}`">
                             <button type="button" @click="removePhoto(index)" class="remove-photo">×</button>
                             <div class="photo-number">{{ index + 1 }}</div>
-                            <div v-if="form.photos[index]" class="photo-size">{{ formatFileSize(form.photos[index].size) }}</div>
+                            <div v-if="form.photos[index]" class="photo-size">{{ formatFileSize(form.photos[index].size)
+                                }}</div>
                         </div>
                     </div>
                 </div>
@@ -182,13 +184,14 @@
                         :disabled="isSubmitting || isProcessingImages">
                         Скасувати
                     </button>
-                    <button v-else type="button" @click="resetForm" class="btn-secondary" 
+                    <button v-else type="button" @click="resetForm" class="btn-secondary"
                         :disabled="isSubmitting || isProcessingImages">
                         Очистити
                     </button>
                     <button type="submit" class="btn-primary" :disabled="isSubmitting || isProcessingImages">
                         <span v-if="!isSubmitting">{{ isEditMode ? 'Зберегти зміни' : 'Додати автомобіль' }}</span>
-                        <span v-else>{{ uploadProgress > 0 ? `Збереження... ${uploadProgress}%` : 'Збереження...' }}</span>
+                        <span v-else>{{ uploadProgress > 0 ? `Збереження... ${uploadProgress}%` : 'Збереження...'
+                            }}</span>
                     </button>
                 </div>
 
@@ -270,6 +273,30 @@ const form = reactive({
     photos: []
 })
 
+// Функция для получения заголовков аутентификации - ИСПРАВЛЕНО!
+function getAuthHeaders() {
+    // Проверяем наличие разных свойств, которые могут содержать информацию об аутентификации
+    if (authStore.token) {
+        return {
+            'Authorization': `Bearer ${authStore.token}`
+        };
+    }
+
+    // Если есть метод getHeaders
+    if (typeof authStore.getHeaders === 'function') {
+        return authStore.getHeaders();
+    }
+
+    // Если есть свойство headers
+    if (authStore.headers) {
+        return authStore.headers;
+    }
+
+    // Если у authStore вообще нет никаких методов или свойств для аутентификации,
+    // просто возвращаем пустой объект
+    return {};
+}
+
 // При завантаженні компонента
 onMounted(() => {
     // Перевіряємо чи ми в режимі редагування
@@ -285,7 +312,7 @@ async function loadCarDetails(carId) {
     try {
         const response = await fetch(`/api/cars-sale/${carId}`, {
             method: 'GET',
-            headers: authStore.getAuthHeader()
+            headers: getAuthHeaders() // Исправлено!
         })
 
         if (!response.ok) {
@@ -323,7 +350,7 @@ async function loadCarDetails(carId) {
 // Функції для автокомпліту
 function onBrandInput() {
     const query = form.brand.toLowerCase().trim()
-    
+
     if (query) {
         filteredBrands.value = carBrands.filter(brand =>
             brand.toLowerCase().includes(query)
@@ -415,10 +442,10 @@ function validateForm() {
 // Функція для форматування розміру файлу
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Байт'
-    
+
     const sizes = ['Байт', 'КБ', 'МБ', 'ГБ']
     const i = Math.floor(Math.log(bytes) / Math.log(1024))
-    
+
     return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`
 }
 
@@ -428,7 +455,7 @@ function formatFileSize(bytes) {
 async function compressImage(file, maxSizeMB = 1) {
     return new Promise((resolve, reject) => {
         const maxSize = maxSizeMB * 1024 * 1024 // в байтах
-        
+
         // Якщо файл вже менший за максимальний розмір або не є зображенням - повертаємо як є
         if (file.size <= maxSize || !file.type.startsWith('image/')) {
             console.log(`Файл ${file.name} не потребує стиснення (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
@@ -436,49 +463,49 @@ async function compressImage(file, maxSizeMB = 1) {
         }
 
         console.log(`Стискаємо файл ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`)
-        
+
         const reader = new FileReader()
         reader.readAsDataURL(file)
-        
+
         reader.onload = (event) => {
             const img = new Image()
             img.src = event.target.result
-            
+
             img.onload = () => {
                 // Створюємо canvas для стиснення
                 const canvas = document.createElement('canvas')
-                
+
                 // Визначаємо розміри
                 let width = img.width
                 let height = img.height
-                
+
                 // Якщо розміри занадто великі, зменшуємо
                 const MAX_WIDTH = 1800
                 const MAX_HEIGHT = 1800
-                
+
                 if (width > MAX_WIDTH) {
                     const ratio = width / MAX_WIDTH
                     width = MAX_WIDTH
                     height = Math.round(height / ratio)
                 }
-                
+
                 if (height > MAX_HEIGHT) {
                     const ratio = height / MAX_HEIGHT
                     height = MAX_HEIGHT
                     width = Math.round(width / ratio)
                 }
-                
+
                 canvas.width = width
                 canvas.height = height
-                
+
                 // Малюємо зображення на canvas
                 const ctx = canvas.getContext('2d')
                 ctx.drawImage(img, 0, 0, width, height)
-                
+
                 // Починаємо з хорошої якості (0.9)
                 let quality = 0.9
                 const MIN_QUALITY = 0.5 // Не опускаємось нижче цієї якості
-                
+
                 // Функція рекурсивного стиснення зі зменшенням якості
                 const compressRecursively = () => {
                     canvas.toBlob(
@@ -494,7 +521,7 @@ async function compressImage(file, maxSizeMB = 1) {
                                     type: file.type,
                                     lastModified: file.lastModified
                                 })
-                                
+
                                 console.log(`Файл стиснуто: ${file.size} -> ${compressedFile.size} (${Math.round(compressedFile.size / file.size * 100)}%)`)
                                 resolve(compressedFile)
                             }
@@ -503,16 +530,16 @@ async function compressImage(file, maxSizeMB = 1) {
                         quality
                     )
                 }
-                
+
                 compressRecursively()
             }
-            
+
             img.onerror = (error) => {
                 console.error('Помилка при завантаженні зображення для стиснення', error)
                 resolve(file) // Повертаємо оригінальний файл у разі помилки
             }
         }
-        
+
         reader.onerror = (error) => {
             console.error('Помилка читання файлу', error)
             resolve(file) // Повертаємо оригінальний файл у разі помилки
@@ -524,24 +551,24 @@ async function compressImage(file, maxSizeMB = 1) {
 async function handleFileUpload(event) {
     const files = event.target.files
     if (!files || files.length === 0) return
-    
+
     // Скидаємо помилки
     errors.photos = ''
-    
+
     // Перевірка кількості файлів
     const maxAllowedFiles = 10 - (isEditMode.value ? existingImages.value.length - imagesToDelete.value.length : 0)
     if (files.length > maxAllowedFiles) {
         errors.photos = `Можна завантажити максимум ${maxAllowedFiles} зображень`
         return
     }
-    
+
     // Очищаємо поточні файли та превью
     form.photos = []
     photoPreviews.value.splice(0, photoPreviews.value.length)
-    
+
     // Відображаємо індикатор завантаження
     isProcessingImages.value = true
-    
+
     try {
         // Обробляємо кожен файл
         for (const file of files) {
@@ -550,13 +577,13 @@ async function handleFileUpload(event) {
                 errors.photos = `Файл ${file.name} занадто великий (${(file.size / 1024 / 1024).toFixed(2)}MB). Максимальний розмір - 20MB.`
                 continue
             }
-            
+
             // Стискаємо зображення до максимум 2MB
             const compressedFile = await compressImage(file, 2)
-            
+
             // Додаємо в форму
             form.photos.push(compressedFile)
-            
+
             // Створюємо превью
             const reader = new FileReader()
             reader.onload = (e) => {
@@ -577,15 +604,15 @@ async function submitForm() {
     try {
         // Якщо вже йде відправка - виходимо
         if (isSubmitting.value) return
-        
+
         // Очищаємо повідомлення
         successMessage.value = ''
         errorMessage.value = ''
-        
+
         // Встановлюємо прапор відправки
         isSubmitting.value = true
         uploadProgress.value = 0
-        
+
         // Валідація форми
         const isValid = validateForm()
         if (!isValid) {
@@ -593,17 +620,17 @@ async function submitForm() {
             errorMessage.value = 'Будь ласка, заповніть всі обов\'язкові поля.'
             return
         }
-        
+
         // Стратегія відправки залежить від кількості та розміру файлів
         const totalImagesSize = form.photos.reduce((sum, file) => sum + file.size, 0)
-        
+
         // Якщо загальний розмір файлів більший за 15MB або файлів більше 5, використовуємо стратегію пакетної відправки
         if (totalImagesSize > 15 * 1024 * 1024 || form.photos.length > 5) {
             console.log(`Використовуємо пакетну стратегію. Загальний розмір: ${(totalImagesSize / 1024 / 1024).toFixed(2)}MB, К-сть файлів: ${form.photos.length}`)
-            
+
             // Спочатку створюємо/оновлюємо автомобіль без зображень
             const carId = await createOrUpdateCarWithoutImages()
-            
+
             // Потім завантажуємо зображення пакетами
             await uploadImagesInBatches(carId)
         } else {
@@ -611,10 +638,10 @@ async function submitForm() {
             console.log(`Використовуємо звичайну стратегію. Загальний розмір: ${(totalImagesSize / 1024 / 1024).toFixed(2)}MB, К-сть файлів: ${form.photos.length}`)
             await createOrUpdateCarWithImages()
         }
-        
+
         // Успішне завершення
         successMessage.value = isEditMode.value ? 'Автомобіль успішно оновлено' : 'Автомобіль успішно додано'
-        
+
         if (isEditMode.value) {
             setTimeout(() => {
                 router.push(`/cars/${carIdToEdit.value}`)
@@ -634,34 +661,34 @@ async function submitForm() {
 // Функція для створення/оновлення автомобіля без зображень
 async function createOrUpdateCarWithoutImages() {
     const formData = new FormData()
-    
+
     // Додаємо всі дані крім зображень
     Object.keys(form).forEach(key => {
         if (key !== 'photos') {
             formData.append(key, form[key])
         }
     })
-    
+
     // Якщо в режимі редагування, додаємо ID зображень для видалення
     if (isEditMode.value && imagesToDelete.value.length > 0) {
         formData.append('deleteImages', imagesToDelete.value.join(','))
     }
-    
+
     // Відправляємо запит
     let url = '/api/cars-sale'
     let method = 'POST'
-    
+
     if (isEditMode.value) {
         url = `/api/cars-sale/${carIdToEdit.value}`
         method = 'PUT'
     }
-    
+
     const response = await fetch(url, {
         method,
         body: formData,
-        headers: authStore.getAuthHeader()
+        headers: getAuthHeaders() // Исправлено!
     })
-    
+
     if (!response.ok) {
         let errorText = 'Помилка збереження автомобіля'
         try {
@@ -672,13 +699,13 @@ async function createOrUpdateCarWithoutImages() {
         }
         throw new Error(errorText)
     }
-    
+
     const result = await response.json()
-    
+
     if (result.status !== 'success') {
         throw new Error(result.error || 'Помилка збереження автомобіля')
     }
-    
+
     // Повертаємо ID створеного/відредагованого автомобіля
     return isEditMode.value ? carIdToEdit.value : result.data.id
 }
@@ -686,20 +713,20 @@ async function createOrUpdateCarWithoutImages() {
 // Функція для відправки зображень пакетами
 async function uploadImagesInBatches(carId) {
     if (!form.photos.length) return
-    
+
     const id = carId || (isEditMode.value ? carIdToEdit.value : null)
     if (!id) {
         throw new Error('ID автомобіля не знайдено')
     }
-    
+
     const maxBatchSize = 8 * 1024 * 1024 // 8MB
     const maxBatchFiles = 3 // Максимум 3 файли в пакеті
-    
+
     // Створюємо пакети зображень
     const batches = []
     let currentBatch = []
     let currentBatchSize = 0
-    
+
     for (const file of form.photos) {
         // Якщо пакет заповнений (за розміром або кількістю) - починаємо новий
         if (currentBatchSize + file.size > maxBatchSize || currentBatch.length >= maxBatchFiles) {
@@ -714,21 +741,21 @@ async function uploadImagesInBatches(carId) {
             currentBatchSize += file.size
         }
     }
-    
+
     // Додаємо останній пакет, якщо він не порожній
     if (currentBatch.length > 0) {
         batches.push(currentBatch)
     }
-    
+
     // Відправляємо пакети один за одним
     let successfulBatches = 0
-    
+
     for (let i = 0; i < batches.length; i++) {
         uploadProgress.value = Math.round((i / batches.length) * 100)
-        console.log(`Відправка пакету ${i+1}/${batches.length}, ${batches[i].length} файлів`)
-        
+        console.log(`Відправка пакету ${i + 1}/${batches.length}, ${batches[i].length} файлів`)
+
         const batchFormData = new FormData()
-        
+
         // Додаємо мінімальні дані для оновлення
         if (isEditMode.value) {
             Object.keys(form).forEach(key => {
@@ -741,39 +768,39 @@ async function uploadImagesInBatches(carId) {
             batchFormData.append('brand', form.brand)
             batchFormData.append('model', form.model)
         }
-        
+
         // Додаємо зображення поточного пакету
         batches[i].forEach(file => {
             batchFormData.append('images', file)
         })
-        
+
         try {
             // Відправляємо запит на оновлення
             const batchResponse = await fetch(`/api/cars-sale/${id}`, {
                 method: 'PUT',
                 body: batchFormData,
-                headers: authStore.getAuthHeader()
+                headers: getAuthHeaders() // Исправлено!
             })
-            
+
             if (batchResponse.ok) {
                 successfulBatches++
             } else {
-                console.error(`Помилка при завантаженні пакету зображень ${i+1}/${batches.length}`)
+                console.error(`Помилка при завантаженні пакету зображень ${i + 1}/${batches.length}`)
             }
         } catch (error) {
-            console.error(`Помилка при відправці пакету ${i+1}:`, error)
+            console.error(`Помилка при відправці пакету ${i + 1}:`, error)
         }
-        
+
         // Невелика затримка між запитами
         await new Promise(resolve => setTimeout(resolve, 300))
     }
-    
+
     uploadProgress.value = 100
-    
+
     if (successfulBatches === 0) {
         throw new Error('Не вдалося завантажити жодне зображення')
     }
-    
+
     if (successfulBatches < batches.length) {
         console.warn(`Увага: завантажено тільки ${successfulBatches} з ${batches.length} пакетів зображень`)
     }
@@ -782,39 +809,39 @@ async function uploadImagesInBatches(carId) {
 // Функція для стандартної відправки всіх даних разом
 async function createOrUpdateCarWithImages() {
     const formData = new FormData()
-    
+
     // Додаємо всі дані форми
     Object.keys(form).forEach(key => {
         if (key !== 'photos') {
             formData.append(key, form[key])
         }
     })
-    
+
     // Додаємо зображення
     form.photos.forEach(file => {
         formData.append('images', file)
     })
-    
+
     // Якщо в режимі редагування, додаємо ID зображень для видалення
     if (isEditMode.value && imagesToDelete.value.length > 0) {
         formData.append('deleteImages', imagesToDelete.value.join(','))
     }
-    
+
     // Відправляємо запит
     let url = '/api/cars-sale'
     let method = 'POST'
-    
+
     if (isEditMode.value) {
         url = `/api/cars-sale/${carIdToEdit.value}`
         method = 'PUT'
     }
-    
+
     const response = await fetch(url, {
         method,
         body: formData,
-        headers: authStore.getAuthHeader()
+        headers: getAuthHeaders() // Исправлено!
     })
-    
+
     if (!response.ok) {
         let errorText = 'Помилка збереження автомобіля'
         try {
@@ -826,13 +853,13 @@ async function createOrUpdateCarWithImages() {
         }
         throw new Error(errorText)
     }
-    
+
     const result = await response.json()
-    
+
     if (result.status !== 'success') {
         throw new Error(result.error || 'Помилка збереження автомобіля')
     }
-    
+
     return isEditMode.value ? carIdToEdit.value : result.data.id
 }
 </script>
