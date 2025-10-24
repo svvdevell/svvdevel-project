@@ -29,9 +29,10 @@ async function generateSitemap() {
     ];
 
     const cars = await getAllCars();
-
     const carPages = cars.map(car => {
-        const lastmod = (car.updatedAt || car.createdAt || new Date()).split('T')[0];
+        const lastmod = car.updatedAt 
+            ? new Date(car.updatedAt).toISOString().split('T')[0]
+            : currentDate;
         return {
             url: `/cars/${car.id}`,
             priority: '0.7',
@@ -42,19 +43,16 @@ async function generateSitemap() {
 
     const allPages = [...staticPages, ...carPages];
 
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-
-    for (const page of allPages) {
-        xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}${page.url}</loc>\n`;
-        xml += `    <lastmod>${page.lastmod}</lastmod>\n`;
-        xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
-        xml += `    <priority>${page.priority}</priority>\n`;
-        xml += '  </url>\n';
-    }
-
-    xml += '</urlset>';
+    // КРИТИЧНО: используй template literals правильно
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allPages.map(page => `  <url>
+    <loc>${baseUrl}${page.url}</loc>
+    <lastmod>${page.lastmod}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
 
     const distDir = path.join(__dirname, 'dist');
     if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });

@@ -1,18 +1,12 @@
 User-agent: *
 Allow: /
 
-# Блокуємо API endpoint (якщо потрібно)
 Disallow: /api/
-
-# Блокуємо адмін панель (якщо є)
 Disallow: /admin/
 
-# Дозволяємо доступ до зображень
 Allow: /images/
 Allow: /assets/
 
-# Sitemap
 Sitemap: https://eleganceauto.od.ua/sitemap.xml
 
-# Затримка для ботів (необов'язково, щоб не навантажувати сервер)
 Crawl-delay: 1
