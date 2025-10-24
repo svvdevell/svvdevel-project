@@ -124,14 +124,33 @@ function generateHTML(route) {
   
   <!-- Structured Data (JSON-LD) -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "${route.path.includes('/cars/') ? 'Car' : 'AutoDealer'}",
-    "name": "${route.title}",
-    "description": "${route.description}",
-    "url": "https://eleganceauto.od.ua${route.path}",
-    "image": "${route.ogImage}"
-  }
+  // У prerender.js - покращена версія для сторінки авто
+{
+  "@context": "https://schema.org",
+  "@type": "Car",
+  "name": "${car.brand} ${car.model}",
+  "brand": {
+    "@type": "Brand",
+    "name": "${car.brand}"
+  },
+  "model": "${car.model}",
+  "vehicleModelDate": "${car.year}",
+  "mileageFromOdometer": {
+    "@type": "QuantitativeValue",
+    "value": "${car.mileage}",
+    "unitCode": "KMT"
+  },
+  "fuelType": "${car.fuel}",
+  "vehicleTransmission": "${car.transmission}",
+  "color": "${car.color}",
+  "offers": {
+    "@type": "Offer",
+    "price": "${car.price}",
+    "priceCurrency": "UAH",
+    "availability": "https://schema.org/InStock"
+  },
+  "image": "${route.ogImage}"
+}
   </script>
   
   <script type="module" crossorigin src="${js}"></script>
