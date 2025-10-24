@@ -72,8 +72,26 @@ async function getAllCarIds() {
     return [];
 }
 
+// Читаємо manifest.json, щоб дізнатися справжні назви файлів
+const manifestPath = path.join(__dirname, 'dist', 'manifest.json');
+let manifest = {};
+
+if (fs.existsSync(manifestPath)) {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+}
+
+function getAssets() {
+    const mainEntry = manifest['index.html'] || Object.values(manifest)[0];
+    return {
+        js: mainEntry.file ? '/' + mainEntry.file : '/assets/index.js',
+        css: mainEntry.css && mainEntry.css.length > 0 ? '/' + mainEntry.css[0] : '/assets/index.css'
+    };
+}
+
+
 // Генерація HTML з метатегами
 function generateHTML(route) {
+    const { js, css } = getAssets();
     return `<!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -117,8 +135,8 @@ function generateHTML(route) {
   }
   </script>
   
-  <script type="module" crossorigin src="/assets/index.js"></script>
-  <link rel="stylesheet" href="/assets/index.css">
+  <script type="module" crossorigin src="${js}"></script>
+  <link rel="stylesheet" href="${css}">
 </head>
 <body>
   <div id="app"></div>
