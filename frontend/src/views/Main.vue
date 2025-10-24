@@ -19,7 +19,19 @@ import FactsBanner from '@/components/banners/FactsBanner.vue'
 import ContactBanner from '@/components/banners/ContactBanner.vue'
 import ParkBanner from '@/components/banners/ParkBanner.vue'
 
+import { onMounted } from 'vue';
+import { useSeo } from '@/composables/useSeo';
 
+const { setMeta } = useSeo();
+
+onMounted(() => {
+    setMeta({
+        title: 'Elegance Auto - Викуп та продаж автомобілів в Одесі',
+        description: 'Вигідний викуп вашого автомобіля та продаж якісних авто в Одесі',
+        keywords: 'викуп авто Одеса, продаж автомобілів Одеса',
+        url: 'https://eleganceauto.od.ua/'
+    });
+});
 </script>
 
 <style scoped lang="scss">

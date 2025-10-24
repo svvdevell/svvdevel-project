@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /catalog
+Allow: /contact
+Allow: /cars/
+
+Disallow: /admin
+Disallow: /admin/*
+
+Sitemap: https://eleganceauto.od.ua/sitemap.xml
+Crawl-delay: 1

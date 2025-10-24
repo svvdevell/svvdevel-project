@@ -147,7 +147,8 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-
+const { setMeta, setStructuredData } = useSeo();
+import { useSeo } from '@/composables/useSeo';
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
@@ -189,7 +190,17 @@ const loadCarData = async () => {
 
         const result = await response.json()
         car.value = result.data
-
+    
+            // Оновлюємо SEO
+            const title = `${car.value.brand} ${car.value.model} ${car.value.year} - ${car.value.price.toLocaleString('uk-UA')} грн`;
+            const description = `${car.value.brand} ${car.value.model} ${car.value.year}, ${car.value.color}, ${car.value.fuel}, пробіг ${car.value.mileage.toLocaleString('uk-UA')} км`;
+            
+            setMeta({
+                title,
+                description,
+                url: `https://eleganceauto.od.ua/cars/${car.value.id}`,
+                ogImage: car.value.images?.[0] ? `https://eleganceauto.od.ua${car.value.images[0].fileUrl}` : null
+            });
     } catch (err) {
         console.error('Error loading car:', err)
         error.value = err.message || 'Ошибка загрузки данных'
@@ -247,6 +258,8 @@ const goBack = () => {
 const editCar = () => {
     router.push(`/admin/edit/${route.params.id}`)
 }
+
+watch(() => route.params.id, loadCarData);
 
 // Удаление
 const confirmDelete = () => {
