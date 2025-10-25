@@ -50,6 +50,14 @@
 
                 <div class="detail-row">
                     <span class="label">
+                        <img src="../../assets/icons/suspension.png" alt="">
+                        Об'єм двигуна:
+                    </span>
+                    <span class="value">{{ car.volume }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">
                         <img src="../../assets/icons/manual-transmission.png" alt="">
                         КПП:
                     </span>
@@ -62,6 +70,14 @@
                         Привід:
                     </span>
                     <span class="value">{{ car.drive }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">
+                        <img src="../../assets/icons/suspension.png" alt="">
+                        Ціна:
+                    </span>
+                    <span class="value">{{ car.price }}</span>
                 </div>
             </div>
 
