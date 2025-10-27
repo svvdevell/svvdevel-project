@@ -1,5 +1,4 @@
-// prerender.js - Скрипт для генерації статичних HTML з метатегами
-import puppeteer from 'puppeteer';
+// prerender.js - Виправлена версія зі створенням директорій
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -34,7 +33,6 @@ const routes = [
 
 // Функція для генерації JSON-LD structured data
 function generateStructuredData(route, carData = null) {
-    // Базова схема для організації
     const organizationSchema = {
         "@context": "https://schema.org",
         "@type": "AutoDealer",
@@ -78,7 +76,6 @@ function generateStructuredData(route, carData = null) {
         ]
     };
 
-    // Для головної сторінки
     if (route.path === '/') {
         return JSON.stringify({
             "@context": "https://schema.org",
@@ -115,7 +112,6 @@ function generateStructuredData(route, carData = null) {
         }, null, 2);
     }
 
-    // Для сторінки контактів
     if (route.path === '/contact') {
         return JSON.stringify({
             "@context": "https://schema.org",
@@ -130,7 +126,6 @@ function generateStructuredData(route, carData = null) {
         }, null, 2);
     }
 
-    // Для каталогу
     if (route.path === '/catalog') {
         return JSON.stringify({
             "@context": "https://schema.org",
@@ -141,7 +136,6 @@ function generateStructuredData(route, carData = null) {
         }, null, 2);
     }
 
-    // Для конкретного автомобіля
     if (carData) {
         return JSON.stringify({
             "@context": "https://schema.org",
@@ -192,7 +186,6 @@ function generateStructuredData(route, carData = null) {
         }, null, 2);
     }
 
-    // За замовчуванням
     return JSON.stringify(organizationSchema, null, 2);
 }
 
@@ -237,7 +230,7 @@ async function getAllCarIds() {
     return [];
 }
 
-// ВИПРАВЛЕНА ФУНКЦІЯ: Функція для отримання assets без manifest.json
+// Функція для отримання assets
 function getAssets() {
     const distAssetsPath = path.join(__dirname, 'dist', 'assets');
     
@@ -245,9 +238,7 @@ function getAssets() {
         if (fs.existsSync(distAssetsPath)) {
             const files = fs.readdirSync(distAssetsPath);
             
-            // Шукаємо JS файл (не .map файли)
             const jsFile = files.find(f => f.startsWith('index-') && f.endsWith('.js') && !f.endsWith('.map'));
-            // Шукаємо CSS файл
             const cssFile = files.find(f => f.startsWith('index-') && f.endsWith('.css'));
             
             if (jsFile && cssFile) {
@@ -266,7 +257,6 @@ function getAssets() {
         console.error('⚠️  Помилка читання assets:', error);
     }
     
-    // Fallback - повертаємо дефолтні шляхи
     console.warn('⚠️  Використовуємо дефолтні шляхи для assets');
     return {
         js: '/assets/index.js',
@@ -350,17 +340,26 @@ async function prerender() {
         try {
             const html = generateHTML(route);
 
-            // Створюємо директорію для роуту
-            const routePath = route.path === '/' ? 'index.html' : route.path;
-            const fullPath = path.join(distPath, routePath);
-            const dir = path.dirname(fullPath);
-
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
+            // ВИПРАВЛЕНО: Правильне створення шляху та директорій
+            let fileName;
+            
+            if (route.path === '/') {
+                // Головна сторінка -> dist/index.html
+                fileName = path.join(distPath, 'index.html');
+            } else {
+                // Інші сторінки -> dist/contact/index.html, dist/catalog/index.html тощо
+                const dirPath = path.join(distPath, route.path);
+                
+                // КРИТИЧНО: Створюємо директорію перед записом
+                if (!fs.existsSync(dirPath)) {
+                    fs.mkdirSync(dirPath, { recursive: true });
+                    console.log(`📁 Створено директорію: ${dirPath}`);
+                }
+                
+                fileName = path.join(dirPath, 'index.html');
             }
 
             // Записуємо HTML файл
-            const fileName = routePath.endsWith('.html') ? fullPath : path.join(fullPath, 'index.html');
             fs.writeFileSync(fileName, html, 'utf-8');
 
             console.log(`✅ ${route.path} -> ${fileName}`);
