@@ -1,5 +1,4 @@
 // prerender.js - Скрипт для генерації статичних HTML з метатегами
-import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -43,13 +42,13 @@ function generateStructuredData(route, carData = null) {
         "url": "https://eleganceauto.od.ua",
         "logo": "https://eleganceauto.od.ua/images/logo.png",
         "image": "https://eleganceauto.od.ua/images/og-home.jpg",
-        "telephone": "+380 (73) 408-09-99",
+        "telephone": "+380 (48) 123-45-67",
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Полковника Гуляєва, 107/1, Лиманка",
+            "streetAddress": "вул. Прикладна, 1",
             "addressLocality": "Одеса",
             "addressRegion": "Одеська область",
-            "postalCode": "65104",
+            "postalCode": "65000",
             "addressCountry": "UA"
         },
         "geo": {
@@ -73,8 +72,8 @@ function generateStructuredData(route, carData = null) {
         ],
         "priceRange": "$$",
         "sameAs": [
-            "https://t.me/eleganceauto_odessa",
-            "https://www.instagram.com/elegance_auto_od"
+            "https://www.facebook.com/eleganceauto",
+            "https://www.instagram.com/eleganceauto"
         ]
     };
 
@@ -112,7 +111,7 @@ function generateStructuredData(route, carData = null) {
                     }
                 }
             ]
-        });
+        }, null, 2);
     }
 
     // Для сторінки контактів
@@ -127,7 +126,7 @@ function generateStructuredData(route, carData = null) {
                     "name": "Контакти - Elegance Auto"
                 }
             ]
-        });
+        }, null, 2);
     }
 
     // Для каталогу - ItemList
@@ -138,7 +137,7 @@ function generateStructuredData(route, carData = null) {
             "name": "Каталог автомобілів",
             "url": "https://eleganceauto.od.ua/catalog",
             "provider": organizationSchema
-        });
+        }, null, 2);
     }
 
     // Для конкретного автомобіля
@@ -176,7 +175,7 @@ function generateStructuredData(route, carData = null) {
                     "offers": {
                         "@type": "Offer",
                         "price": carData.price,
-                        "priceCurrency": "USD",
+                        "priceCurrency": "UAH",
                         "availability": "https://schema.org/InStock",
                         "url": `https://eleganceauto.od.ua/cars/${carData.id}`,
                         "seller": {
@@ -189,17 +188,24 @@ function generateStructuredData(route, carData = null) {
                     "url": `https://eleganceauto.od.ua/cars/${carData.id}`
                 }
             ]
-        });
+        }, null, 2);
     }
 
     // За замовчуванням - базова схема організації
-    return JSON.stringify(organizationSchema);
+    return JSON.stringify(organizationSchema, null, 2);
 }
 
 // Функція для отримання метаданих машини з API
 async function getCarMetadata(carId) {
     try {
-        const response = await fetch(`https://eleganceauto.od.ua/api/cars-sale/${carId}`);
+        const response = await fetch(`https://eleganceauto.od.ua/api/cars-sale/${carId}`, {
+            signal: AbortSignal.timeout(5000) // Таймаут 5 секунд
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
 
         if (data.status === 'success' && data.data) {
@@ -213,11 +219,11 @@ async function getCarMetadata(carId) {
                 description: description,
                 keywords: `${car.brand} ${car.model} купити, ${car.brand} ${car.model} Одеса, ${car.brand} ціна, авто ${car.year}, купить ${car.brand} Одесса`,
                 ogImage: car.images && car.images[0] ? `https://eleganceauto.od.ua${car.images[0].fileUrl}` : 'https://eleganceauto.od.ua/images/og-default.jpg',
-                carData: car // Зберігаємо дані машини для structured data
+                carData: car
             };
         }
     } catch (error) {
-        console.error(`Помилка отримання даних для авто ${carId}:`, error);
+        console.error(`⚠️  Помилка отримання даних для авто ${carId}:`, error.message);
     }
     return null;
 }
@@ -225,14 +231,21 @@ async function getCarMetadata(carId) {
 // Функція для отримання списку всіх авто з API
 async function getAllCarIds() {
     try {
-        const response = await fetch('https://eleganceauto.od.ua/api/cars-sale');
+        const response = await fetch('https://eleganceauto.od.ua/api/cars-sale', {
+            signal: AbortSignal.timeout(10000) // Таймаут 10 секунд
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
 
         if (data.status === 'success' && Array.isArray(data.data)) {
             return data.data.map(car => car.id);
         }
     } catch (error) {
-        console.error('Помилка отримання списку авто:', error);
+        console.warn('⚠️  API недоступний, продовжуємо без динамічних роутів:', error.message);
     }
     return [];
 }
@@ -242,15 +255,47 @@ const manifestPath = path.join(__dirname, 'dist', 'manifest.json');
 let manifest = {};
 
 if (fs.existsSync(manifestPath)) {
-    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+    try {
+        manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+        console.log('✅ manifest.json знайдено');
+    } catch (error) {
+        console.warn('⚠️  Помилка читання manifest.json:', error.message);
+    }
+} else {
+    console.warn('⚠️  manifest.json не знайдено, використовуємо стандартні шляхи');
 }
 
 function getAssets() {
-    const mainEntry = manifest['index.html'] || Object.values(manifest)[0];
-    return {
-        js: mainEntry.file ? '/' + mainEntry.file : '/assets/index.js',
-        css: mainEntry.css && mainEntry.css.length > 0 ? '/' + mainEntry.css[0] : '/assets/index.css'
-    };
+    // Якщо manifest існує та має дані
+    if (manifest && Object.keys(manifest).length > 0) {
+        const mainEntry = manifest['index.html'] || Object.values(manifest)[0];
+        if (mainEntry) {
+            return {
+                js: mainEntry.file ? '/' + mainEntry.file : '/assets/index.js',
+                css: mainEntry.css && mainEntry.css.length > 0 ? '/' + mainEntry.css[0] : '/assets/index.css'
+            };
+        }
+    }
+    
+    // Fallback - шукаємо файли в директорії dist/assets
+    const distAssetsPath = path.join(__dirname, 'dist', 'assets');
+    let jsFile = '/assets/index.js';
+    let cssFile = '/assets/index.css';
+    
+    try {
+        if (fs.existsSync(distAssetsPath)) {
+            const files = fs.readdirSync(distAssetsPath);
+            const jsFiles = files.filter(f => f.endsWith('.js') && !f.endsWith('.map'));
+            const cssFiles = files.filter(f => f.endsWith('.css'));
+            
+            if (jsFiles.length > 0) jsFile = `/assets/${jsFiles[0]}`;
+            if (cssFiles.length > 0) cssFile = `/assets/${cssFiles[0]}`;
+        }
+    } catch (error) {
+        console.warn('⚠️  Помилка пошуку assets:', error.message);
+    }
+    
+    return { js: jsFile, css: cssFile };
 }
 
 // Генерація HTML з метатегами
@@ -317,18 +362,32 @@ async function prerender() {
 
     console.log('🚀 Початок prerendering з structured data...\n');
 
+    // Перевіряємо чи існує dist директорія
+    if (!fs.existsSync(distPath)) {
+        console.error('❌ Директорія dist/ не знайдена! Спочатку виконайте build.');
+        process.exit(1);
+    }
+
     // Додаємо динамічні роути для машин
     const carIds = await getAllCarIds();
-    console.log(`📦 Знайдено ${carIds.length} автомобілів для prerendering\n`);
-
-    for (const carId of carIds) {
-        const carRoute = await getCarMetadata(carId);
-        if (carRoute) {
-            routes.push(carRoute);
+    
+    if (carIds.length > 0) {
+        console.log(`📦 Знайдено ${carIds.length} автомобілів для prerendering\n`);
+        
+        for (const carId of carIds) {
+            const carRoute = await getCarMetadata(carId);
+            if (carRoute) {
+                routes.push(carRoute);
+            }
         }
+    } else {
+        console.log('📦 Динамічні роути недоступні, використовуємо тільки статичні сторінки\n');
     }
 
     // Генеруємо HTML для кожного роуту
+    let successCount = 0;
+    let errorCount = 0;
+    
     for (const route of routes) {
         try {
             const html = generateHTML(route);
@@ -346,14 +405,23 @@ async function prerender() {
             const fileName = routePath.endsWith('.html') ? fullPath : path.join(fullPath, 'index.html');
             fs.writeFileSync(fileName, html, 'utf-8');
 
-            console.log(`✅ ${route.path} -> ${fileName}`);
+            console.log(`✅ ${route.path}`);
+            successCount++;
         } catch (error) {
-            console.error(`❌ Помилка для ${route.path}:`, error);
+            console.error(`❌ Помилка для ${route.path}:`, error.message);
+            errorCount++;
         }
     }
 
-    console.log(`\n🎉 Prerendering завершено! Оброблено ${routes.length} сторінок з structured data.`);
+    console.log(`\n🎉 Prerendering завершено!`);
+    console.log(`   ✅ Успішно: ${successCount} сторінок`);
+    if (errorCount > 0) {
+        console.log(`   ❌ Помилок: ${errorCount}`);
+    }
 }
 
 // Запуск
-prerender().catch(console.error);
+prerender().catch(error => {
+    console.error('💥 Критична помилка:', error);
+    process.exit(1);
+});
