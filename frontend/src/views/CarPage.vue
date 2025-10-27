@@ -160,6 +160,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useSeo } from '@/composables/useSeo';
+const { setMeta, setStructuredData } = useSeo();
 import Badge from '@/components/common/Badge.vue'
 
 const route = useRoute()
@@ -191,6 +193,19 @@ const fetchCarDetails = async () => {
         }
 
         const data = await response.json()
+        car.value = data.data
+
+        const title = `${car.value.brand} ${car.value.model} ${car.value.year} - ${car.value.price.toLocaleString('uk-UA')} грн`;
+        const description = `${car.value.brand} ${car.value.model} ${car.value.year} року, ${car.value.color}, ${car.value.fuel}, ${car.value.transmission}, пробіг ${car.value.mileage.toLocaleString('uk-UA')} км. Ціна: ${car.value.price.toLocaleString('uk-UA')} грн. ${car.value.description || ''}`.slice(0, 160);
+        const keywords = `${car.value.brand} ${car.value.model} купити, ${car.value.brand} ${car.value.model} Одеса, ${car.value.brand} ціна, авто ${car.value.year}`;
+
+        setMeta({
+            title,
+            description,
+            keywords,
+            url: `https://eleganceauto.od.ua/cars/${car.value.id}`,
+            ogImage: car.value.images?.[0] ? `https://eleganceauto.od.ua${car.value.images[0].fileUrl}` : 'https://eleganceauto.od.ua/images/og-default.jpg'
+        });
 
         if (data.status === 'success') {
             car.value = data.data
