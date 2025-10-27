@@ -6,6 +6,7 @@ RUN npm ci
 
 COPY . .
 RUN npm run build
+RUN npm run prerender
 
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
