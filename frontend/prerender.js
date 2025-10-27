@@ -43,7 +43,7 @@ function generateStructuredData(route, carData = null) {
         "url": "https://eleganceauto.od.ua",
         "logo": "https://eleganceauto.od.ua/images/logo.png",
         "image": "https://eleganceauto.od.ua/images/og-home.jpg",
-        "telephone": "+380 (73) 408-09-99",
+        "telephone": "+380 (48) 123-45-67",
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "Полковника Гуляєва, 107/1, Лиманка",
@@ -170,7 +170,7 @@ function generateStructuredData(route, carData = null) {
                         "@type": "EngineSpecification",
                         "fuelType": carData.fuel
                     },
-                    "image": carData.images && carData.images.length > 0
+                    "image": carData.images && carData.images.length > 0 
                         ? carData.images.map(img => `https://eleganceauto.od.ua${img.fileUrl}`)
                         : ["https://eleganceauto.od.ua/images/og-default.jpg"],
                     "offers": {
@@ -237,28 +237,44 @@ async function getAllCarIds() {
     return [];
 }
 
-// Читаємо manifest.json, щоб дізнатися справжні назви файлів
-const manifestPath = path.join(__dirname, 'dist', 'manifest.json');
-let manifest = {};
-
-if (fs.existsSync(manifestPath)) {
-    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
-}
-
+// Функція для отримання assets без manifest.json
 function getAssets() {
-    const mainEntry = manifest['index.html'] || Object.values(manifest)[0];
+    const distAssetsPath = path.join(__dirname, 'dist', 'assets');
+    
+    try {
+        if (fs.existsSync(distAssetsPath)) {
+            const files = fs.readdirSync(distAssetsPath);
+            
+            // Шукаємо JS файл (не .map файли)
+            const jsFile = files.find(f => f.startsWith('index-') && f.endsWith('.js') && !f.endsWith('.map'));
+            // Шукаємо CSS файл
+            const cssFile = files.find(f => f.startsWith('index-') && f.endsWith('.css'));
+            
+            if (jsFile && cssFile) {
+                console.log(`📦 Знайдено assets: JS=${jsFile}, CSS=${cssFile}`);
+                return {
+                    js: `/assets/${jsFile}`,
+                    css: `/assets/${cssFile}`
+                };
+            }
+        }
+    } catch (error) {
+        console.error('⚠️  Помилка читання assets:', error);
+    }
+    
+    // Fallback
+    console.warn('⚠️  Assets не знайдено, використовуємо дефолтні шляхи');
     return {
-        js: mainEntry.file ? '/' + mainEntry.file : '/assets/index.js',
-        css: mainEntry.css && mainEntry.css.length > 0 ? '/' + mainEntry.css[0] : '/assets/index.css'
+        js: '/assets/index.js',
+        css: '/assets/index.css'
     };
 }
-
 
 // Генерація HTML з метатегами
 function generateHTML(route) {
     const { js, css } = getAssets();
     const structuredData = generateStructuredData(route, route.carData);
-
+    
     return `<!DOCTYPE html>
 <html lang="uk">
 <head>
