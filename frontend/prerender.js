@@ -32,170 +32,6 @@ const routes = [
     },
 ];
 
-// Функція для генерації JSON-LD structured data
-function generateStructuredData(route, carData = null) {
-    // Базова схема для організації
-    const organizationSchema = {
-        "@context": "https://schema.org",
-        "@type": "AutoDealer",
-        "name": "Elegance Auto",
-        "description": "Викуп та продаж автомобілів в Одесі",
-        "url": "https://eleganceauto.od.ua",
-        "logo": "https://eleganceauto.od.ua/images/logo.png",
-        "image": "https://eleganceauto.od.ua/images/og-home.jpg",
-        "telephone": "+380 (48) 123-45-67",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Полковника Гуляєва, 107/1, Лиманка",
-            "addressLocality": "Одеса",
-            "addressRegion": "Одеська область",
-            "postalCode": "65104",
-            "addressCountry": "UA"
-        },
-        "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": "46.384590958544315",
-            "longitude": "30.704781900546564"
-        },
-        "openingHoursSpecification": [
-            {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                "opens": "09:00",
-                "closes": "18:00"
-            },
-            {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": "Saturday",
-                "opens": "10:00",
-                "closes": "16:00"
-            }
-        ],
-        "priceRange": "$$",
-        "sameAs": [
-            "https://t.me/eleganceauto_odessa",
-            "https://www.instagram.com/elegance_auto_od"
-        ]
-    };
-
-    // Для головної сторінки
-    if (route.path === '/') {
-        return JSON.stringify({
-            "@context": "https://schema.org",
-            "@graph": [
-                organizationSchema,
-                {
-                    "@type": "Service",
-                    "serviceType": "Викуп автомобілів",
-                    "provider": {
-                        "@type": "AutoDealer",
-                        "name": "Elegance Auto"
-                    },
-                    "areaServed": {
-                        "@type": "City",
-                        "name": "Одеса"
-                    },
-                    "description": "Терміновий викуп автомобілів в Одесі. Оцінка за 15 хвилин, виплата готівкою.",
-                    "offers": {
-                        "@type": "Offer",
-                        "availability": "https://schema.org/InStock"
-                    }
-                },
-                {
-                    "@type": "WebSite",
-                    "url": "https://eleganceauto.od.ua",
-                    "name": "Elegance Auto",
-                    "potentialAction": {
-                        "@type": "SearchAction",
-                        "target": "https://eleganceauto.od.ua/catalog?search={search_term_string}",
-                        "query-input": "required name=search_term_string"
-                    }
-                }
-            ]
-        }, null, 2);
-    }
-
-    // Для сторінки контактів
-    if (route.path === '/contact') {
-        return JSON.stringify({
-            "@context": "https://schema.org",
-            "@graph": [
-                organizationSchema,
-                {
-                    "@type": "ContactPage",
-                    "url": "https://eleganceauto.od.ua/contact",
-                    "name": "Контакти - Elegance Auto"
-                }
-            ]
-        }, null, 2);
-    }
-
-    // Для каталогу
-    if (route.path === '/catalog') {
-        return JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "Каталог автомобілів",
-            "url": "https://eleganceauto.od.ua/catalog",
-            "provider": organizationSchema
-        }, null, 2);
-    }
-
-    // Для конкретного автомобіля
-    if (carData) {
-        return JSON.stringify({
-            "@context": "https://schema.org",
-            "@graph": [
-                organizationSchema,
-                {
-                    "@type": "Car",
-                    "name": `${carData.brand} ${carData.model}`,
-                    "brand": {
-                        "@type": "Brand",
-                        "name": carData.brand
-                    },
-                    "model": carData.model,
-                    "vehicleModelDate": carData.year.toString(),
-                    "productionDate": carData.year.toString(),
-                    "mileageFromOdometer": {
-                        "@type": "QuantitativeValue",
-                        "value": carData.mileage,
-                        "unitCode": "KMT"
-                    },
-                    "fuelType": carData.fuel,
-                    "vehicleTransmission": carData.transmission,
-                    "color": carData.color,
-                    "bodyType": carData.bodyType || "Sedan",
-                    "vehicleEngine": {
-                        "@type": "EngineSpecification",
-                        "fuelType": carData.fuel
-                    },
-                    "image": carData.images && carData.images.length > 0 
-                        ? carData.images.map(img => `https://eleganceauto.od.ua${img.fileUrl}`)
-                        : ["https://eleganceauto.od.ua/images/og-default.jpg"],
-                    "offers": {
-                        "@type": "Offer",
-                        "price": carData.price,
-                        "priceCurrency": "UAH",
-                        "availability": "https://schema.org/InStock",
-                        "url": `https://eleganceauto.od.ua/cars/${carData.id}`,
-                        "seller": {
-                            "@type": "AutoDealer",
-                            "name": "Elegance Auto"
-                        },
-                        "itemCondition": "https://schema.org/UsedCondition"
-                    },
-                    "description": carData.description || `${carData.brand} ${carData.model} ${carData.year} року`,
-                    "url": `https://eleganceauto.od.ua/cars/${carData.id}`
-                }
-            ]
-        }, null, 2);
-    }
-
-    // За замовчуванням
-    return JSON.stringify(organizationSchema, null, 2);
-}
-
 // Функція для отримання метаданих машини з API
 async function getCarMetadata(carId) {
     try {
@@ -212,8 +48,7 @@ async function getCarMetadata(carId) {
                 title: title,
                 description: description,
                 keywords: `${car.brand} ${car.model} купити, ${car.brand} ${car.model} Одеса, ${car.brand} ціна, авто ${car.year}`,
-                ogImage: car.images && car.images[0] ? `https://eleganceauto.od.ua${car.images[0].fileUrl}` : 'https://eleganceauto.od.ua/images/og-default.jpg',
-                carData: car
+                ogImage: car.images && car.images[0] ? `https://eleganceauto.od.ua${car.images[0].fileUrl}` : 'https://eleganceauto.od.ua/images/og-default.jpg'
             };
         }
     } catch (error) {
@@ -237,44 +72,26 @@ async function getAllCarIds() {
     return [];
 }
 
-// Функція для отримання assets без manifest.json
+// Читаємо manifest.json, щоб дізнатися справжні назви файлів
+const manifestPath = path.join(__dirname, 'dist', 'manifest.json');
+let manifest = {};
+
+if (fs.existsSync(manifestPath)) {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+}
+
 function getAssets() {
-    const distAssetsPath = path.join(__dirname, 'dist', 'assets');
-    
-    try {
-        if (fs.existsSync(distAssetsPath)) {
-            const files = fs.readdirSync(distAssetsPath);
-            
-            // Шукаємо JS файл (не .map файли)
-            const jsFile = files.find(f => f.startsWith('index-') && f.endsWith('.js') && !f.endsWith('.map'));
-            // Шукаємо CSS файл
-            const cssFile = files.find(f => f.startsWith('index-') && f.endsWith('.css'));
-            
-            if (jsFile && cssFile) {
-                console.log(`📦 Знайдено assets: JS=${jsFile}, CSS=${cssFile}`);
-                return {
-                    js: `/assets/${jsFile}`,
-                    css: `/assets/${cssFile}`
-                };
-            }
-        }
-    } catch (error) {
-        console.error('⚠️  Помилка читання assets:', error);
-    }
-    
-    // Fallback
-    console.warn('⚠️  Assets не знайдено, використовуємо дефолтні шляхи');
+    const mainEntry = manifest['index.html'] || Object.values(manifest)[0];
     return {
-        js: '/assets/index.js',
-        css: '/assets/index.css'
+        js: mainEntry.file ? '/' + mainEntry.file : '/assets/index.js',
+        css: mainEntry.css && mainEntry.css.length > 0 ? '/' + mainEntry.css[0] : '/assets/index.css'
     };
 }
+
 
 // Генерація HTML з метатегами
 function generateHTML(route) {
     const { js, css } = getAssets();
-    const structuredData = generateStructuredData(route, route.carData);
-    
     return `<!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -307,7 +124,33 @@ function generateHTML(route) {
   
   <!-- Structured Data (JSON-LD) -->
   <script type="application/ld+json">
-${structuredData}
+  // У prerender.js - покращена версія для сторінки авто
+{
+  "@context": "https://schema.org",
+  "@type": "Car",
+  "name": "${car.brand} ${car.model}",
+  "brand": {
+    "@type": "Brand",
+    "name": "${car.brand}"
+  },
+  "model": "${car.model}",
+  "vehicleModelDate": "${car.year}",
+  "mileageFromOdometer": {
+    "@type": "QuantitativeValue",
+    "value": "${car.mileage}",
+    "unitCode": "KMT"
+  },
+  "fuelType": "${car.fuel}",
+  "vehicleTransmission": "${car.transmission}",
+  "color": "${car.color}",
+  "offers": {
+    "@type": "Offer",
+    "price": "${car.price}",
+    "priceCurrency": "UAH",
+    "availability": "https://schema.org/InStock"
+  },
+  "image": "${route.ogImage}"
+}
   </script>
   
   <script type="module" crossorigin src="${js}"></script>
