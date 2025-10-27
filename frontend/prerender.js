@@ -86,7 +86,15 @@ function generateStructuredData(route) {
                     "serviceType": "Викуп автомобілів",
                     "provider": {
                         "@type": "AutoDealer",
-                        "name": "Elegance Auto"
+                        "name": "Elegance Auto",
+                        "address": {
+                            "@type": "PostalAddress",
+                            "streetAddress": "Полковника Гуляєва, 107/1, Лиманка",
+                            "addressLocality": "Одеса",
+                            "addressRegion": "Одеська область",
+                            "postalCode": "65104",
+                            "addressCountry": "UA"
+                        },
                     },
                     "areaServed": {
                         "@type": "City",
@@ -208,7 +216,7 @@ function generateHTML(route) {
                 <meta name="googlebot" content="index, follow">
 
                 <link rel="canonical" href="https://eleganceauto.od.ua${route.path}">
-                <link rel="shortcut icon" href="./public/favicon.ico" type="image/x-icon">
+                <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
                 <link rel="stylesheet" href="/fonts/SFpro/stylesheet.css">
                 <link rel="manifest" href="/manifest.webmanifest">
                 
