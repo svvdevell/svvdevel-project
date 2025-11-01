@@ -25,33 +25,28 @@
                 <div class="car-header">
                     <h1>{{ car.brand }} {{ car.model }} {{ car.year }}</h1>
                     <div class="car-status">
-                        <Badge :status="car.status"/>
+                        <Badge :status="car.status" />
                     </div>
                 </div>
 
                 <!-- Images Gallery -->
                 <div v-if="car.images && car.images.length > 0" class="car-gallery">
                     <div class="main-image">
-                        <img :src="car.images[currentImageIndex].fileUrl" 
-                             :alt="`${car.brand} ${car.model}`"
-                             @error="handleImageError">
-                        
+                        <img :src="car.images[currentImageIndex].fileUrl" :alt="`${car.brand} ${car.model}`"
+                            @error="handleImageError">
+
                         <!-- Navigation Arrows -->
-                        <button v-if="car.images.length > 1" 
-                                @click="previousImage" 
-                                class="nav-arrow nav-arrow-left">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" 
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                                 stroke-linejoin="round">
+                        <button v-if="car.images.length > 1" @click="previousImage" class="nav-arrow nav-arrow-left">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
                                 <polyline points="15 18 9 12 15 6"></polyline>
                             </svg>
                         </button>
-                        <button v-if="car.images.length > 1" 
-                                @click="nextImage" 
-                                class="nav-arrow nav-arrow-right">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" 
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                                 stroke-linejoin="round">
+                        <button v-if="car.images.length > 1" @click="nextImage" class="nav-arrow nav-arrow-right">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
                                 <polyline points="9 18 15 12 9 6"></polyline>
                             </svg>
                         </button>
@@ -64,10 +59,9 @@
 
                     <!-- Thumbnails -->
                     <div v-if="car.images.length > 1" class="thumbnails">
-                        <div v-for="(image, index) in car.images" 
-                             :key="image.id"
-                             :class="['thumbnail', { active: index === currentImageIndex }]"
-                             @click="currentImageIndex = index">
+                        <div v-for="(image, index) in car.images" :key="image.id"
+                            :class="['thumbnail', { active: index === currentImageIndex }]"
+                            @click="currentImageIndex = index">
                             <img :src="image.fileUrl" :alt="`Фото ${index + 1}`">
                         </div>
                     </div>
@@ -114,7 +108,7 @@
                         </div>
                         <div class="spec-item">
                             <span class="spec-label">Об`єм двигуна</span>
-                            <span class="spec-value">{{ car.volume }}</span>
+                            <span class="spec-value">{{ formatEngineVolume(car.volume) }}</span>
                         </div>
                         <div class="spec-item">
                             <span class="spec-label">Трансмісія</span>
@@ -142,9 +136,9 @@
                     <h3>Поділитися оголошенням</h3>
                     <div class="share-buttons">
                         <button @click="copyLink" class="share-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" 
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                                 stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
                                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                             </svg>
@@ -175,6 +169,11 @@ const currentImageIndex = ref(0)
 const linkCopied = ref(false)
 
 // Methods
+const formatEngineVolume = (volume) => {
+    if (!volume) return '0.0'
+    return (volume / 10).toFixed(1)
+}
+
 const fetchCarDetails = async () => {
     loading.value = true
     error.value = ''
@@ -232,8 +231,8 @@ const nextImage = () => {
 
 const previousImage = () => {
     if (car.value && car.value.images) {
-        currentImageIndex.value = currentImageIndex.value === 0 
-            ? car.value.images.length - 1 
+        currentImageIndex.value = currentImageIndex.value === 0
+            ? car.value.images.length - 1
             : currentImageIndex.value - 1
     }
 }
@@ -349,9 +348,7 @@ onMounted(() => {
     background: #0056b3;
 }
 
-.car-details-content {
-
-}
+.car-details-content {}
 
 .car-header {
     display: flex;
@@ -578,9 +575,7 @@ onMounted(() => {
         padding: 1rem;
     }
 
-    .car-details-content {
-
-    }
+    .car-details-content {}
 
     .car-header {
         flex-direction: column;

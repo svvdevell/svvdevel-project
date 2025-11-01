@@ -73,7 +73,7 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label">Об`єм Двигуна:</span>
-                            <span class="info-value">{{ car.volume }}</span>
+                            <span class="info-value">{{ formatEngineVolume(car.volume) }}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Трансмиссия:</span>
@@ -174,6 +174,12 @@ const currentImage = computed(() => {
     }
     return null
 })
+
+const formatEngineVolume = (volume) => {
+    if (!volume) return '0.0'
+    return (volume / 10).toFixed(1)
+}
+
 
 // Загрузка данных автомобиля
 const loadCarData = async () => {

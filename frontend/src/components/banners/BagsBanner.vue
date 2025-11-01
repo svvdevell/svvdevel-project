@@ -41,6 +41,7 @@
             width: 64px;
             height: 64px;
             object-fit: contain;
+            filter: invert(1);
         }
 
         & h3 {
