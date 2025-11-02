@@ -22,9 +22,16 @@ export function useHelpers() {
         }).format(price)
     }
 
+    const formatEngineVolume = (volume) => {
+        if (!volume) return '0.0'
+        return (volume / 10).toFixed(1)
+    }
+
+
     return {
         formatDate,
         formatPrice,
-        formatMileage
+        formatMileage,
+        formatEngineVolume
     }
 }

@@ -53,7 +53,13 @@
             <!-- Основная информация -->
             <div class="car-info-grid">
                 <div class="info-section">
-                    <h2>Технические характеристики</h2>
+                    <div class="info-section_header">
+                        <h2>Технические характеристики</h2>
+                        <div>
+                            <img src="../../assets/icons/price.png" alt="">
+                            <p>{{ formatPrice(car.price) }}</p>
+                        </div>
+                    </div>
                     <div class="info-table">
                         <div class="info-row">
                             <span class="info-label">Год выпуска:</span>
@@ -153,9 +159,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 const { setMeta, setStructuredData } = useSeo();
 import { useSeo } from '@/composables/useSeo';
+import { useHelpers } from '@/composables/useHelpers'
+
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const { formatDate, formatPrice, formatMileage, formatEngineVolume } = useHelpers()
 
 const car = ref(null)
 const loading = ref(true)
@@ -174,12 +183,6 @@ const currentImage = computed(() => {
     }
     return null
 })
-
-const formatEngineVolume = (volume) => {
-    if (!volume) return '0.0'
-    return (volume / 10).toFixed(1)
-}
-
 
 // Загрузка данных автомобиля
 const loadCarData = async () => {
@@ -200,17 +203,17 @@ const loadCarData = async () => {
 
         const result = await response.json()
         car.value = result.data
-    
-            // Оновлюємо SEO
-            const title = `${car.value.brand} ${car.value.model} ${car.value.year} - ${car.value.price.toLocaleString('uk-UA')} грн`;
-            const description = `${car.value.brand} ${car.value.model} ${car.value.year}, ${car.value.color}, ${car.value.fuel}, пробіг ${car.value.mileage.toLocaleString('uk-UA')} км`;
-            
-            setMeta({
-                title,
-                description,
-                url: `https://eleganceauto.od.ua/cars/${car.value.id}`,
-                ogImage: car.value.images?.[0] ? `https://eleganceauto.od.ua${car.value.images[0].fileUrl}` : null
-            });
+
+        // Оновлюємо SEO
+        const title = `${car.value.brand} ${car.value.model} ${car.value.year} - ${car.value.price.toLocaleString('uk-UA')} грн`;
+        const description = `${car.value.brand} ${car.value.model} ${car.value.year}, ${car.value.color}, ${car.value.fuel}, пробіг ${car.value.mileage.toLocaleString('uk-UA')} км`;
+
+        setMeta({
+            title,
+            description,
+            url: `https://eleganceauto.od.ua/cars/${car.value.id}`,
+            ogImage: car.value.images?.[0] ? `https://eleganceauto.od.ua${car.value.images[0].fileUrl}` : null
+        });
     } catch (err) {
         console.error('Error loading car:', err)
         error.value = err.message || 'Ошибка загрузки данных'
@@ -321,7 +324,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .car-detail-container {
     max-width: 1440px;
     margin: 0 auto;
@@ -508,6 +511,35 @@ onMounted(() => {
     border-radius: 8px;
     padding: 1.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    &_header {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 20px;
+
+        & div {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+
+            & img {
+                width: 30px;
+                height: 30px;
+                object-fit: contain;
+            }
+
+            & p {
+                color: #4caf50;
+                margin: 0;
+                font-size: 1.3rem;
+                font-weight: 600;
+                line-height: 1.3;
+            }
+        }
+    }
 }
 
 .info-section h2 {
