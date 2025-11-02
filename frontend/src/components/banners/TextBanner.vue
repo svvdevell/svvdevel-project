@@ -1,10 +1,9 @@
 <template>
     <div class="text-banner">
         <h1>Чому обирають нас для швидкого викупу авто?</h1>
-        <h3>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Est ipsum tempore minus odit nihil dolor voluptas
-            et ullam odio, excepturi, pariatur magni laborum aut quibusdam ipsa nostrum iusto ab ipsam.</h3>
+        <h2>Викупимо ваш автомобіль за найвищою ринковою ціною протягом 1 дня. Працюємо з будь-якими марками та моделями, в будь-якому стані. Оцінка безкоштовна, гроші отримаєте відразу після укладення угоди. Всі документи оформимо самостійно.</h2>
         <div class="links">
-            <Link :url="'tel:23423423432'" :text="'+ (380) 50 08 04 200'" />
+            <Link :url="'tel:0734080999'" :text="'+38 (073) 40 80 999'" />
         </div>
     </div>
 </template>
@@ -32,7 +31,7 @@ import Link from '@/components/common/Link.vue';
         color: #FFF;
     }
 
-    & h3 {
+    & h2 {
         font-family: Work Sans;
         font-weight: 400;
         font-style: Regular;

@@ -21,7 +21,13 @@
 
         <!-- Car Info -->
         <div class="car-info">
-            <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
+            <div class="car-info_header">
+                <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
+                <div>
+                    <img src="../../assets/icons/engine.png" alt="">
+                    <p>{{ car.price }}</p>
+                </div>
+            </div>
 
             <div class="car-details">
                 <div class="detail-row">
@@ -50,7 +56,7 @@
 
                 <div class="detail-row">
                     <span class="label">
-                        <img src="../../assets/icons/suspension.png" alt="">
+                        <img src="../../assets/icons/volume.png" alt="">
                         Об'єм двигуна:
                     </span>
                     <span class="value">{{ car.volume }}</span>
@@ -74,7 +80,7 @@
 
                 <div class="detail-row">
                     <span class="label">
-                        <img src="../../assets/icons/suspension.png" alt="">
+                        <img src="../../assets/icons/price.png" alt="">
                         Ціна:
                     </span>
                     <span class="value">{{ car.price }}</span>
@@ -106,9 +112,8 @@
 import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Badge from '@/components/common/Badge.vue'
-
-
-const route = useRoute()
+import { useHelpers } from '@/composables/useHelpers'
+const { formatDate, formatPrice, formatMileage } = useHelpers()
 const router = useRouter()
 
 const props = defineProps({
@@ -138,15 +143,6 @@ const handleImageError = (event) => {
     event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmaWxsPSIjOTk5OTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGR5PSIuM2VtIj7QndC10YIg0YTQvtGC0L48L3RleHQ+Cjwvc3ZnPg=='
 }
 
-const formatMileage = (mileage) => {
-    return new Intl.NumberFormat('uk-UA').format(mileage) + ' км'
-}
-
-const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('uk-UA')
-}
-
 const truncateDescription = (description) => {
     if (!description) return ''
     return description.length > 100 ? description.substring(0, 100) + '...' : description
@@ -157,7 +153,7 @@ const getImageTimestamp = (createdAt) => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .car-card {
     background: white;
     border-radius: 15px;
@@ -244,11 +240,40 @@ const getImageTimestamp = (createdAt) => {
     display: flex;
     flex-direction: column;
     flex: 1;
+
+    &_header {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 20px;
+
+        & div {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+
+            & img {
+                width: 30px;
+                height: 30px;
+                object-fit: contain;
+            }
+
+            & p {
+                color: #4caf50;
+                margin: 0;
+                font-size: 1.3rem;
+                font-weight: 600;
+                line-height: 1.3;
+            }
+        }
+    }
 }
 
 .car-title {
     color: #000;
-    margin: 0 0 1.25rem 0;
+    margin: 0;
     font-size: 1.5rem;
     font-weight: 600;
     line-height: 1.3;

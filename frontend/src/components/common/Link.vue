@@ -16,7 +16,7 @@ const props = defineProps({
 </script>
 <style lang="scss" scoped>
 .link {
-    background: #FF9E0C;
+    background: #aa3535;
     padding: 13px 28px;
     gap: 10px;
     border-radius: 12px;

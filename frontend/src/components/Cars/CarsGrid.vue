@@ -11,49 +11,126 @@
 
             <!-- Filters -->
             <div class="filters">
+                <!-- Custom Select for Fuel -->
                 <div class="filter-group">
-                    <select v-model="filters.fuel" @change="applyFilters">
-                        <option value="">Всі види палива</option>
-                        <option value="Бензин">Бензин</option>
-                        <option value="Дизель">Дизель</option>
-                        <option value="Гібрид">Гібрид</option>
-                        <option value="Електро">Електро</option>
-                        <option value="Газ">Газ</option>
-                        <option value="Газ/Бензин">Газ/Бензин</option>
-                    </select>
+                    <div class="custom-select" :class="{ open: openSelect === 'fuel' }">
+                        <div class="select-trigger" @click="toggleSelect('fuel')">
+                            <span>{{ filters.fuel || 'Всі види палива' }}</span>
+                            <svg class="arrow" width="12" height="8" viewBox="0 0 12 8">
+                                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="select-options">
+                            <div class="select-option" @click="selectOption('fuel', '')">
+                                Всі види палива
+                            </div>
+                            <div class="select-option" @click="selectOption('fuel', 'Бензин')">
+                                Бензин
+                            </div>
+                            <div class="select-option" @click="selectOption('fuel', 'Дизель')">
+                                Дизель
+                            </div>
+                            <div class="select-option" @click="selectOption('fuel', 'Гібрид')">
+                                Гібрид
+                            </div>
+                            <div class="select-option" @click="selectOption('fuel', 'Електро')">
+                                Електро
+                            </div>
+                            <div class="select-option" @click="selectOption('fuel', 'Газ')">
+                                Газ
+                            </div>
+                            <div class="select-option" @click="selectOption('fuel', 'Газ/Бензин')">
+                                Газ/Бензин
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Custom Select for Transmission -->
                 <div class="filter-group">
-                    <select v-model="filters.transmission" @change="applyFilters">
-                        <option value="">Всі трансмісії</option>
-                        <option value="Механічна">Механічна</option>
-                        <option value="Автоматична">Автоматична</option>
-                        <option value="Робот">Робот</option>
-                        <option value="Варіатор">Варіатор</option>
-                    </select>
+                    <div class="custom-select" :class="{ open: openSelect === 'transmission' }">
+                        <div class="select-trigger" @click="toggleSelect('transmission')">
+                            <span>{{ filters.transmission || 'Всі трансмісії' }}</span>
+                            <svg class="arrow" width="12" height="8" viewBox="0 0 12 8">
+                                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="select-options">
+                            <div class="select-option" @click="selectOption('transmission', '')">
+                                Всі трансмісії
+                            </div>
+                            <div class="select-option" @click="selectOption('transmission', 'Механічна')">
+                                Механічна
+                            </div>
+                            <div class="select-option" @click="selectOption('transmission', 'Автоматична')">
+                                Автоматична
+                            </div>
+                            <div class="select-option" @click="selectOption('transmission', 'Робот')">
+                                Робот
+                            </div>
+                            <div class="select-option" @click="selectOption('transmission', 'Варіатор')">
+                                Варіатор
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Custom Select for Drive -->
                 <div class="filter-group">
-                    <select v-model="filters.drive" @change="applyFilters">
-                        <option value="">Всі типи приводу</option>
-                        <option value="Передній">Передній</option>
-                        <option value="Задній">Задній</option>
-                        <option value="Повний">Повний</option>
-                    </select>
+                    <div class="custom-select" :class="{ open: openSelect === 'drive' }">
+                        <div class="select-trigger" @click="toggleSelect('drive')">
+                            <span>{{ filters.drive || 'Всі типи приводу' }}</span>
+                            <svg class="arrow" width="12" height="8" viewBox="0 0 12 8">
+                                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="select-options">
+                            <div class="select-option" @click="selectOption('drive', '')">
+                                Всі типи приводу
+                            </div>
+                            <div class="select-option" @click="selectOption('drive', 'Передній')">
+                                Передній
+                            </div>
+                            <div class="select-option" @click="selectOption('drive', 'Задній')">
+                                Задній
+                            </div>
+                            <div class="select-option" @click="selectOption('drive', 'Повний')">
+                                Повний
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Search Input -->
                 <div class="filter-group">
                     <input v-model="filters.search" type="text" placeholder="Пошук по марці або моделі..."
-                        @input="debouncedSearch">
+                        @input="debouncedSearch" class="search-input">
                 </div>
 
+                <!-- Custom Select for Items Per Page -->
                 <div class="filter-group">
-                    <select v-model="itemsPerPage" @change="changeItemsPerPage">
-                        <option :value="6">6 авто</option>
-                        <option :value="12">12 авто</option>
-                        <option :value="24">24 авто</option>
-                        <option :value="48">48 авто</option>
-                    </select>
+                    <div class="custom-select" :class="{ open: openSelect === 'itemsPerPage' }">
+                        <div class="select-trigger" @click="toggleSelect('itemsPerPage')">
+                            <span>{{ itemsPerPage }} авто</span>
+                            <svg class="arrow" width="12" height="8" viewBox="0 0 12 8">
+                                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none" />
+                            </svg>
+                        </div>
+                        <div class="select-options">
+                            <div class="select-option" @click="selectItemsPerPage(6)">
+                                6 авто
+                            </div>
+                            <div class="select-option" @click="selectItemsPerPage(12)">
+                                12 авто
+                            </div>
+                            <div class="select-option" @click="selectItemsPerPage(24)">
+                                24 авто
+                            </div>
+                            <div class="select-option" @click="selectItemsPerPage(48)">
+                                48 авто
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <button @click="clearFilters" class="clear-filters">Очистити</button>
@@ -104,7 +181,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import CarCard from '@/components/Cars/CarCard.vue'
 
@@ -118,6 +195,7 @@ const currentPage = ref(1)
 const totalCars = ref(0)
 const totalPages = ref(0)
 const itemsPerPage = ref(12)
+const openSelect = ref(null)
 
 const filters = reactive({
     fuel: '',
@@ -168,6 +246,28 @@ const visiblePages = computed(() => {
 })
 
 // Methods
+const toggleSelect = (selectName) => {
+    openSelect.value = openSelect.value === selectName ? null : selectName
+}
+
+const selectOption = (filterName, value) => {
+    filters[filterName] = value
+    openSelect.value = null
+    applyFilters()
+}
+
+const selectItemsPerPage = (value) => {
+    itemsPerPage.value = value
+    openSelect.value = null
+    changeItemsPerPage()
+}
+
+const closeAllSelects = (e) => {
+    if (!e.target.closest('.custom-select')) {
+        openSelect.value = null
+    }
+}
+
 const fetchCars = async () => {
     loading.value = true
     error.value = ''
@@ -243,6 +343,11 @@ const clearFilters = () => {
 // Lifecycle
 onMounted(() => {
     fetchCars()
+    document.addEventListener('click', closeAllSelects)
+})
+
+onUnmounted(() => {
+    document.removeEventListener('click', closeAllSelects)
 })
 </script>
 
@@ -277,44 +382,138 @@ onMounted(() => {
     gap: 1rem;
     margin-bottom: 2rem;
     flex-wrap: wrap;
-    /* background: white; */
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .filter-group {
     flex: 1;
     min-width: 180px;
+    position: relative;
 }
 
-.filter-group select,
-.filter-group input {
+/* Custom Select Styles */
+.custom-select {
+    position: relative;
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    user-select: none;
+}
+
+.select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     font-size: 1rem;
-    color: #000;
+    color: #333;
 }
 
-.filter-group select option {
-    color: #000;
-
+.select-trigger:hover {
+    border-color: #007bff;
 }
 
+.custom-select.open .select-trigger {
+    border-color: #007bff;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.select-trigger .arrow {
+    transition: transform 0.3s ease;
+    color: #666;
+}
+
+.custom-select.open .select-trigger .arrow {
+    transform: rotate(180deg);
+}
+
+.select-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #007bff;
+    border-top: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.custom-select.open .select-options {
+    max-height: 300px;
+    overflow-y: auto;
+    opacity: 1;
+}
+
+.select-option {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #333;
+}
+
+.select-option:hover {
+    background: #f0f8ff;
+    color: #007bff;
+}
+
+.select-option:last-child {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* Search Input */
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+/* Clear Button */
 .clear-filters {
     padding: 0.75rem 1.5rem;
-    background: #6c757d;
+    background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
 }
 
 .clear-filters:hover {
-    background: #545b62;
+    background: linear-gradient(135deg, #545b62 0%, #3d4349 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+}
+
+.clear-filters:active {
+    transform: translateY(0);
 }
 
 .loading,
@@ -407,6 +606,25 @@ onMounted(() => {
 .page-btn.active {
     background: #007bff;
     color: white;
+}
+
+/* Scrollbar for select options */
+.select-options::-webkit-scrollbar {
+    width: 6px;
+}
+
+.select-options::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.select-options::-webkit-scrollbar-thumb {
+    background: #007bff;
+    border-radius: 3px;
+}
+
+.select-options::-webkit-scrollbar-thumb:hover {
+    background: #0056b3;
 }
 
 @media (max-width: 768px) {

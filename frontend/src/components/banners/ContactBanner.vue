@@ -214,7 +214,7 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 24px 32px;
+    padding: 15px 20px;
     background: white;
     border-radius: 20px;
     text-decoration: none;
@@ -271,7 +271,7 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 24px 32px;
+    padding: 15px 20px;
     background: white;
     border-radius: 20px;
     text-decoration: none;

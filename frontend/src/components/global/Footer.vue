@@ -295,7 +295,6 @@
 
 // Bottom Bar
 .footer-bottom {
-    background: rgba(0, 0, 0, 0.3);
 
     .bottom-content {
         display: flex;
