@@ -14,10 +14,10 @@ export function useHelpers() {
     }
 
     const formatPrice = (price) => {
-        if (!price) return '0'
+        if (!price) return '$0'
         return new Intl.NumberFormat('uk-UA', {
             style: 'currency',
-            currency: '$',
+            currency: 'USD',
             minimumFractionDigits: 0
         }).format(price)
     }
