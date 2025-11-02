@@ -1,19 +1,19 @@
 <template>
     <div class="car-detail-container">
-        <div v-if="loading" class="loading">Загрузка...</div>
+        <div v-if="loading" class="loading">Завантаження...</div>
 
         <div v-else-if="error" class="error-state">
             <p>{{ error }}</p>
-            <button @click="goBack" class="btn-primary">Вернуться назад</button>
+            <button @click="goBack" class="btn-primary">Повернутися назад</button>
         </div>
 
         <div v-else-if="car" class="car-detail">
             <!-- Навигация -->
             <div class="navigation">
-                <button @click="goBack" class="btn-back">← Назад к списку</button>
+                <button @click="goBack" class="btn-back">← Назад до списку</button>
                 <div class="nav-actions">
-                    <button @click="editCar" class="btn-edit">✏️ Редактировать</button>
-                    <button @click="confirmDelete" class="btn-delete">🗑️ Удалить</button>
+                    <button @click="editCar" class="btn-edit">✏️ Редагувати</button>
+                    <button @click="confirmDelete" class="btn-delete">🗑️ Видалити</button>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@
                 </div>
 
                 <div v-else class="no-images">
-                    <p>Нет фотографий</p>
+                    <p>Немає фотографій</p>
                 </div>
 
                 <!-- Миниатюры -->
@@ -54,7 +54,7 @@
             <div class="car-info-grid">
                 <div class="info-section">
                     <div class="info-section_header">
-                        <h2>Технические характеристики</h2>
+                        <h2>Технічні характеристики</h2>
                         <div>
                             <img src="../../assets/icons/price.png" alt="">
                             <p>{{ formatPrice(car.price) }}</p>
@@ -62,54 +62,54 @@
                     </div>
                     <div class="info-table">
                         <div class="info-row">
-                            <span class="info-label">Год выпуска:</span>
+                            <span class="info-label">Рік випуску:</span>
                             <span class="info-value">{{ car.year }}</span>
                         </div>
                         <div v-if="car.color" class="info-row">
-                            <span class="info-label">Цвет:</span>
+                            <span class="info-label">Колір:</span>
                             <span class="info-value">{{ car.color }}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Пробег:</span>
+                            <span class="info-label">Пробіг:</span>
                             <span class="info-value">{{ formatMileage(car.mileage) }} км</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Тип топлива:</span>
+                            <span class="info-label">Тип палива:</span>
                             <span class="info-value">{{ car.fuel }}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Об`єм Двигуна:</span>
+                            <span class="info-label">Об'єм двигуна:</span>
                             <span class="info-value">{{ formatEngineVolume(car.volume) }}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Трансмиссия:</span>
+                            <span class="info-label">Трансмісія:</span>
                             <span class="info-value">{{ car.transmission }}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Привод:</span>
+                            <span class="info-label">Привід:</span>
                             <span class="info-value">{{ car.drive }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div v-if="car.description" class="info-section">
-                    <h2>Описание</h2>
+                    <h2>Опис</h2>
                     <p class="description">{{ car.description }}</p>
                 </div>
 
                 <div class="info-section">
-                    <h2>Дополнительная информация</h2>
+                    <h2>Додаткова інформація</h2>
                     <div class="info-table">
                         <div class="info-row">
-                            <span class="info-label">Добавлено:</span>
+                            <span class="info-label">Додано:</span>
                             <span class="info-value">{{ formatDate(car.createdAt) }}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Обновлено:</span>
+                            <span class="info-label">Оновлено:</span>
                             <span class="info-value">{{ formatDate(car.updatedAt) }}</span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">ID объявления:</span>
+                            <span class="info-label">ID оголошення:</span>
                             <span class="info-value">#{{ car.id }}</span>
                         </div>
                     </div>
@@ -118,28 +118,28 @@
 
             <!-- Контактная информация (можно добавить) -->
             <div class="contact-section">
-                <h2>Свяжитесь с нами</h2>
-                <p>Для получения дополнительной информации или записи на тест-драйв свяжитесь с нашими менеджерами.</p>
-                <button class="btn-contact">📞 Связаться</button>
+                <h2>Зв'яжіться з нами</h2>
+                <p>Для отримання додаткової інформації або запису на тест-драйв зв'яжіться з нашими менеджерами.</p>
+                <button class="btn-contact">📞 Зв'язатися</button>
             </div>
         </div>
 
         <!-- Модальное окно удаления -->
         <div v-if="deleteModal.show" class="modal-overlay" @click="closeDeleteModal">
             <div class="modal" @click.stop>
-                <h3>Удалить автомобиль?</h3>
+                <h3>Видалити автомобіль?</h3>
                 <p>
-                    Вы уверены, что хотите удалить
+                    Ви впевнені, що хочете видалити
                     <strong>{{ car?.brand }} {{ car?.model }}</strong>?
                 </p>
-                <p class="warning">Это действие нельзя отменить!</p>
+                <p class="warning">Цю дію не можна скасувати!</p>
 
                 <div class="modal-actions">
                     <button @click="closeDeleteModal" class="btn-secondary" :disabled="deleteModal.deleting">
-                        Отмена
+                        Скасувати
                     </button>
                     <button @click="deleteCar" class="btn-danger" :disabled="deleteModal.deleting">
-                        {{ deleteModal.deleting ? 'Удаление...' : 'Удалить' }}
+                        {{ deleteModal.deleting ? 'Видалення...' : 'Видалити' }}
                     </button>
                 </div>
 
@@ -198,7 +198,7 @@ const loadCarData = async () => {
         const response = await fetch(apiUrl)
 
         if (!response.ok) {
-            throw new Error('Автомобиль не найден')
+            throw new Error('Автомобіль не знайдено')
         }
 
         const result = await response.json()
@@ -216,36 +216,10 @@ const loadCarData = async () => {
         });
     } catch (err) {
         console.error('Error loading car:', err)
-        error.value = err.message || 'Ошибка загрузки данных'
+        error.value = err.message || 'Помилка завантаження даних'
     } finally {
         loading.value = false
     }
-}
-
-// Форматирование
-const formatMileage = (mileage) => {
-    return mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-}
-
-const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('uk-UA', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    })
-}
-
-const getStatusLabel = (status) => {
-    const labels = {
-        'sold': 'Продано',
-        'new': 'Новинка',
-        'sale': 'Знижка',
-        'super-price': 'Супер ціна'
-    }
-    return labels[status] || status
 }
 
 // Навигация по изображениям
@@ -305,7 +279,7 @@ const deleteCar = async () => {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
-            throw new Error(errorData.error || 'Ошибка удаления')
+            throw new Error(errorData.error || 'Помилка видалення')
         }
 
         // Успешно удалено, возвращаемся к списку
@@ -313,7 +287,7 @@ const deleteCar = async () => {
 
     } catch (err) {
         console.error('Delete error:', err)
-        deleteModal.error = err.message || 'Ошибка при удалении автомобиля'
+        deleteModal.error = err.message || 'Помилка при видаленні автомобіля'
     } finally {
         deleteModal.deleting = false
     }
