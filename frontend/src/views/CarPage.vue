@@ -80,7 +80,13 @@
 
                 <!-- Car Specifications -->
                 <div class="car-specs">
-                    <h2>Технічні характеристики</h2>
+                    <div class="car-specs_header">
+                        <h2>Технічні характеристики</h2>
+                        <div>
+                            <img src="../../assets/icons/price.png" alt="">
+                            <p>{{ formatPrice(car.price) }}</p>
+                        </div>
+                    </div>
                     <div class="specs-grid">
                         <div class="spec-item">
                             <span class="spec-label">Марка</span>
@@ -157,6 +163,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useSeo } from '@/composables/useSeo';
 const { setMeta, setStructuredData } = useSeo();
 import Badge from '@/components/common/Badge.vue'
+import { useHelpers } from '@/composables/useHelpers'
 
 const route = useRoute()
 const router = useRouter()
@@ -167,12 +174,9 @@ const loading = ref(false)
 const error = ref('')
 const currentImageIndex = ref(0)
 const linkCopied = ref(false)
+const { formatDate, formatPrice, formatMileage, formatEngineVolume } = useHelpers()
 
 // Methods
-const formatEngineVolume = (volume) => {
-    if (!volume) return '0.0'
-    return (volume / 10).toFixed(1)
-}
 
 const fetchCarDetails = async () => {
     loading.value = true
@@ -241,19 +245,6 @@ const handleImageError = (event) => {
     event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDgwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjQwMCIgeT0iMzAwIiBmaWxsPSIjOTk5OTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGR5PSIuM2VtIj7QndC10YIg0YTQvtGC0L48L3RleHQ+Cjwvc3ZnPg=='
 }
 
-const formatMileage = (mileage) => {
-    return new Intl.NumberFormat('uk-UA').format(mileage) + ' км'
-}
-
-const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('uk-UA', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    })
-}
-
 const copyLink = async () => {
     try {
         await navigator.clipboard.writeText(window.location.href)
@@ -272,7 +263,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .car-details-page {
     padding: 2rem;
     min-height: 100vh;
@@ -478,6 +469,35 @@ onMounted(() => {
 
 .car-specs {
     margin-bottom: 2rem;
+
+    &_header {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 20px;
+
+        & div {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+
+            & img {
+                width: 25px;
+                height: 25px;
+                object-fit: contain;
+            }
+
+            & p {
+                color: #4caf50;
+                margin: 0;
+                font-size: 1rem;
+                font-weight: 600;
+                line-height: 1.3;
+            }
+        }
+    }
 }
 
 .car-specs h2 {

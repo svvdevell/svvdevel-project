@@ -370,10 +370,11 @@ onUnmounted(() => {
 .catalog-header h1 {
     margin-bottom: 1rem;
     font-size: 2.5rem;
+    color: #FFF;
 }
 
 .stats {
-    color: #666;
+    color: #FFF;
     font-size: 1.1rem;
 }
 
@@ -409,6 +410,10 @@ onUnmounted(() => {
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 1rem;
+    color: #333;
+}
+
+.select-trigger span {
     color: #333;
 }
 
