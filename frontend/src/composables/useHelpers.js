@@ -25,7 +25,6 @@ export function useHelpers() {
     return {
         formatDate,
         formatPrice,
-        formatNumber,
         formatMileage
     }
 }
