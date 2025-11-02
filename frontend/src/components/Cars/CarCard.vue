@@ -83,7 +83,7 @@
                         <img src="../../assets/icons/price.png" alt="">
                         Ціна:
                     </span>
-                    <span class="value">{{ car.price }}</span>
+                    <span class="value">{{ formatPrice(car.price) }}</span>
                 </div>
             </div>
 

@@ -13,6 +13,15 @@ export function useHelpers() {
         return new Intl.NumberFormat('uk-UA').format(mileage) + ' км'
     }
 
+    const formatPrice = (price) => {
+        if (!price) return '0'
+        return new Intl.NumberFormat('uk-UA', {
+            style: 'currency',
+            currency: '$',
+            minimumFractionDigits: 0
+        }).format(price)
+    }
+
     return {
         formatDate,
         formatPrice,
