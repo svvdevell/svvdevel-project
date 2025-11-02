@@ -24,8 +24,8 @@
             <div class="car-info_header">
                 <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
                 <div>
-                    <img src="../../assets/icons/engine.png" alt="">
-                    <p>{{ car.price }}</p>
+                    <img src="../../assets/icons/price.png" alt="">
+                    <p>{{ formatPrice(car.price) }}</p>
                 </div>
             </div>
 
@@ -251,7 +251,7 @@ const getImageTimestamp = (createdAt) => {
 
         & div {
             display: flex;
-            gap: 10px;
+            gap: 5px;
             align-items: center;
 
             & img {
