@@ -8,28 +8,18 @@
                 <div class="form-row">
                     <div class="form-group autocomplete-wrapper">
                         <label for="brand">Марка *</label>
-                        <input 
-                            v-model="form.brand" 
-                            type="text" 
-                            id="brand" 
-                            required
-                            placeholder="Почніть вводити марку..."
-                            :class="{ error: errors.brand }"
-                            @input="onBrandInput"
-                            @focus="onBrandFocus"
-                            @blur="onBrandBlur"
-                            autocomplete="off">
-                        
+                        <input v-model="form.brand" type="text" id="brand" required
+                            placeholder="Почніть вводити марку..." :class="{ error: errors.brand }"
+                            @input="onBrandInput" @focus="onBrandFocus" @blur="onBrandBlur" autocomplete="off">
+
                         <!-- Dropdown зі списком марок -->
                         <div v-if="showBrandDropdown && filteredBrands.length > 0" class="dropdown-list">
-                            <div v-for="brand in filteredBrands" 
-                                 :key="brand" 
-                                 class="dropdown-item"
-                                 @mousedown="selectBrand(brand)">
+                            <div v-for="brand in filteredBrands" :key="brand" class="dropdown-item"
+                                @mousedown="selectBrand(brand)">
                                 {{ brand }}
                             </div>
                         </div>
-                        
+
                         <span v-if="errors.brand" class="error-text">{{ errors.brand }}</span>
                     </div>
 
@@ -52,8 +42,32 @@
 
                     <div class="form-group">
                         <label for="color">Колір</label>
-                        <input v-model="form.color" type="text" id="color" placeholder="Чорний, Білий, Сріблястий..."
-                            :class="{ error: errors.color }">
+                        <select v-model="form.color" id="color" :class="{ error: errors.color }">
+                            <option value="">Оберіть колір</option>
+                            <option value="Чорний">Чорний</option>
+                            <option value="Білий">Білий</option>
+                            <option value="Сірий">Сірий</option>
+                            <option value="Сріблястий">Сріблястий</option>
+                            <option value="Синій">Синій</option>
+                            <option value="Червоний">Червоний</option>
+                            <option value="Зелений">Зелений</option>
+                            <option value="Жовтий">Жовтий</option>
+                            <option value="Помаранчевий">Помаранчевий</option>
+                            <option value="Коричневий">Коричневий</option>
+                            <option value="Бежевий">Бежевий</option>
+                            <option value="Золотистий">Золотистий</option>
+                            <option value="Бронзовий">Бронзовий</option>
+                            <option value="Фіолетовий">Фіолетовий</option>
+                            <option value="Рожевий">Рожевий</option>
+                            <option value="Темно-синій">Темно-синій</option>
+                            <option value="Темно-зелений">Темно-зелений</option>
+                            <option value="Бордовий">Бордовий</option>
+                            <option value="Графітовий">Графітовий</option>
+                            <option value="Перламутровий">Перламутровий</option>
+                            <option value="Матовий чорний">Матовий чорний</option>
+                            <option value="Матовий сірий">Матовий сірий</option>
+                            <option value="Інший">Інший</option>
+                        </select>
                         <span v-if="errors.color" class="error-text">{{ errors.color }}</span>
                     </div>
                 </div>
@@ -103,8 +117,8 @@
 
                     <div class="form-group">
                         <label for="volume">Об'єм двигуна *</label>
-                        <input v-model.number="form.volume" type="number" id="volume" required min="0"
-                            placeholder="3.0" :class="{ error: errors.volume }">
+                        <input v-model.number="form.volume" type="number" id="volume" required min="0" placeholder="3.0"
+                            :class="{ error: errors.volume }">
                         <span v-if="errors.volume" class="error-text">{{ errors.volume }}</span>
                     </div>
 
@@ -151,8 +165,8 @@
                     <div class="photos-preview">
                         <div v-for="img in existingImages" :key="img.id" class="photo-preview">
                             <img :src="img.fileUrl" :alt="img.fileName">
-                            <button type="button" @click="markImageForDeletion(img.id)" 
-                                    :class="['remove-photo', { 'marked-delete': imagesToDelete.includes(img.id) }]">
+                            <button type="button" @click="markImageForDeletion(img.id)"
+                                :class="['remove-photo', { 'marked-delete': imagesToDelete.includes(img.id) }]">
                                 {{ imagesToDelete.includes(img.id) ? '↶' : '×' }}
                             </button>
                         </div>
@@ -182,8 +196,8 @@
 
                 <!-- Кнопки -->
                 <div class="form-actions">
-                    <button v-if="isEditMode" type="button" @click="cancelEdit" class="btn-secondary" 
-                            :disabled="isSubmitting">
+                    <button v-if="isEditMode" type="button" @click="cancelEdit" class="btn-secondary"
+                        :disabled="isSubmitting">
                         Скасувати
                     </button>
                     <button v-else type="button" @click="resetForm" class="btn-secondary" :disabled="isSubmitting">
@@ -329,7 +343,7 @@ const loadCarData = async () => {
             : 'http://localhost:8001/api/cars-sale'
 
         const response = await fetch(`${apiUrl}/${carId.value}`)
-        
+
         if (!response.ok) {
             throw new Error('Не вдалося завантажити дані автомобіля')
         }
@@ -437,7 +451,7 @@ const handleFileUpload = (event) => {
     if (files.length === 0) return
 
     const totalImages = existingImages.value.length - imagesToDelete.value.length + files.length
-    
+
     if (totalImages > 10) {
         errors.photos = 'Максимум 10 фотографій всього'
         if (fileInput.value) fileInput.value.value = ''
@@ -537,10 +551,10 @@ const submitForm = async () => {
 
         if (response.ok) {
             const result = await response.json()
-            successMessage.value = isEditMode.value 
-                ? 'Автомобіль успішно оновлено!' 
+            successMessage.value = isEditMode.value
+                ? 'Автомобіль успішно оновлено!'
                 : 'Автомобіль успішно додано в каталог!'
-            
+
             if (!isEditMode.value) {
                 resetForm()
             } else {
