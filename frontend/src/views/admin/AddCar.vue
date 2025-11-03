@@ -40,34 +40,20 @@
                         <span v-if="errors.year" class="error-text">{{ errors.year }}</span>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group autocomplete-wrapper">
                         <label for="color">Колір</label>
-                        <select v-model="form.color" id="color" :class="{ error: errors.color }">
-                            <option value="">Оберіть колір</option>
-                            <option value="Чорний">Чорний</option>
-                            <option value="Білий">Білий</option>
-                            <option value="Сірий">Сірий</option>
-                            <option value="Сріблястий">Сріблястий</option>
-                            <option value="Синій">Синій</option>
-                            <option value="Червоний">Червоний</option>
-                            <option value="Зелений">Зелений</option>
-                            <option value="Жовтий">Жовтий</option>
-                            <option value="Помаранчевий">Помаранчевий</option>
-                            <option value="Коричневий">Коричневий</option>
-                            <option value="Бежевий">Бежевий</option>
-                            <option value="Золотистий">Золотистий</option>
-                            <option value="Бронзовий">Бронзовий</option>
-                            <option value="Фіолетовий">Фіолетовий</option>
-                            <option value="Рожевий">Рожевий</option>
-                            <option value="Темно-синій">Темно-синій</option>
-                            <option value="Темно-зелений">Темно-зелений</option>
-                            <option value="Бордовий">Бордовий</option>
-                            <option value="Графітовий">Графітовий</option>
-                            <option value="Перламутровий">Перламутровий</option>
-                            <option value="Матовий чорний">Матовий чорний</option>
-                            <option value="Матовий сірий">Матовий сірий</option>
-                            <option value="Інший">Інший</option>
-                        </select>
+                        <input v-model="form.color" type="text" id="color" placeholder="Почніть вводити колір..."
+                            :class="{ error: errors.color }" @input="onColorInput" @focus="onColorFocus"
+                            @blur="onColorBlur" autocomplete="off">
+
+                        <!-- Dropdown зі списком кольорів -->
+                        <div v-if="showColorDropdown && filteredColors.length > 0" class="dropdown-list">
+                            <div v-for="color in filteredColors" :key="color" class="dropdown-item"
+                                @mousedown="selectColor(color)">
+                                {{ color }}
+                            </div>
+                        </div>
+
                         <span v-if="errors.color" class="error-text">{{ errors.color }}</span>
                     </div>
                 </div>
@@ -117,8 +103,8 @@
 
                     <div class="form-group">
                         <label for="volume">Об'єм двигуна *</label>
-                        <input v-model.number="form.volume" type="number" id="volume" required min="0" placeholder="3.0"
-                            :class="{ error: errors.volume }">
+                        <input v-model.number="form.volume" type="number" id="volume" required min="0" step="0.1"
+                            placeholder="3.0" :class="{ error: errors.volume }">
                         <span v-if="errors.volume" class="error-text">{{ errors.volume }}</span>
                     </div>
 
@@ -248,6 +234,105 @@ const carBrands = [
     'Богдан', 'ВАЗ', 'ГАЗ', 'ЗАЗ', 'ЗИЛ', 'ІЖ', 'ЛуАЗ', 'Москвич', 'УАЗ'
 ].sort()
 
+// Розширений список кольорів автомобілів
+const carColors = [
+    // Основні кольори
+    'Чорний',
+    'Білий',
+    'Сірий',
+    'Сріблястий',
+    'Синій',
+    'Червоний',
+    'Зелений',
+    'Жовтий',
+    'Помаранчевий',
+    'Коричневий',
+    'Бежевий',
+    'Золотистий',
+    'Бронзовий',
+    'Фіолетовий',
+    'Рожевий',
+
+    // Відтінки синього
+    'Темно-синій',
+    'Світло-синій',
+    'Блакитний',
+    'Небесно-блакитний',
+    'Аквамарин',
+    'Бірюзовий',
+    'Лазуровий',
+
+    // Відтінки зеленого
+    'Темно-зелений',
+    'Світло-зелений',
+    'Салатовий',
+    'Оливковий',
+    'Смарагдовий',
+    'Хакі',
+    'М\'ятний',
+
+    // Відтінки червоного
+    'Бордовий',
+    'Вишневий',
+    'Малиновий',
+    'Рубіновий',
+    'Коралловий',
+    'Червоно-помаранчевий',
+
+    // Відтінки сірого
+    'Графітовий',
+    'Світло-сірий',
+    'Темно-сірий',
+    'Антрацит',
+    'Сталевий',
+    'Титановий',
+    'Перламутровий',
+
+    // Відтінки коричневого
+    'Шоколадний',
+    'Каштановий',
+    'Мідний',
+    'Кавовий',
+    'Карамельний',
+
+    // Металік та перламутр
+    'Срібло металік',
+    'Чорний металік',
+    'Білий перламутр',
+    'Синій металік',
+    'Зелений металік',
+    'Червоний металік',
+    'Сірий металік',
+    'Золото металік',
+
+    // Матові покриття
+    'Матовий чорний',
+    'Матовий сірий',
+    'Матовий білий',
+    'Матовий синій',
+    'Матовий червоний',
+    'Матовий зелений',
+
+    // Хамелеон та інші
+    'Хамелеон',
+    'Перламутр',
+    'Камуфляж',
+    'Двоколірний',
+    'Триколірний',
+
+    // Рідкісні
+    'Іридій',
+    'Опал',
+    'Пурпурний',
+    'Індиго',
+    'Морська хвиля',
+    'Лайм',
+    'Фуксія',
+
+    // Інше
+    'Інший'
+].sort()
+
 // Режим редагування
 const isEditMode = computed(() => !!route.params.id)
 const carId = computed(() => route.params.id)
@@ -260,6 +345,16 @@ const filteredBrands = computed(() => {
     if (!brandSearchQuery.value) return carBrands
     const query = brandSearchQuery.value.toLowerCase()
     return carBrands.filter(brand => brand.toLowerCase().includes(query))
+})
+
+// Автокомпліт для кольорів
+const showColorDropdown = ref(false)
+const colorSearchQuery = ref('')
+
+const filteredColors = computed(() => {
+    if (!colorSearchQuery.value) return carColors
+    const query = colorSearchQuery.value.toLowerCase()
+    return carColors.filter(color => color.toLowerCase().includes(query))
 })
 
 // Реактивні дані
@@ -329,6 +424,32 @@ const onBrandBlur = () => {
     }, 200)
 }
 
+// Функції для автокомпліту кольорів
+const onColorInput = (event) => {
+    form.color = event.target.value
+    colorSearchQuery.value = event.target.value
+    showColorDropdown.value = true
+    errors.color = null
+}
+
+const selectColor = (color) => {
+    form.color = color
+    colorSearchQuery.value = color
+    showColorDropdown.value = false
+    errors.color = null
+}
+
+const onColorFocus = () => {
+    colorSearchQuery.value = form.color
+    showColorDropdown.value = true
+}
+
+const onColorBlur = () => {
+    setTimeout(() => {
+        showColorDropdown.value = false
+    }, 200)
+}
+
 // Завантаження даних автомобіля при редагуванні
 onMounted(async () => {
     if (isEditMode.value) {
@@ -362,7 +483,7 @@ const loadCarData = async () => {
             drive: carData.drive,
             mileage: carData.mileage,
             price: carData.price,
-            volume: carData.Volume,
+            volume: carData.volume,
             status: carData.status || 'active',
             description: carData.description || '',
             photos: []
@@ -606,6 +727,8 @@ const resetForm = () => {
     errorMessage.value = ''
     brandSearchQuery.value = ''
     showBrandDropdown.value = false
+    colorSearchQuery.value = ''
+    showColorDropdown.value = false
 
     if (fileInput.value) {
         fileInput.value.value = ''

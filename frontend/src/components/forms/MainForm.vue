@@ -378,28 +378,41 @@ const validateCarTrans = () => {
 const formatPhone = () => {
     let value = form.phone.replace(/\D/g, '')
 
+    // Якщо поле порожнє, очищуємо його повністю
     if (!value) {
         form.phone = ''
         clearError('phone')
         return
     }
 
-    if (value.startsWith('0')) {
-        value = '380' + value.slice(1)
-    }
-
-    if (!value.startsWith('380')) {
-        value = '380' + value
-    }
-
-    value = value.slice(0, 12)
-
-    if (value.length <= 3) {
-        form.phone = '+' + value
+    // Якщо користувач видалив все до 380, очищуємо поле
+    if (value === '380' || value === '38' || value === '3') {
+        form.phone = ''
         clearError('phone')
         return
     }
 
+    // Якщо номер починається з 0 (український формат), замінюємо на 380
+    if (value.startsWith('0')) {
+        value = '380' + value.slice(1)
+    }
+
+    // Якщо номер не починається з 380, додаємо префікс
+    if (!value.startsWith('380')) {
+        value = '380' + value
+    }
+
+    // Обмежуємо довжину до 12 цифр (380 + 9 цифр)
+    value = value.slice(0, 12)
+
+    // Якщо тільки код країни, залишаємо поле порожнім
+    if (value.length <= 3) {
+        form.phone = ''
+        clearError('phone')
+        return
+    }
+
+    // Форматуємо номер
     let formatted = '+380'
     const phoneDigits = value.slice(3)
 
@@ -933,9 +946,11 @@ const resetForm = () => {
             font-size: 16px;
         }
     }
+
     .form-inner {
         padding: 0 16px;
     }
+
     .submit-btn {
         padding: 10px;
     }
