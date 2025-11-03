@@ -236,6 +236,7 @@ const confirmDelete = (car) => {
     deleteModal.show = true
     deleteModal.car = car
     deleteModal.error = ''
+    closeDeleteModal()
 }
 
 const closeDeleteModal = () => {
@@ -574,6 +575,10 @@ onMounted(() => {
 .modal h3 {
     margin: 0 0 1rem 0;
     color: #333;
+}
+
+.modal strong {
+    color: #000;
 }
 
 .modal p {
