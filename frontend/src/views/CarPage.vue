@@ -83,7 +83,7 @@
                     <div class="car-specs_header">
                         <h2>Технічні характеристики</h2>
                         <div>
-                            <img src="../assets/icons/price" alt="">
+                            <img src="../assets/icons/price.png" alt="">
                             <p>{{ formatPrice(car.price) }}</p>
                         </div>
                     </div>
