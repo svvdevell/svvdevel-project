@@ -236,7 +236,6 @@ const confirmDelete = (car) => {
     deleteModal.show = true
     deleteModal.car = car
     deleteModal.error = ''
-    closeDeleteModal()
 }
 
 const closeDeleteModal = () => {
