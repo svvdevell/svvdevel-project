@@ -11,22 +11,19 @@
                     <img src="../../assets/images/salon.jpg" alt="Slide 1">
                 </SwiperSlide>
                 <SwiperSlide>
-                    <img src="../../assets/images/park_image_12" alt="Slide 2">
+                    <img src="../../assets/images/park_image_12.jpg" alt="Slide 2">
                 </SwiperSlide>
                 <SwiperSlide>
-                    <img src="../../assets/images/park_image_13" alt="Slide 3">
+                    <img src="../../assets/images/park_image_10.jpg" alt="Slide 3">
                 </SwiperSlide>
                 <SwiperSlide>
-                    <img src="../../assets/images/park_image_7" alt="Slide 4">
+                    <img src="../../assets/images/park_image_7.jpg" alt="Slide 4">
                 </SwiperSlide>
                 <SwiperSlide>
-                    <img src="../../assets/images/park_image_11" alt="Slide 5">
+                    <img src="../../assets/images/park_image_11.jpg" alt="Slide 5">
                 </SwiperSlide>
                 <SwiperSlide>
-                    <img src="../../assets/images/park_image_8" alt="Slide 6">
-                </SwiperSlide>
-                <SwiperSlide>
-                    <img src="../../assets/images/park_image_10" alt="Slide 7">
+                    <img src="../../assets/images/park_image_8.jpg" alt="Slide 6">
                 </SwiperSlide>
             </Swiper>
         </div>
@@ -110,7 +107,7 @@ const modules = [Autoplay, Pagination];
 
         & img {
             width: 100%;
-            height: 600px;
+            max-height: 800px;
             object-fit: cover;
             border-radius: 20px;
         }
@@ -143,7 +140,7 @@ const modules = [Autoplay, Pagination];
 
         & .image {
             & img {
-                height: 300px;
+                height: 500px;
             }
         }
 

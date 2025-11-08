@@ -19,9 +19,6 @@
                 <SwiperSlide>
                     <img src="../../assets/images/park_image_5.jpg" alt="Slide 4">
                 </SwiperSlide>
-                <SwiperSlide>
-                    <img src="../../assets/images/park_image_13.jpg" alt="Slide 5">
-                </SwiperSlide>
             </Swiper>
         </div>
         <div class="text">
@@ -87,7 +84,7 @@ const modules = [Autoplay, Pagination];
 
         & img {
             width: 100%;
-            height: 500px;
+            height: 700px;
             object-fit: cover;
             border-radius: 20px;
         }
