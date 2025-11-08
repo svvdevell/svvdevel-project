@@ -1,5 +1,5 @@
 <template>
-    <div class="car-card" @click="handleOpenDetails(car)" :class="[car.status == 'Продано' ? 'selled' : '']">
+    <div class="car-card" @click="handleOpenDetails(car)" :class="{ 'selled': car.status === 'Продано' }">
         <!-- Car Image -->
         <div class="car-image" @click="handleOpenDetails">
             <img v-if="car.imageCount > 0" :src="car?.images[0]?.fileUrl" :alt="`${car.brand} ${car.model}`"

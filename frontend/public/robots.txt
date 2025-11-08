@@ -1,12 +1,15 @@
 User-agent: *
 Allow: /
 
-Disallow: /api/
-Disallow: /admin/
-
-Allow: /images/
-Allow: /assets/
-
+# Sitemap
 Sitemap: https://eleganceauto.od.ua/sitemap.xml
 
-Crawl-delay: 1
+# Не індексувати адмінку якщо є
+Disallow: /admin
+Disallow: /api
+
+# Дозволити всі інші сторінки
+Allow: /
+Allow: /contact
+Allow: /catalog
+Allow: /cars/
