@@ -786,6 +786,111 @@ const resetForm = () => {
 </script>
 
 <style scoped>
+/* Toast Notification */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 400px;
+    z-index: 10000;
+    border-left: 4px solid;
+}
+
+.toast-notification.success {
+    border-left-color: #28a745;
+}
+
+.toast-notification.error {
+    border-left-color: #dc3545;
+}
+
+.toast-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-notification.success .toast-icon {
+    background: #d4edda;
+    color: #28a745;
+}
+
+.toast-notification.error .toast-icon {
+    background: #f8d7da;
+    color: #dc3545;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-content h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.toast-content p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+.toast-close:hover {
+    color: #333;
+}
+
+/* Toast Animation */
+.toast-enter-active,
+.toast-leave-active {
+    transition: all 0.3s ease;
+}
+
+.toast-enter-from {
+    opacity: 0;
+    transform: translateX(100px);
+}
+
+.toast-leave-to {
+    opacity: 0;
+    transform: translateX(100px);
+}
+
+@media (max-width: 768px) {
+    .toast-notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+}
+
 .add-car-container {
     max-width: 1440px;
     margin: 2rem auto;
