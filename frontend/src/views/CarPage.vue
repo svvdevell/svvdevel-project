@@ -163,8 +163,8 @@
                             {{ linkCopied ? 'Скопійовано!' : 'Копіювати посилання' }}
                         </button>
                     </div>
-                    <div class="share-buttons" >
-                        <a href="tel:0734080999" class="share-btn" style="background-color: #27ae60;">
+                    <div class="share-buttons">
+                        <a href="tel:0734080999" class="share-btn" style="background-color: #27ae60; margin-top: 20px; text-decoration: none;">
                             Зателефонувати
                         </a>
                     </div>
@@ -456,9 +456,7 @@ onUnmounted(() => {
 }
 
 .back-btn:hover {
-    background: #f8f9fa;
-    border-color: #007bff;
-    color: #007bff;
+    opacity: 0.7;
 }
 
 .loading,
@@ -681,7 +679,7 @@ onUnmounted(() => {
             & p {
                 color: #4caf50;
                 margin: 0;
-                font-size: 1rem;
+                font-size: 2rem;
                 font-weight: 600;
                 line-height: 1.3;
             }
@@ -690,7 +688,6 @@ onUnmounted(() => {
 }
 
 .car-specs h2 {
-    margin-bottom: 1.5rem;
     font-size: 1.5rem;
 }
 

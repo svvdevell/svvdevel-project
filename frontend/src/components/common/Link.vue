@@ -33,4 +33,10 @@ const props = defineProps({
         opacity: 0.7;
     }
 }
+
+@media (max-width: 960px) {
+    .link {
+        font-size: 16px;
+    }
+}
 </style>

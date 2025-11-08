@@ -693,7 +693,7 @@ const resetForm = () => {
     background: #FFFFFF;
     border: 1px solid #E0E0E0;
     border-radius: 12px;
-    max-height: 200px;
+    max-height: 250px;
     overflow-y: auto;
     z-index: 99999;
     margin-top: 4px;
@@ -720,11 +720,11 @@ const resetForm = () => {
 }
 
 .autocomplete-item {
-    padding: 12px 16px;
+    padding: 10px 16px;
     cursor: pointer;
     transition: background-color 0.2s ease;
     font-family: Work Sans;
-    font-size: 16px;
+    font-size: 15px;
     color: #000;
 
     &:hover {

@@ -777,7 +777,7 @@ const resetForm = () => {
 
 .success-box {
     background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-    color: #ffffff;
+    color: #000;
     padding: 20px;
     border-radius: 14px;
     text-align: center;

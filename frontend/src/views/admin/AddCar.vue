@@ -75,17 +75,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="transmission">Трансмісія *</label>
-                        <select v-model="form.transmission" id="transmission" required
-                            :class="{ error: errors.transmission }">
-                            <option value="">Оберіть тип трансмісії</option>
-                            <option value="Механічна">Механічна</option>
-                            <option value="Автоматична">Автоматична</option>
-                            <option value="Робот">Робот</option>
-                            <option value="Варіатор">Варіатор</option>
-                        </select>
-                        <span v-if="errors.transmission" class="error-text">{{ errors.transmission }}</span>
+                        <label for="volume">Об'єм двигуна *</label>
+                        <input v-model.number="form.volume" type="number" id="volume" required min="0" step="0.1"
+                            placeholder="3.0" :class="{ error: errors.volume }">
+                        <span v-if="errors.volume" class="error-text">{{ errors.volume }}</span>
                     </div>
+
                 </div>
 
                 <!-- Привід та пробіг -->
@@ -102,12 +97,20 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="volume">Об'єм двигуна *</label>
-                        <input v-model.number="form.volume" type="number" id="volume" required min="0" step="0.1"
-                            placeholder="3.0" :class="{ error: errors.volume }">
-                        <span v-if="errors.volume" class="error-text">{{ errors.volume }}</span>
+                        <label for="transmission">Трансмісія *</label>
+                        <select v-model="form.transmission" id="transmission" required
+                            :class="{ error: errors.transmission }">
+                            <option value="">Оберіть тип трансмісії</option>
+                            <option value="Механічна">Механічна</option>
+                            <option value="Автоматична">Автоматична</option>
+                            <option value="Робот">Робот</option>
+                            <option value="Варіатор">Варіатор</option>
+                        </select>
+                        <span v-if="errors.transmission" class="error-text">{{ errors.transmission }}</span>
                     </div>
+                </div>
 
+                <div class="form-row">
                     <div class="form-group">
                         <label for="mileage">Пробіг (км) *</label>
                         <input v-model.number="form.mileage" type="number" id="mileage" required min="0"
@@ -204,6 +207,27 @@
                     {{ errorMessage }}
                 </div>
             </form>
+            <Transition name="toast">
+                <div v-if="showToast" class="toast-notification" :class="toastType">
+                    <div class="toast-icon">
+                        <svg v-if="toastType === 'success'" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="toast-content">
+                        <h4>{{ toastTitle }}</h4>
+                        <p>{{ toastMessage }}</p>
+                    </div>
+                    <button @click="closeToast" class="toast-close">×</button>
+                </div>
+            </Transition>
         </div>
     </div>
 </template>
@@ -216,6 +240,11 @@ import { useAuthStore } from '@/stores/auth'
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+
+const showToast = ref(false)
+const toastType = ref('success') // 'success' или 'error'
+const toastTitle = ref('')
+const toastMessage = ref('')
 
 // Список марок автомобілів
 const carBrands = [
@@ -332,6 +361,21 @@ const carColors = [
     // Інше
     'Інший'
 ].sort()
+
+const showNotification = (type, title, message) => {
+    toastType.value = type
+    toastTitle.value = title
+    toastMessage.value = message
+    showToast.value = true
+
+    setTimeout(() => {
+        showToast.value = false
+    }, 5000) // Автоматически закрывается через 5 секунд
+}
+
+const closeToast = () => {
+    showToast.value = false
+}
 
 // Режим редагування
 const isEditMode = computed(() => !!route.params.id)
@@ -672,16 +716,21 @@ const submitForm = async () => {
 
         if (response.ok) {
             const result = await response.json()
-            successMessage.value = isEditMode.value
-                ? 'Автомобіль успішно оновлено!'
-                : 'Автомобіль успішно додано в каталог!'
+
+            showNotification(
+                'success',
+                'Успішно!',
+                isEditMode.value
+                    ? 'Автомобіль успішно оновлено!'
+                    : 'Автомобіль успішно додано в каталог!'
+            )
 
             if (!isEditMode.value) {
                 resetForm()
             } else {
                 setTimeout(() => {
                     router.push('/admin/list')
-                }, 1500)
+                }, 2000)
             }
         } else {
             const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
@@ -690,7 +739,7 @@ const submitForm = async () => {
 
     } catch (error) {
         console.error('Submission error:', error)
-        errorMessage.value = 'Помилка збереження. Спробуйте ще раз.'
+        showNotification('error', 'Помилка!', 'Помилка збереження. Спробуйте ще раз.')
     } finally {
         isSubmitting.value = false
     }

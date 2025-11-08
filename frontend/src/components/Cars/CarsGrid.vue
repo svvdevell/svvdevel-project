@@ -482,7 +482,7 @@ onUnmounted(() => {
 .search-input {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 2px solid #e0e0e0;
+    border: none;
     border-radius: 8px;
     font-size: 1rem;
     color: #333;
