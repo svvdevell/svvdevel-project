@@ -117,17 +117,11 @@
                             </svg>
                         </div>
                         <div class="select-options">
-                            <div class="select-option" @click="selectItemsPerPage(6)">
-                                6 авто
-                            </div>
-                            <div class="select-option" @click="selectItemsPerPage(12)">
-                                12 авто
-                            </div>
-                            <div class="select-option" @click="selectItemsPerPage(24)">
-                                24 авто
-                            </div>
                             <div class="select-option" @click="selectItemsPerPage(48)">
                                 48 авто
+                            </div>
+                            <div class="select-option" @click="selectItemsPerPage(24)">
+                                64 авто
                             </div>
                         </div>
                     </div>
@@ -405,7 +399,7 @@ onUnmounted(() => {
     justify-content: space-between;
     padding: 0.75rem 1rem;
     background: white;
-    border: 2px solid #e0e0e0;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -442,7 +436,7 @@ onUnmounted(() => {
     left: 0;
     right: 0;
     background: white;
-    border: 2px solid #007bff;
+    border: none;
     border-top: none;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -455,7 +449,7 @@ onUnmounted(() => {
 }
 
 .custom-select.open .select-options {
-    max-height: 300px;
+    max-height: 305px;
     overflow-y: auto;
     opacity: 1;
 }
@@ -591,7 +585,7 @@ onUnmounted(() => {
     padding: 0.5rem 1rem;
     border: 1px solid #ddd;
     background: white;
-    color: #007bff;
+    color: #4caf50;
     border-radius: 5px;
     cursor: pointer;
     min-width: 40px;
@@ -599,7 +593,7 @@ onUnmounted(() => {
 }
 
 .page-btn:hover:not(:disabled) {
-    background: #007bff;
+    background: #222;
     color: white;
 }
 
@@ -609,7 +603,7 @@ onUnmounted(() => {
 }
 
 .page-btn.active {
-    background: #007bff;
+    background: #4caf50;
     color: white;
 }
 

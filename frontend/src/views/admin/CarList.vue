@@ -137,7 +137,7 @@ const cars = ref([])
 const loading = ref(true)
 const pagination = reactive({
     page: 1,
-    limit: 12,
+    limit: 20,
     total: 0,
     pages: 0
 })
