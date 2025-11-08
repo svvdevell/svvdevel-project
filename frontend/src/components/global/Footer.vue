@@ -54,9 +54,10 @@
                         <img src="../../assets/icons/geo.svg" alt="" class="contact-icon">
                         <div>
                             <a href="https://www.google.com/maps?q=%D0%90%D0%B2%D1%82%D0%BE%D1%81%D0%B0%D0%BB%D0%BE%D0%BD+%22Elegance+Auto%22"
-                                class="contact-link address-link">
-                                м. Одеса,<br>
-                                пр. Небесної Сотні, 100/1
+                                class="contact-link address-link" target="_blank">
+                                Полковника Гуляєва, 107/1, Лиманка, <br>
+                                Одеса, Одеська область, 65104 <br>
+                                ТЦ  «МАЯК 1» (возле метро)
                             </a>
                             <p class="work-hours">Працюємо щодня: 9:00 - 20:00</p>
                         </div>
