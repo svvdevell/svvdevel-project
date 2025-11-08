@@ -15,7 +15,6 @@ import (
 // Учетные данные администратора
 const (
     ADMIN_USERNAME      = "admin"
-    // Пароль: eleganceautoadminpass777!
     ADMIN_PASSWORD_HASH = "$2b$10$gytUP2mQ2vEuGCZ04JmX7O1uv4JM5/dhKR.QwHnhy4PmiWIp2tyNm"
 )
 

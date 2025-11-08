@@ -182,6 +182,7 @@ const handleLogin = async () => {
     padding: 0.875rem;
     border: 2px solid #ddd;
     border-radius: 6px;
+    color: #222;
     font-size: 1rem;
     transition: border-color 0.3s ease;
 }
