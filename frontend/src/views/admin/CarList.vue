@@ -369,7 +369,7 @@ onMounted(() => {
 .car-image {
     position: relative;
     width: 100%;
-    height: 220px;
+    height: 300px;
     background: #f5f5f5;
     overflow: hidden;
 }

@@ -76,7 +76,7 @@
                             <span class="info-label">Тип палива:</span>
                             <span class="info-value">{{ car.fuel }}</span>
                         </div>
-                        <div class="info-row">
+                        <div class="info-row" v-if="car.fuel != 'Електро'">
                             <span class="info-label">Об'єм двигуна:</span>
                             <span class="info-value">{{ formatEngineVolume(car.volume) }}</span>
                         </div>

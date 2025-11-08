@@ -15,7 +15,7 @@ export function useHelpers() {
 
     const formatPrice = (price) => {
         if (!price) return '$0'
-        return new Intl.NumberFormat('uk-UA', {
+        return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
             minimumFractionDigits: 0

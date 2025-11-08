@@ -178,7 +178,7 @@ const getImageTimestamp = (createdAt) => {
 
 .car-image {
     position: relative;
-    height: 220px;
+    height: 300px;
     cursor: pointer;
     overflow: hidden;
     background: #f8f9fa;

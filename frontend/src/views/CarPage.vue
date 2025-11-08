@@ -96,7 +96,6 @@
                     <div class="car-specs_header">
                         <h2>Технічні характеристики</h2>
                         <div>
-                            <img src="../assets/icons/price.png" alt="">
                             <p>{{ formatPrice(car.price) }}</p>
                         </div>
                     </div>
@@ -125,7 +124,7 @@
                             <span class="spec-label">Паливо</span>
                             <span class="spec-value">{{ car.fuel }}</span>
                         </div>
-                        <div class="spec-item">
+                        <div class="spec-item" v-if="car.fuel != 'Електро'">
                             <span class="spec-label">Об`єм двигуна</span>
                             <span class="spec-value">{{ formatEngineVolume(car.volume) }}</span>
                         </div>
@@ -164,9 +163,9 @@
                             {{ linkCopied ? 'Скопійовано!' : 'Копіювати посилання' }}
                         </button>
                     </div>
-                    <div class="share-buttons" style="background-color: #27ae60;">
-                        <a href="tel:0734080999" class="share-btn">
-                            {{ Зателефонувати }}
+                    <div class="share-buttons" >
+                        <a href="tel:0734080999" class="share-btn" style="background-color: #27ae60;">
+                            Зателефонувати
                         </a>
                     </div>
                 </div>
@@ -965,8 +964,8 @@ onUnmounted(() => {
     }
 
     .lightbox-nav {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
     }
 
     .lightbox-nav-left {
