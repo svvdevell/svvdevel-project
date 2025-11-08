@@ -389,7 +389,7 @@ const getImageTimestamp = (createdAt) => {
 
 @media (max-width: 768px) {
     .car-image {
-        height: 200px;
+        height: 250px;
     }
 
     .car-info {
@@ -426,10 +426,6 @@ const getImageTimestamp = (createdAt) => {
 }
 
 @media (max-width: 480px) {
-    .car-image {
-        height: 180px;
-    }
-
     .car-title {
         font-size: 1.2rem;
     }
