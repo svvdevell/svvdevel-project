@@ -164,6 +164,11 @@
                             {{ linkCopied ? 'Скопійовано!' : 'Копіювати посилання' }}
                         </button>
                     </div>
+                    <div class="share-buttons" style="background-color: #27ae60;">
+                        <a href="tel:0734080999" class="share-btn">
+                            {{ Зателефонувати }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -173,20 +178,24 @@
             <Transition name="lightbox">
                 <div v-if="isLightboxOpen" class="lightbox" @click="closeLightbox">
                     <button class="lightbox-close" @click="closeLightbox">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
                     </button>
 
-                    <div class="lightbox-content" @click.stop>
-                        <img :src="car.images[lightboxIndex].fileUrl" :alt="`${car.brand} ${car.model}`">
+                    <div class="lightbox-content" @click.stop @mousedown="handleDragStart" @mousemove="handleDragMove"
+                        @mouseup="handleDragEnd" @mouseleave="handleDragEnd" @touchstart="handleTouchStart"
+                        @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+                        <div class="lightbox-image-wrapper" :style="{ transform: `translateX(${dragOffset}px)` }">
+                            <img :src="car.images[lightboxIndex].fileUrl" :alt="`${car.brand} ${car.model}`">
+                        </div>
 
                         <!-- Navigation -->
                         <button v-if="car.images.length > 1" @click.stop="previousLightboxImage"
                             class="lightbox-nav lightbox-nav-left">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
                                 <polyline points="15 18 9 12 15 6"></polyline>
@@ -194,7 +203,7 @@
                         </button>
                         <button v-if="car.images.length > 1" @click.stop="nextLightboxImage"
                             class="lightbox-nav lightbox-nav-right">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
                                 <polyline points="9 18 15 12 9 6"></polyline>
@@ -232,6 +241,12 @@ const linkCopied = ref(false)
 const isLightboxOpen = ref(false)
 const lightboxIndex = ref(0)
 const { formatDate, formatPrice, formatMileage, formatEngineVolume } = useHelpers()
+
+// Drag/Swipe functionality
+const isDragging = ref(false)
+const dragStartX = ref(0)
+const dragOffset = ref(0)
+const dragThreshold = 50 // Minimum distance to trigger swipe
 
 // Methods
 
@@ -324,6 +339,7 @@ const openLightbox = (index) => {
 const closeLightbox = () => {
     isLightboxOpen.value = false
     document.body.style.overflow = ''
+    dragOffset.value = 0
 }
 
 const nextLightboxImage = () => {
@@ -338,6 +354,51 @@ const previousLightboxImage = () => {
             ? car.value.images.length - 1
             : lightboxIndex.value - 1
     }
+}
+
+// Mouse drag handlers
+const handleDragStart = (e) => {
+    isDragging.value = true
+    dragStartX.value = e.clientX
+}
+
+const handleDragMove = (e) => {
+    if (!isDragging.value) return
+    const currentX = e.clientX
+    dragOffset.value = currentX - dragStartX.value
+}
+
+const handleDragEnd = () => {
+    if (!isDragging.value) return
+
+    if (dragOffset.value < -dragThreshold) {
+        nextLightboxImage()
+    } else if (dragOffset.value > dragThreshold) {
+        previousLightboxImage()
+    }
+
+    isDragging.value = false
+    dragOffset.value = 0
+}
+
+// Touch handlers
+const handleTouchStart = (e) => {
+    dragStartX.value = e.touches[0].clientX
+}
+
+const handleTouchMove = (e) => {
+    const currentX = e.touches[0].clientX
+    dragOffset.value = currentX - dragStartX.value
+}
+
+const handleTouchEnd = () => {
+    if (dragOffset.value < -dragThreshold) {
+        nextLightboxImage()
+    } else if (dragOffset.value > dragThreshold) {
+        previousLightboxImage()
+    }
+
+    dragOffset.value = 0
 }
 
 // Keyboard navigation
@@ -742,8 +803,8 @@ onUnmounted(() => {
     backdrop-filter: blur(10px);
     border: 2px solid rgba(255, 255, 255, 0.2);
     color: white;
-    width: 60px;
-    height: 60px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -765,13 +826,24 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+    user-select: none;
+    cursor: grab;
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.lightbox-image-wrapper {
+    transition: transform 0.3s ease;
 
     img {
-        max-width: 100%;
+        max-width: 90vw;
         max-height: 90vh;
         object-fit: contain;
         border-radius: 10px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        pointer-events: none;
     }
 }
 
@@ -783,8 +855,8 @@ onUnmounted(() => {
     backdrop-filter: blur(10px);
     border: 2px solid rgba(255, 255, 255, 0.2);
     color: white;
-    width: 60px;
-    height: 60px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -888,13 +960,13 @@ onUnmounted(() => {
     .lightbox-close {
         top: 10px;
         right: 10px;
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
     }
 
     .lightbox-nav {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
     }
 
     .lightbox-nav-left {
