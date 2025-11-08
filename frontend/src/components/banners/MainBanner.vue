@@ -21,14 +21,15 @@ import { ref, onMounted } from 'vue';
 import MainForm from '@/components/forms/MainForm.vue'
 import TextBanner from '@/components/banners/TextBanner.vue';
 import { useScreenSize } from '@/composables/useScreenSize';
+import placeholderImage from '@/assets/images/placeholder_video.png'; // Добавь импорт
 
 const { isMobile } = useScreenSize();
 const desktopVideoRef = ref(null);
 const mobileVideoRef = ref(null);
 const videoLoaded = ref(false);
 
-// Путь к плейсхолдеру для мобилки (замени на свой путь)
-const placeholderMobile = ref('../../assets/images/placeholder_video.png');
+// Используй импортированное изображение
+const placeholderMobile = placeholderImage;
 
 // Обработчик загрузки видео
 const onVideoLoaded = () => {
