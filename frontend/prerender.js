@@ -29,6 +29,13 @@ const routes = [
         keywords: 'каталог авто Одеса, купити авто Одеса, продаж авто Одеса, купить машину Одесса, автомобілі в наявності, б/у авто Одеса, авто после выкупа, trade-in Одеса',
         ogImage: 'https://eleganceauto.od.ua/images/og-catalog.jpg'
     },
+    {
+        path: '/blog',
+        title: 'Корисні поради про купівлю та продаж авто - Elegance Auto',
+        description: 'Експертні поради про купівлю та продаж автомобілів. Як правильно перевірити вживане авто, оформити документи, не попастися на шахраїв. Все про авто ринок України.',
+        keywords: 'поради купівля авто, як купити авто, як продати авто, перевірка вживаного авто, оформлення авто, документи на авто, викуп авто поради, продаж автомобіля Одеса, авто блог',
+        ogImage: 'https://eleganceauto.od.ua/images/og-blog.jpg'
+    }
 ];
 
 // Функція для генерації JSON-LD structured data
@@ -141,6 +148,40 @@ function generateStructuredData(route) {
             "name": "Каталог автомобілів",
             "url": "https://eleganceauto.od.ua/catalog",
             "provider": organizationSchema
+        }, null, 2);
+    }
+
+    if (route.path === '/blog') {
+        return JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+                organizationSchema,
+                {
+                    "@type": "Blog",
+                    "name": "Блог Elegance Auto",
+                    "description": "Корисні поради про купівлю та продаж автомобілів",
+                    "url": "https://eleganceauto.od.ua/blog",
+                    "publisher": organizationSchema,
+                    "inLanguage": "uk-UA"
+                },
+                {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        {
+                            "@type": "ListItem",
+                            "position": 1,
+                            "name": "Головна",
+                            "item": "https://eleganceauto.od.ua"
+                        },
+                        {
+                            "@type": "ListItem",
+                            "position": 2,
+                            "name": "Блог",
+                            "item": "https://eleganceauto.od.ua/blog"
+                        }
+                    ]
+                }
+            ]
         }, null, 2);
     }
 

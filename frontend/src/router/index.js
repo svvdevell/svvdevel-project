@@ -9,6 +9,7 @@ import NotFound from '@/views/NotFound.vue'
 import CarsCatalog from '@/views/CarsCatalog.vue'
 import Login from '@/views/Login.vue'
 import CarPage from '@/views/CarPage.vue'
+import BlogView from '@/views/BlogView.vue'
 
 const routes = [
     {
@@ -25,6 +26,14 @@ const routes = [
         component: CarsCatalog,
         meta: {
             title: 'У продажі!'
+        }
+    },
+    {
+        path: '/blog',
+        name: 'BlogView',
+        component: BlogView,
+        meta: {
+            title: 'Корисні поради - Elegance Auto'
         }
     },
     {

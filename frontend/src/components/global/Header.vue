@@ -10,8 +10,8 @@
                 <router-link to="/" class="nav-link" @click="closeMenu">Головна</router-link>
                 <!-- <router-link to="/form" class="nav-link" @click="closeMenu">Авто викуп</router-link> -->
                 <router-link to="/catalog" class="nav-link" @click="closeMenu">У продажі</router-link>
-                <!-- <router-link to="/reviews" class="nav-link" @click="closeMenu">Відгуки</router-link> -->
                 <router-link to="/contact" class="nav-link" @click="closeMenu">Контакти</router-link>
+                <router-link to="/blog" class="nav-link" @click="closeMenu">Блог</router-link>
 
                 <!-- Social Links in Mobile Menu -->
                 <div class="mobile-social">
@@ -58,6 +58,7 @@
             <router-link to="/" class="nav-link">Головна</router-link>
             <router-link to="/catalog" class="nav-link">У продажі</router-link>
             <router-link to="/contact" class="nav-link">Контакти</router-link>
+            <router-link to="/blog" class="nav-link" @click="closeMenu">Блог</router-link>
         </div>
     </header>
 </template>
@@ -385,7 +386,7 @@ onUnmounted(() => {
 
         & .nav-link {
             border: 0;
-            padding: 8px;
+            padding: 8px 0;
         }
     }
 }
@@ -397,7 +398,7 @@ onUnmounted(() => {
     }
 
     .nav-link {
-        font-size: 15px;
+        font-size: 13px;
     }
 }
 

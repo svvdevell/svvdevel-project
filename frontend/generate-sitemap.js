@@ -25,7 +25,8 @@ async function generateSitemap() {
     const staticPages = [
         { url: '/', priority: '1.0', changefreq: 'daily', lastmod: currentDate },
         { url: '/catalog', priority: '0.9', changefreq: 'daily', lastmod: currentDate },
-        { url: '/contact', priority: '0.8', changefreq: 'monthly', lastmod: currentDate }
+        { url: '/contact', priority: '0.8', changefreq: 'monthly', lastmod: currentDate },
+        { url: '/blog', priority: '0.7', changefreq: 'monthly', lastmod: currentDate }
     ];
 
     const cars = await getAllCars();

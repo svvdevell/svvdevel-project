@@ -1,5 +1,5 @@
 <template>
-    <div class="car-card" @click="handleOpenDetails(car)">
+    <div class="car-card" @click="handleOpenDetails(car)" :class="[car.status == 'Продано' ? 'selled' : '']">
         <!-- Car Image -->
         <div class="car-image" @click="handleOpenDetails">
             <img v-if="car.imageCount > 0" :src="car?.images[0]?.fileUrl" :alt="`${car.brand} ${car.model}`"
@@ -153,6 +153,10 @@ const getImageTimestamp = (createdAt) => {
 </script>
 
 <style scoped lang="scss">
+.selled {
+    opacity: 0.4;
+}
+
 .car-card {
     background: white;
     border-radius: 15px;
