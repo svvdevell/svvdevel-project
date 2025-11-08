@@ -224,10 +224,18 @@ const editCar = (id) => {
     router.push(`/admin/edit/${id}`)
 }
 
-const changePage = (page) => {
-    if (page >= 1 && page <= pagination.pages) {
-        loadCars(page)
+const changePage = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages.value) {
+        // Сначала плавно прокручиваем вверх
         window.scrollTo({ top: 0, behavior: 'smooth' })
+        
+        // Затем меняем страницу и загружаем данные
+        currentPage.value = newPage
+        
+        // Небольшая задержка для плавной прокрутки
+        setTimeout(() => {
+            fetchCars()
+        }, 300)
     }
 }
 

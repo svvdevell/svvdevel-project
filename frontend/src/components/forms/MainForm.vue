@@ -695,7 +695,7 @@ const resetForm = () => {
     border-radius: 12px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 99999;
     margin-top: 4px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
@@ -788,7 +788,6 @@ const resetForm = () => {
     color: #ff6b6b;
     font-size: 0.85rem;
     margin-top: 0.5rem;
-    padding: 10px;
 }
 
 .file-upload-wrapper {

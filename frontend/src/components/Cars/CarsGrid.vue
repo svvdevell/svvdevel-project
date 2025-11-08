@@ -188,7 +188,7 @@ const error = ref('')
 const currentPage = ref(1)
 const totalCars = ref(0)
 const totalPages = ref(0)
-const itemsPerPage = ref(12)
+const itemsPerPage = ref(24)
 const openSelect = ref(null)
 
 const filters = reactive({
@@ -305,9 +305,16 @@ const goToCarPage = (car) => {
 
 const changePage = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages.value) {
-        currentPage.value = newPage
-        fetchCars()
+        // Сначала плавно прокручиваем вверх
         window.scrollTo({ top: 0, behavior: 'smooth' })
+        
+        // Затем меняем страницу и загружаем данные
+        currentPage.value = newPage
+        
+        // Небольшая задержка для плавной прокрутки
+        setTimeout(() => {
+            fetchCars()
+        }, 300)
     }
 }
 
