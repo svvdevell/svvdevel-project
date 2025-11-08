@@ -8,7 +8,7 @@
                 clickable: true,
             }" :loop="true" class="swiper-container">
                 <SwiperSlide>
-                    <img src="../../assets/images/park_photo_3.jpg" alt="Slide 1">
+                    <img src="../../assets/images/park-photo-3.jpg" alt="Slide 1">
                 </SwiperSlide>
                 <SwiperSlide>
                     <img src="../../assets/images/park_image_6.jpg" alt="Slide 2">
