@@ -28,7 +28,7 @@ const mobileVideoRef = ref(null);
 const videoLoaded = ref(false);
 
 // Путь к плейсхолдеру для мобилки (замени на свой путь)
-const placeholderMobile = ref('../../assets/images/mob_ferrari.png');
+const placeholderMobile = ref('../../assets/images/ferrari.png');
 
 // Обработчик загрузки видео
 const onVideoLoaded = () => {
