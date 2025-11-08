@@ -1,24 +1,13 @@
 <template>
     <section class="banner">
         <div class="video">
-            <video 
-                v-if="!isMobile"
-                src="../../assets/video/1.mp4"
-                autoplay
-                muted
-                loop
-                playsinline
-                preload="auto"
-            ></video>
-            <video 
-                v-else
-                src="../../assets/video/mob_ferrari.mp4"
-                autoplay
-                muted
-                loop
-                playsinline
-                preload="auto"
-            ></video>
+            <img v-if="isMobile && !videoLoaded" :src="placeholderMobile" alt="Loading..." class="video-placeholder" />
+
+            <video v-if="!isMobile" ref="desktopVideoRef" src="../../assets/video/1.mp4" autoplay muted loop playsinline
+                preload="auto"></video>
+
+            <video v-else ref="mobileVideoRef" src="../../assets/video/mob_ferrari.mp4" autoplay muted loop playsinline
+                preload="auto" :class="{ 'video-visible': videoLoaded }" @loadeddata="onVideoLoaded"></video>
         </div>
         <div class="block">
             <TextBanner />
@@ -34,7 +23,17 @@ import TextBanner from '@/components/banners/TextBanner.vue';
 import { useScreenSize } from '@/composables/useScreenSize';
 
 const { isMobile } = useScreenSize();
-const videoRef = ref(null);
+const desktopVideoRef = ref(null);
+const mobileVideoRef = ref(null);
+const videoLoaded = ref(false);
+
+// Путь к плейсхолдеру для мобилки (замени на свой путь)
+const placeholderMobile = ref('../../assets/images/mob_ferrari.png');
+
+// Обработчик загрузки видео
+const onVideoLoaded = () => {
+    videoLoaded.value = true;
+};
 
 // Принудительный запуск видео для iOS
 onMounted(() => {
@@ -65,11 +64,23 @@ onMounted(() => {
     top: 0;
     left: 0;
 
-    & video {
+    & video,
+    & .video-placeholder {
         width: 100%;
         height: 100vh;
         object-fit: cover;
         filter: brightness(0.7) blur(5px);
+    }
+
+    & video {
+        opacity: 1;
+    }
+
+    & .video-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
     }
 }
 
@@ -96,9 +107,22 @@ onMounted(() => {
         padding-bottom: 40px;
         justify-content: center;
     }
-    
-    .video video {
+
+    .video video,
+    .video .video-placeholder {
         filter: brightness(0.9) blur(5px);
+    }
+
+    .video video {
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .video video.video-visible {
+        opacity: 1;
     }
 }
 </style>

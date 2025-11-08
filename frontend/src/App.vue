@@ -5,7 +5,9 @@
     <main class="main-content">
       <router-view></router-view>
     </main>
+    
     <LinkForm />
+
     <Footer />
   </div>
 </template>

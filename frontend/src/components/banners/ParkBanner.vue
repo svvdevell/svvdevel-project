@@ -1,7 +1,7 @@
 <template>
     <section class="container">
         <div class="image">
-            <img src="../../assets/images/park_image_1.webp" alt="">
+            <img src="../../assets/images/salon.jpg" alt="">
         </div>
         <div class="text">
             <h3>Швидке оформлення</h3>

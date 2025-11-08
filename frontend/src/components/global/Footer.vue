@@ -5,9 +5,9 @@
             <!-- Top Section -->
             <div class="footer-top">
                 <div class="footer-brand">
-                    <a href="" class="logo">
+                    <router-link to="/" class="logo"> 
                         <img src="../../assets/images/logo.png" alt="Elegance Auto">
-                    </a>
+                    </router-link>
                     <p class="brand-description">
                         Професійний автовикуп в Одесі. Швидка оцінка, чесна ціна, миттєва виплата.
                     </p>
@@ -22,6 +22,9 @@
                         <a href="https://auto.ria.com/uk/pro/seller-4625376.html" class="social-link autoria"
                             aria-label="Auto.ria">
                             <img src="../../assets/icons/auto-ria.png" alt="" class="bordered-icon">
+                        </a>
+                        <a href="https://www.tiktok.com/@elegance_auto_od" class="social-link tiktok">
+                            <img src="../../assets/icons/tiktok.png" alt="TikTok" class="bordered-icon">
                         </a>
                     </div>
                 </div>

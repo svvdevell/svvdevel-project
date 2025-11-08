@@ -25,7 +25,7 @@
                         <img src="../../assets/icons/instagram.svg" alt="Instagram">
                     </a>
                     <a href="https://www.tiktok.com/@elegance_auto_od" @click="closeMenu">
-                        <img src="../../assets/icons/whatsup.svg" alt="TikTok">
+                        <img src="../../assets/icons/tiktok.png" alt="TikTok">
                     </a>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                     <img src="../../assets/icons/instagram.svg" alt="Instagram">
                 </a>
                 <a href="https://www.tiktok.com/@elegance_auto_od">
-                    <img src="../../assets/icons/whatsup.svg" alt="TikTok">
+                    <img src="../../assets/icons/tiktok.png" alt="TikTok">
                 </a>
             </div>
 
