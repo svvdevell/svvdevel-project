@@ -24,7 +24,6 @@
             <div class="car-info_header">
                 <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
                 <div>
-                    <img src="../../assets/icons/price.png" alt="">
                     <p>{{ formatPrice(car.price) }}</p>
                 </div>
             </div>
@@ -59,7 +58,7 @@
                         <img src="../../assets/icons/volume.png" alt="">
                         Об'єм двигуна:
                     </span>
-                    <span class="value">{{ car.volume }}</span>
+                    <span class="value">{{ formatEngineVolume(car.volume)}}</span>
                 </div>
 
                 <div class="detail-row">
@@ -113,7 +112,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Badge from '@/components/common/Badge.vue'
 import { useHelpers } from '@/composables/useHelpers'
-const { formatDate, formatPrice, formatMileage } = useHelpers()
+const { formatDate, formatPrice, formatMileage, formatEngineVolume } = useHelpers()
 const router = useRouter()
 
 const props = defineProps({

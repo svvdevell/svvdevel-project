@@ -58,7 +58,6 @@
             <router-link to="/" class="nav-link">Головна</router-link>
             <router-link to="/catalog" class="nav-link">У продажі</router-link>
             <router-link to="/contact" class="nav-link">Контакти</router-link>
-
         </div>
     </header>
 </template>
@@ -272,7 +271,8 @@ onUnmounted(() => {
 }
 
 // Mobile Social Links (hidden by default)
-.mobile-social , .mob-nav-menu {
+.mobile-social,
+.mob-nav-menu {
     display: none;
 }
 
@@ -382,6 +382,11 @@ onUnmounted(() => {
         justify-content: space-between;
         align-items: center;
         width: 100%;
+
+        & .nav-link {
+            border: 0;
+            padding: 8px;
+        }
     }
 }
 

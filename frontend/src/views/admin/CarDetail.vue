@@ -56,7 +56,6 @@
                     <div class="info-section_header">
                         <h2>Технічні характеристики</h2>
                         <div>
-                            <img src="../../assets/icons/price.png" alt="">
                             <p>{{ formatPrice(car.price) }}</p>
                         </div>
                     </div>

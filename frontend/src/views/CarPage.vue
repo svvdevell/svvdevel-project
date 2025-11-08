@@ -31,19 +31,32 @@
 
                 <!-- Images Gallery -->
                 <div v-if="car.images && car.images.length > 0" class="car-gallery">
-                    <div class="main-image">
+                    <div class="main-image" @click="openLightbox(currentImageIndex)">
                         <img :src="car.images[currentImageIndex].fileUrl" :alt="`${car.brand} ${car.model}`"
                             @error="handleImageError">
 
+                        <!-- Zoom Icon -->
+                        <div class="zoom-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                <line x1="11" y1="8" x2="11" y2="14"></line>
+                                <line x1="8" y1="11" x2="14" y2="11"></line>
+                            </svg>
+                        </div>
+
                         <!-- Navigation Arrows -->
-                        <button v-if="car.images.length > 1" @click="previousImage" class="nav-arrow nav-arrow-left">
+                        <button v-if="car.images.length > 1" @click.stop="previousImage"
+                            class="nav-arrow nav-arrow-left">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
                                 <polyline points="15 18 9 12 15 6"></polyline>
                             </svg>
                         </button>
-                        <button v-if="car.images.length > 1" @click="nextImage" class="nav-arrow nav-arrow-right">
+                        <button v-if="car.images.length > 1" @click.stop="nextImage" class="nav-arrow nav-arrow-right">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
@@ -154,11 +167,53 @@
                 </div>
             </div>
         </div>
+
+        <!-- Lightbox Modal -->
+        <Teleport to="body">
+            <Transition name="lightbox">
+                <div v-if="isLightboxOpen" class="lightbox" @click="closeLightbox">
+                    <button class="lightbox-close" @click="closeLightbox">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+
+                    <div class="lightbox-content" @click.stop>
+                        <img :src="car.images[lightboxIndex].fileUrl" :alt="`${car.brand} ${car.model}`">
+
+                        <!-- Navigation -->
+                        <button v-if="car.images.length > 1" @click.stop="previousLightboxImage"
+                            class="lightbox-nav lightbox-nav-left">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <button v-if="car.images.length > 1" @click.stop="nextLightboxImage"
+                            class="lightbox-nav lightbox-nav-right">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+
+                        <!-- Counter -->
+                        <div class="lightbox-counter">
+                            {{ lightboxIndex + 1 }} / {{ car.images.length }}
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSeo } from '@/composables/useSeo';
 const { setMeta, setStructuredData } = useSeo();
@@ -174,6 +229,8 @@ const loading = ref(false)
 const error = ref('')
 const currentImageIndex = ref(0)
 const linkCopied = ref(false)
+const isLightboxOpen = ref(false)
+const lightboxIndex = ref(0)
 const { formatDate, formatPrice, formatMileage, formatEngineVolume } = useHelpers()
 
 // Methods
@@ -242,7 +299,7 @@ const previousImage = () => {
 }
 
 const handleImageError = (event) => {
-    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDgwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjQwMCIgeT0iMzAwIiBmaWxsPSIjOTk5OTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGR5PSIuM2VtIj7QndC10YIg0YTQvtGC0L48L3RleHQ+Cjwvc3ZnPg=='
+    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDgwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjZjVmNWY1Ii8+Cjx0ZXh0IHg9IjQwMCIgeT0iMzAwIiBmaWxsPSIjOTk5OTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGR5PSIuM2VtIj7QndC10YIg0YTQvtGC0L88L3RleHQ+Cjwvc3ZnPg=='
 }
 
 const copyLink = async () => {
@@ -257,9 +314,54 @@ const copyLink = async () => {
     }
 }
 
+// Lightbox functions
+const openLightbox = (index) => {
+    lightboxIndex.value = index
+    isLightboxOpen.value = true
+    document.body.style.overflow = 'hidden'
+}
+
+const closeLightbox = () => {
+    isLightboxOpen.value = false
+    document.body.style.overflow = ''
+}
+
+const nextLightboxImage = () => {
+    if (car.value && car.value.images) {
+        lightboxIndex.value = (lightboxIndex.value + 1) % car.value.images.length
+    }
+}
+
+const previousLightboxImage = () => {
+    if (car.value && car.value.images) {
+        lightboxIndex.value = lightboxIndex.value === 0
+            ? car.value.images.length - 1
+            : lightboxIndex.value - 1
+    }
+}
+
+// Keyboard navigation
+const handleKeydown = (e) => {
+    if (!isLightboxOpen.value) return
+
+    if (e.key === 'Escape') {
+        closeLightbox()
+    } else if (e.key === 'ArrowLeft') {
+        previousLightboxImage()
+    } else if (e.key === 'ArrowRight') {
+        nextLightboxImage()
+    }
+}
+
 // Lifecycle
 onMounted(() => {
     fetchCarDetails()
+    window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeydown)
+    document.body.style.overflow = ''
 })
 </script>
 
@@ -365,14 +467,41 @@ onMounted(() => {
     height: 500px;
     border-radius: 10px;
     overflow: hidden;
-    /* background: #f8f9fa; */
     margin-bottom: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.01);
+
+        .zoom-icon {
+            opacity: 1;
+        }
+    }
 }
 
 .main-image img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+.zoom-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
 .nav-arrow {
@@ -590,6 +719,130 @@ onMounted(() => {
     transform: translateY(-2px);
 }
 
+/* Lightbox Styles */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10001;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(90deg);
+    }
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+        max-width: 100%;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 10px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10001;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-50%) scale(1.1);
+    }
+}
+
+.lightbox-nav-left {
+    left: 20px;
+}
+
+.lightbox-nav-right {
+    right: 20px;
+}
+
+.lightbox-counter {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Lightbox Transitions */
+.lightbox-enter-active,
+.lightbox-leave-active {
+    transition: all 0.3s ease;
+}
+
+.lightbox-enter-from,
+.lightbox-leave-to {
+    opacity: 0;
+}
+
+.lightbox-enter-from .lightbox-content,
+.lightbox-leave-to .lightbox-content {
+    transform: scale(0.9);
+}
+
+.lightbox-enter-active .lightbox-content,
+.lightbox-leave-active .lightbox-content {
+    transition: transform 0.3s ease;
+}
+
 @media (max-width: 768px) {
     .car-details-page {
         padding: 1rem;
@@ -626,6 +879,36 @@ onMounted(() => {
 
     .nav-arrow-right {
         right: 10px;
+    }
+
+    .lightbox {
+        padding: 1rem;
+    }
+
+    .lightbox-close {
+        top: 10px;
+        right: 10px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .lightbox-nav {
+        width: 50px;
+        height: 50px;
+    }
+
+    .lightbox-nav-left {
+        left: 10px;
+    }
+
+    .lightbox-nav-right {
+        right: 10px;
+    }
+
+    .lightbox-counter {
+        bottom: -50px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
     }
 }
 </style>
