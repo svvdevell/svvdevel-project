@@ -1,5 +1,5 @@
 <template>
-    <router-link to="/contact" aria-label="Link to Route" :class="{ 'is-ringing': isRinging }"
+    <router-link to="/contact" class="phone-call-link" aria-label="Link to Route" :class="{ 'is-ringing': isRinging }"
         @mouseenter="isRinging = true" @mouseleave="isRinging = false">
         <div class="phone-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"

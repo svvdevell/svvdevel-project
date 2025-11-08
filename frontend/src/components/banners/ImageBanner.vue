@@ -1,7 +1,28 @@
 <template>
     <section class="container">
         <div class="image">
-            <img src="../../assets/images/park-photo-3.jpg" alt="">
+            <Swiper :modules="modules" :slides-per-view="1" :space-between="0" :autoplay="{
+                delay: 3000,
+                disableOnInteraction: false,
+            }" :pagination="{
+                clickable: true,
+            }" :loop="true" class="swiper-container">
+                <SwiperSlide>
+                    <img src="../../assets/images/park_photo_3.jpg" alt="Slide 1">
+                </SwiperSlide>
+                <SwiperSlide>
+                    <img src="../../assets/images/park_image_6.jpg" alt="Slide 2">
+                </SwiperSlide>
+                <SwiperSlide>
+                    <img src="../../assets/images/park_image_9.jpg" alt="Slide 3">
+                </SwiperSlide>
+                <SwiperSlide>
+                    <img src="../../assets/images/park_image_5.jpg" alt="Slide 4">
+                </SwiperSlide>
+                <SwiperSlide>
+                    <img src="../../assets/images/park_image_13.jpg" alt="Slide 5">
+                </SwiperSlide>
+            </Swiper>
         </div>
         <div class="text">
             <div class="block">
@@ -39,9 +60,16 @@
         </div>
     </section>
 </template>
-<script setup>
 
+<script setup>
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Autoplay, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+
+const modules = [Autoplay, Pagination];
 </script>
+
 <style lang="scss" scoped>
 .container {
     display: flex;
@@ -52,9 +80,15 @@
     & .image {
         width: 100%;
 
+        & .swiper-container {
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
         & img {
             width: 100%;
-            object-fit: contain;
+            height: 500px;
+            object-fit: cover;
             border-radius: 20px;
         }
     }
@@ -118,7 +152,35 @@
     }
 }
 
+/* Стили для пагинации (точек) */
+:deep(.swiper-pagination) {
+    bottom: 20px !important;
+}
+
+:deep(.swiper-pagination-bullet) {
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    opacity: 0.5;
+    transition: all 0.3s;
+}
+
+:deep(.swiper-pagination-bullet-active) {
+    background: #aa3535;
+    opacity: 1;
+    width: 30px;
+    border-radius: 5px;
+}
+
 @media (max-width: 768px) {
+    .container {
+        & .image {
+            & img {
+                height: 300px;
+            }
+        }
+    }
+
     .text {
         grid-template-columns: repeat(1, minmax(0, 1fr));
 
@@ -127,6 +189,10 @@
                 max-width: 100%;
             }
         }
+    }
+
+    :deep(.swiper-pagination) {
+        bottom: 10px !important;
     }
 }
 </style>
