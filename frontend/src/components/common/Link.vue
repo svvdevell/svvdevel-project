@@ -22,7 +22,7 @@ const props = defineProps({
     border-radius: 12px;
     font-weight: 600;
     font-style: Semi Bold;
-    font-size: 16px;
+    font-size: 25px;
     line-height: 100%;
     letter-spacing: 0%;
     text-decoration: none;

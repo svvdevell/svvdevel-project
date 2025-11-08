@@ -5,7 +5,7 @@
     <main class="main-content">
       <router-view></router-view>
     </main>
-
+    <LinkForm />
     <Footer />
   </div>
 </template>
@@ -13,6 +13,7 @@
 <script setup>
 import Header from './components/global/Header.vue'
 import Footer from './components/global/Footer.vue'
+import LinkForm from './components/forms/LinkForm.vue'
 
 </script>
 
