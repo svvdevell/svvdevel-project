@@ -69,6 +69,9 @@
                     <h3 class="footer-title">Послуги</h3>
                     <router-link to="/contact" class="footer-link">Викуп легкових авто</router-link>
                     <router-link to="/contact" class="footer-link">Викуп позашляховиків</router-link>
+                    <router-link to="/contact" class="footer-link">Викуп мотоцклів та скутерів</router-link>
+                    <a href="tel:0734080999" class="footer-link">Підбрір авто під ключ</a>
+                    <router-link to="/contact" class="footer-link">Оцінка авто</router-link>
                     <router-link to="/contact" class="footer-link">Оцінка авто онлайн</router-link>
                 </div>
             </div>

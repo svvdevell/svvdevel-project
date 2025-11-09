@@ -53,7 +53,7 @@
                     <span class="value">{{ car.fuel }}</span>
                 </div>
 
-                <div class="detail-row">
+                <div class="detail-row" v-if="car.fuel == 'Електро'">
                     <span class="label">
                         <img src="../../assets/icons/volume.png" alt="">
                         Об'єм двигуна:

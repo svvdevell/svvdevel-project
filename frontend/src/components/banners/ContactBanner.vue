@@ -58,7 +58,7 @@
                     <img src="../../assets/icons/geo.svg" alt="">
                     <div>
                         <span class="social-title">Наша адреса</span>
-                        <span class="social-desc">пр. Небесної Сотні, 100/1</span>
+                        <span class="social-desc">Полковника Гуляєва, 107/1, Лиманка, Одеса, Одеська область, 65104 ,ТЦ  «МАЯК 1» (возле метро)</span>
                     </div>
                 </a>
             </div>

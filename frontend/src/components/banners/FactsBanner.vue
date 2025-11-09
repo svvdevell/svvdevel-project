@@ -6,7 +6,7 @@
             <div class="text">
                 <img src="../../assets/icons/year.svg" alt="">
                 <div>
-                    <h4>540+</h4>
+                    <h4>1040+</h4>
                     <span>Авто викуплено</span>
                 </div>
             </div>
@@ -27,7 +27,7 @@
             <div class="text">
                 <img src="../../assets/icons/speed.svg" alt="">
                 <div>
-                    <h4>20m+</h4>
+                    <h4>20м+</h4>
                     <span>Пройдено кілометрів</span>
                 </div>
             </div>
@@ -87,6 +87,7 @@
     & .text {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 40px;
         padding: 16px;
         background-color: #FFF;
@@ -102,6 +103,7 @@
             flex-direction: column;
             align-items: flex-start;
             gap: 8px;
+            max-width: 100px;
 
             & h4 {
                 font-family: Work Sans;
