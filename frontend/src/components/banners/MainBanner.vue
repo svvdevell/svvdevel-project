@@ -6,7 +6,8 @@
             <video v-if="!isMobile" ref="desktopVideoRef" src="../../assets/video/1.mp4" autoplay muted loop playsinline
                 preload="auto"></video>
 
-            <video v-else ref="mobileVideoRef" src="../../assets/video/mob_ferrari.mp4" autoplay muted loop playsinline
+            <!-- <video v-else ref="mobileVideoRef" src="../../assets/video/mob_ferrari.mp4" autoplay muted loop playsinline -->
+            <video v-else ref="mobileVideoRef" src="../../assets/video/bg.webm" autoplay muted loop playsinline
                 preload="auto" :class="{ 'video-visible': videoLoaded }" @loadeddata="onVideoLoaded"></video>
         </div>
         <div class="block">
