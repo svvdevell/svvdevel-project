@@ -59,6 +59,10 @@ import Link from '@/components/common/Link.vue';
             font-size: 24px;
         }
 
+        & h2 {
+            text-align: center;
+        }
+
         & h3 {
             text-align: center;
             font-size: 14px;

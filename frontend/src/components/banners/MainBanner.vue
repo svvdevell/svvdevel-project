@@ -3,7 +3,7 @@
         <div class="video">
             <img v-if="isMobile && !videoLoaded" :src="placeholderMobile" alt="Loading..." class="video-placeholder" />
 
-            <video v-if="!isMobile" ref="desktopVideoRef" src="../../assets/video/1.mp4" autoplay muted loop playsinline
+            <video v-if="!isMobile" ref="desktopVideoRef" src="../../assets/video/bgDesk.webm" autoplay muted loop playsinline
                 preload="auto"></video>
 
             <!-- <video v-else ref="mobileVideoRef" src="../../assets/video/mob_ferrari.mp4" autoplay muted loop playsinline -->
@@ -71,7 +71,8 @@ onMounted(() => {
         width: 100%;
         height: 100vh;
         object-fit: cover;
-        filter: brightness(0.7) blur(5px);
+        // filter: brightness(0.7) blur(5px);
+        filter: brightness(0.9) blur(5px);
     }
 
     & video {

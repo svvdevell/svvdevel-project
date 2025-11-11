@@ -60,6 +60,9 @@
             <router-link to="/contact" class="nav-link">Контакти</router-link>
             <router-link to="/blog" class="nav-link" @click="closeMenu">Блог</router-link>
         </div>
+
+        <!-- Overlay for closing menu on outside click -->
+        <div v-if="isMenuOpen" class="menu-overlay" @click="closeMenu"></div>
     </header>
 </template>
 
@@ -277,6 +280,11 @@ onUnmounted(() => {
     display: none;
 }
 
+// Menu Overlay
+.menu-overlay {
+    display: none;
+}
+
 // Mobile Styles
 @media (max-width: 768px) {
     .navigation {
@@ -303,6 +311,30 @@ onUnmounted(() => {
 
     .contact-links {
         display: none;
+    }
+
+    // Overlay for closing menu
+    .menu-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 9998;
+        backdrop-filter: blur(4px);
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 
     .nav-menu {
@@ -350,6 +382,8 @@ onUnmounted(() => {
         display: flex;
         gap: 16px;
         width: 100%;
+        justify-content: center;
+        margin-top: 20px;
 
         a {
             width: 48px;

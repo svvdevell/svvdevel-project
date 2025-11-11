@@ -84,18 +84,6 @@
                     <div v-if="errors.phone" class="error-message">{{ errors.phone }}</div>
                 </div>
 
-                <!-- Поле описания (необязательное) -->
-                <!-- <div class="input-group"
-                :class="{ 'has-error': errors.description, 'has-success': !errors.description && form.description.length > 0 }">
-                <textarea v-model="form.description" placeholder="Розкажіть трошки про Ваше авто (необов'язково)"
-                    class="glass-textarea" rows="4" @blur="validateDescription" @input="clearError('description')"
-                    maxlength="500"></textarea>
-                <div v-if="errors.description" class="error-message">{{ errors.description }}</div>
-                <div v-if="form.description.length > 0" class="char-counter">
-                    {{ form.description.length }} / 500
-                </div>
-            </div> -->
-
                 <!-- Кнопка отправки -->
                 <button type="submit" class="submit-btn" :class="{ 'loading': isSubmitting }"
                     :disabled="isSubmitting || !isFormValid">
@@ -609,7 +597,7 @@ const resetForm = () => {
 .form-container {
     width: 100%;
     max-width: 520px;
-    background: #FFFFFF;
+    background: rgba(255, 255, 255, 0.4);
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -640,9 +628,11 @@ const resetForm = () => {
     position: relative;
     display: flex;
     flex-direction: column;
-    background: #FAFAFA;
+    background: transparent;
     border-radius: 12px;
     padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
 
     & input,
     textarea,
@@ -654,7 +644,7 @@ const resetForm = () => {
         line-height: 20px;
         letter-spacing: 0%;
         color: #000;
-        background: #FAFAFA;
+        background: transparent;
         border: none;
         max-height: 150px;
     }
@@ -749,14 +739,15 @@ const resetForm = () => {
     transition: all 0.3s ease;
 
     &::placeholder {
-        color: #666;
+        color: #222;
     }
 
     &:focus {
         outline: none;
-        border-color: rgba(255, 255, 255, 0.6);
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        border-color: 0;
+        box-shadow: 0;
+        background: inherit;
     }
 }
 
@@ -769,7 +760,7 @@ const resetForm = () => {
     background-position: right 10px center;
 
     option {
-        background: #FAFAFA;
+        background: transparent;
         color: #000;
     }
 
