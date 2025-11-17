@@ -225,16 +225,16 @@ const editCar = (id) => {
 }
 
 const changePage = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages.value) {
-        // Сначала плавно прокручиваем вверх
+    if (newPage >= 1 && newPage <= pagination.pages) {
+        // Спочатку плавно прокручуємо вгору
         window.scrollTo({ top: 0, behavior: 'smooth' })
         
-        // Затем меняем страницу и загружаем данные
-        currentPage.value = newPage
+        // Оновлюємо сторінку та завантажуємо дані
+        pagination.page = newPage
         
-        // Небольшая задержка для плавной прокрутки
+        // Невелика затримка для плавної прокрутки
         setTimeout(() => {
-            fetchCars()
+            loadCars(newPage)
         }, 300)
     }
 }
